@@ -146,7 +146,8 @@ def gGas(r,a,b,lamb,eta):
     return 1/(ut*(1-b*np.sign(ur)*sqrt(np.abs(Rint(r,a,lamb,eta)*ur**2))/Delta(r,a)/ut-lamb*uphi/ut))
 
 #calculate the observed brightness for a purely radial profile
-def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao):
+def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams):
+    # ASK: is this called once or for each photon?
     """
     Calculate the brightness of a rotationally symmetric disk
     (Eq. 50 P1)
@@ -170,8 +171,16 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao):
     brightness = np.zeros(rs.shape[0])
     redshift_sign = redshift_sign[mask]
 
-    brightness[rs>=isco]= gDisk(rs[rs>=isco],a,redshift_sign[rs>=isco],lamb[rs>=isco],eta[rs>=isco])**gfactor*ilp.profile(rs[rs>=isco],a,gammap,mup,sigmap)
-    brightness[rs<isco]= gGas(rs[rs<isco],a,redshift_sign[rs<isco],lamb[rs<isco],eta[rs<isco])**gfactor*ilp.profile(rs[rs<isco],a,gammap,mup,sigmap)
+    redshift_inner = gDisk(rs[rs>=isco],a,redshift_sign[rs>=isco],lamb[rs>=isco],eta[rs>=isco])
+    redshift_outter = gGas(rs[rs<isco],a,redshift_sign[rs<isco],lamb[rs<isco],eta[rs<isco])
+
+    ilp.set_b_params(brightparams[1],brightparams[4],brightparams[5],brightparams[6],brightparams[8])
+    brightness[rs>=isco]= redshift_inner**gfactor*ilp.profile(
+        rs[rs>=isco], redshift_inner,brightparams[0],brightparams[1],brightparams[2],brightparams[3],brightparams[4],brightparams[5],
+        brightparams[6],brightparams[7],brightparams[8],brightparams[9])
+    brightness[rs<isco]= redshift_outter**gfactor*ilp.profile(
+        rs[rs<isco], redshift_outter,brightparams[0],brightparams[1],brightparams[2],brightparams[3],brightparams[4],brightparams[5],
+        brightparams[6],brightparams[7],brightparams[8],brightparams[9])
     
     r_p = 1+np.sqrt(1-a**2)
     brightness[rs<=r_p] = 0
@@ -262,19 +271,32 @@ def slow_light(grid,mask,redshift_sign,a,isco,rs,th,ts,interpolation,thetao):
     I[mask] = brightness
     return(I)
 
-def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,mask2,N2,rs2,sign2):
+def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,mask2,N2,rs2,sign2,brightparams):
     """
     Calculate and save the radial brightness profile
     """
-    bghts0 = bright_radial(supergrid0,mask0,sign0,spin_case,rs0,isco,thetao)
-    bghts1 = bright_radial(supergrid1,mask1,sign1,spin_case,rs1,isco,thetao)
-    bghts2 = bright_radial(supergrid2,mask2,sign2,spin_case,rs2,isco,thetao)
+    #ASK is it ok to alter bghts 1 and 2
+    bghts0 = bright_radial(supergrid0,mask0,sign0,spin_case,rs0,isco,thetao,brightparams)
+    bghts1 = bright_radial(supergrid1,mask1,sign1,spin_case,rs1,isco,thetao,brightparams)
+    bghts2 = bright_radial(supergrid2,mask2,sign2,spin_case,rs2,isco,thetao,brightparams)
 
     I0 = bghts0.reshape(N0,N0).T
     I1 = bghts1.reshape(N1,N1).T
     I2 = bghts2.reshape(N2,N2).T
 
-    filename=path+"Intensity_a_%s_i_%s.h5"%(spin_case,i_case)
+    filename=path+'Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rb_{}_nth0_{}_te0_{}_pdens_{}_ptemp_{}.h5'.format(
+    spin_case,
+    i_case,
+    "{:.1e}".format(brightparams[0].value),
+    "{:.1e}".format(brightparams[1].value), 
+    brightparams[2],
+    "{:.3e}".format(brightparams[3].value), 
+    "{:.1e}".format(brightparams[4]),
+    "{:.1e}".format(brightparams[5]), 
+    "{:.1e}".format(brightparams[6].value),
+    "{:.1e}".format(brightparams[7].value),
+    "{:.1e}".format(brightparams[8]),
+    "{:.1e}".format(brightparams[9]))
     h5f = h5py.File(filename, 'w')
 
     h5f.create_dataset('bghts0', data=I0)
@@ -338,3 +360,54 @@ def gfactorf(grid,mask,redshift_sign,a,isco,rs,th,thetao):
     gs = np.zeros(mask.shape)
     gs[mask] = gfact
     return(gs)
+
+# orbit for the centroid with r=8 and phidot = 0.01
+# one may put arbitrary orbit here.
+def x0(t):
+    return(radhs*np.sin(t*velhs))
+
+def y0(t):
+    return(radhs*np.cos(t*velhs))
+
+def flare_model(grid,mask,redshift_sign,a,rs,th,ts,thetao,rwidth,delta_t):
+
+    """
+    Calculate the black hole image including the time delay due to lensing and geometric effect
+    :param grid: alpha and beta grid on the observer plane on which we evaluate the observables
+    :param mask: mask out the lensing band, see lb_f.py for detail
+    :param redshift_sign: sign of the redshift
+    :param mbar: lensing band index 0,1,2,...
+    :param a: black hole spin
+    :param isco: radius of the inner-most stable circular orbit
+    :param rs: source radius
+    :param th: source angle, polar coordinate
+    :param ts: time of emission at the source
+    :param interpolation: a time series of 2 dimensional brightness function of the source, 3d interpolation object
+    :param thetao: observer inclination
+    
+    :return: image of a lensed equitorial source with only radial dependence. 
+    """
+
+    alpha = grid[:,0][mask]
+    beta = grid[:,1][mask]
+    rs = rs[mask]
+    th = th[mask]
+    ts = ts[mask]
+    lamb,eta = rt.conserved_quantities(alpha,beta,thetao,a)
+    brightness = np.zeros(rs.shape[0])
+    redshift_sign = redshift_sign[mask]
+    
+    x_aux = rs*np.cos(th)
+    y_aux = rs*np.sin(th)
+    # x0 and y0 is now a function of t, where one can specify an arbitrary equitorial orbit
+    brightness = np.exp(-(x_aux-x0(ts+delta_t))**2/rwidth**2-(y_aux-y0(ts+delta_t))**2/rwidth**2)
+    
+    brightness[rs>=isco]*= gDisk(rs[rs>=isco],a,redshift_sign[rs>=isco],lamb[rs>=isco],eta[rs>=isco])**gfactor
+    brightness[rs<isco]*= gGas(rs[rs<isco],a,redshift_sign[rs<isco],lamb[rs<isco],eta[rs<isco])**gfactor
+
+    r_p = 1+np.sqrt(1-a**2)
+    brightness[rs<=r_p] = 0
+    
+    I = np.zeros(mask.shape)
+    I[mask] = brightness
+    return(np.nan_to_num(I))
