@@ -1,5 +1,33 @@
 from aart_func import *
 from params import * 
+import argparse
+
+
+parser = argparse.ArgumentParser(description='Intensity as function of radial distance from black hole')
+parser.add_argument('--nu', default=ilp.kw_nu0.value, type=float)
+parser.add_argument('--mass', default=ilp.kw_mass.value, type=float)
+parser.add_argument('--scaleh', default=ilp.kw_scale_height, type=float)
+parser.add_argument('--thetab', default=ilp.kw_theta_b.value, type=float)
+parser.add_argument('--beta', default=ilp.kw_beta, type=float)
+parser.add_argument('--rb0', default=ilp.kw_rb_0, type=float)
+parser.add_argument('--nth0', default=ilp.kw_n_th0.value, type=float)
+parser.add_argument('--te0', default=ilp.kw_t_e0.value, type=float)
+parser.add_argument('--pdens', default=ilp.kw_p_dens, type=float)
+parser.add_argument('--ptemp', default=ilp.kw_p_temp, type=float)
+args = parser.parse_args()
+brightparams = [
+	args.nu*ilp.Hz, # 0 
+	args.mass*ilp.grams, # 1 
+	args.scaleh, # 2
+	args.thetab*ilp.rads, # 3
+	args.beta, # 4
+	args.rb0, # 5
+	args.nth0*ilp.cmcubed, # 6
+	args.te0*ilp.kelv, # 7
+	args.pdens, # 8
+	args.ptemp # 9
+]
+
 
 print("Intensity")
 
@@ -36,9 +64,7 @@ if bvapp!=1:
 	rs2=h5f['rs2'][:]
 	sign2=h5f['sign2'][:]
 	h5f.close()
-
-	obsint.br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,mask2,N2,rs2,sign2)
-
+	obsint.br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,mask2,N2,rs2,sign2,brightparams)	
 else:
 
 	h5f.close()
@@ -53,4 +79,5 @@ else:
 
 	h5f.close()
 
-	obsint.br_bv(supergrid0,mask0,N0,rs0_bv,sign0_bv)	
+	obsint.br_bv(supergrid0,mask0,N0,rs0_bv,sign0_bv)
+
