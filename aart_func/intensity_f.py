@@ -275,7 +275,6 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     """
     Calculate and save the radial brightness profile
     """
-    #ASK is it ok to alter bghts 1 and 2
     bghts0 = bright_radial(supergrid0,mask0,sign0,spin_case,rs0,isco,thetao,brightparams)
     bghts1 = bright_radial(supergrid1,mask1,sign1,spin_case,rs1,isco,thetao,brightparams)
     bghts2 = bright_radial(supergrid2,mask2,sign2,spin_case,rs2,isco,thetao,brightparams)

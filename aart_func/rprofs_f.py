@@ -32,13 +32,13 @@ Hz = 1 * u.Hz
 # kw_nu0 = 230e9 * Hz
 kw_nu0 = 86e9 * Hz
 #kw_nu0 = 345e9 * Hz
-kw_mass = 1.989e42 * grams  # m87 mass
+kw_mass = (MMkg * u.kg).to(u.g)  # m87 mass as put in AART
+kw_scale_height = .5
 kw_theta_b = 60 * (np.pi / 180) * rads
 kw_beta = 1
-kw_scale_height = .5
 
 '''Math Coeff'''
-kw_rb_0 = 60
+kw_rb_0 = 50
 kw_n_th0 = 1.23e4 * cmcubed
 kw_t_e0 = 8.1e9 * kelv
 
@@ -151,3 +151,18 @@ def profile(r, redshift, nu0=kw_nu0,mass=kw_mass, scale_height=kw_scale_height, 
     jcoeff = n * e ** 2 * nu * synchrotron_func(x) / (2 * np.sqrt(3) * c * theta_e ** 2)
     specific_intensity = r * scale_height * rg_func(mass) * jcoeff
     return ((c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity).to(u.K)
+
+# Assume I is ndarray without astropy units, but in kelvin
+def total_jy(I, nu, mass):
+    I = I * u.K
+    nu = nu * u.Hz
+    mass = mass * u.g
+    one_M = rg_func(mass).to(u.m)
+    M2rads = np.arctan(one_M.value / dBH)
+    rads2pxls = (M2rads * 2 * limits) / (I.shape)[0]
+    return (I * nu ** 2 * (2 * kB / c ** 2)).to(u.Jy).sum() * rads2pxls ** 2
+
+def ring_radius(I0):
+    count = np.zeros([(I0.shape)[0] + 1000, 4])
+
+

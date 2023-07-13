@@ -34,12 +34,14 @@ parser.add_argument('var', help=
 parser.add_argument('start', type=float)
 parser.add_argument('stop',help='Inclusive Stop',type=float)
 parser.add_argument("step_size",type=float)
+parser.add_argument("power_val",type=float, help="Colorbar power norm value. Lower for anticipated higher brightness range")
 args = parser.parse_args()
 action = [
     (args.var),
     (args.start),
     (args.stop),
-    (args.step_size)
+    (args.step_size),
+    (args.power_val)
 ]
 
 '''Reading of the lensing bands----------------------------------'''
@@ -119,11 +121,11 @@ cmd_args = [
 ]
 brightparams = [
 	230e9, # nu0
-	1.989e42, # mass
+	(MMkg * u.kg).to(u.g).value, # mass
 	.5, # scale_height
-	60.0 * (np.pi / 180), # theta_b
+	50.0 * (np.pi / 180), # theta_b
 	1.0, # beta
-	60.0, # rb
+	50.0, # rb
 	1.23e4, # n_th0
 	8.1e9, # t_e0
 	-.7, # p_dens
@@ -169,15 +171,19 @@ label[:,2] = [
 	''	
 ]
 
-names_to_delete1 = [] #.h5 files
+num_iterations = (action[2] - action[1]) / action[3]
+doth5_files = [] #.h5 files
 names_to_delete2 = [] # images
 b = 0
+x_variable = []
+jansky_variable = []
 for i in range(int((action[2]-action[1])/action[3])):
 	brightparams[action[0]] = action[1] + b * action[3]
 	print('Creating: Figure ' + str(b))
 	for k in range(len(brightparams)):
 		args = args + '--' + cmd_args[k] + ' ' + str(brightparams[k]) + ' '
 
+	x_variable.append(brightparams[action[0]])
 
 	subprocess.run(['python3 ' + aartpath + '/radialintensity.py' + args], shell=True)
 	fnrays='./Results/Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rb_{}_nth0_{}_te0_{}_pdens_{}_ptemp_{}.h5'.format(
@@ -193,11 +199,8 @@ for i in range(int((action[2]-action[1])/action[3])):
 		"{:.1e}".format(brightparams[7]),
 		"{:.1e}".format(brightparams[8]),
 		"{:.1e}".format(brightparams[9]))
-	names_to_delete1 += [fnrays]
-	
-	
-# Intensity_a_0.94_i_17_nu_2.3e+11_mass_2.0e+42_scaleh_10.0_thetab_1.047e+00_beta_1.0e+00_rb_6.0e+01_nth0_1.2e+04_te0_8.1e+09_pdens_-7.0e-01_ptemp_-8.4e-01
-# Intensity_a_0.94_i_17_nu_2.3e+11_mass_2.0e+42_scaleh_10_thetab_1.047e+00_beta_1.0e+00_rb_6.0e+01_nth0_1.2e+04_te0_8.1e+09_pdens_-7.0e-01_ptemp_-8.4e-01.h5
+	doth5_files += [fnrays]
+
 
 	print("Reading file: ",fnrays)
 
@@ -209,33 +212,88 @@ for i in range(int((action[2]-action[1])/action[3])):
 
 	h5f.close()
 
-	# if b == 0:
-	# 	VMax = np.max(I0+I1+I2)
-        
-	#image
-	fig, ax = plt.subplots(figsize=[5,5],dpi=400)
-
-	#im = ax.imshow(I0+I1+I2,vmax=np.max(I0+I1+I2)*1.2,origin="lower",cmap="afmhot",extent=[-lim0,lim0,-lim0,lim0])
-	im = ax.imshow(I0,origin="lower",cmap="afmhot",extent=[-lim0,lim0,-lim0,lim0])
-
-
-
-	ax.set_xlim(-10,10)
-	ax.set_ylim(-10,10)
-		
-	ax.set_xlabel(r"$\alpha$"+" "+"(M)")
-	ax.set_ylabel(r"$\beta$"+" "+"(M)")
-
-	#ax.text(-12.5,12, cmd_args[action[0]] + ": " + str('{:.4e}'.format(brightparams[action[0]])), fontsize = 12, bbox=dict(facecolor='red', alpha=0.5))
-	ax.text(-9,8.5, label[action[0],0] + str(round(brightparams[action[0]]/label[action[0],1], 2)) + ' ' + label[action[0],2], fontsize = 12, color="w")
-
-	figname = 'Fig_{}.png'.format(b)
+	jansky_variable.append(ilp.total_jy(I0 + I1 + I2, brightparams[0], brightparams[1]).value)
 	b = b + 1
+
+b = 0
+for i in range(int((action[2]-action[1])/action[3])):
+
+	h5f = h5py.File(doth5_files[i],'r')
+
+	I0=h5f['bghts0'][:]
+	I1=h5f['bghts1'][:]
+	I2=h5f['bghts2'][:]
+
+	h5f.close()
+
+	#image-------------------------
+	one_M = ilp.rg_func(brightparams[1] * u.g).to(u.m)
+	M2uas = np.arctan(one_M.value / dBH)/muas_to_rad 	# Mass to micro arcseconds
+
+
+	if b == 0:
+		vmax = np.max(I0+I1+I2)*1.2
+
+	fig, (ax1, ax2) = plt.subplots(1,2, figsize=[14,5],dpi=400)
+
+	ax1.scatter(np.array(x_variable)/label[action[0],1], jansky_variable, color='r')
+	ax1.plot(np.array(x_variable)/label[action[0],1], jansky_variable, '--b')
+	ax1.set_xlabel(label[action[0],0].replace('=', '') + ' (' + label[action[0],2] + ')')
+	ax1.set_ylabel("Total Intensity ({})".format(R'$J_y$'))
+
+	#im = ax2.imshow(I0+I1+I2,vmax=np.max(I0+I1+I2)*1.2,origin="lower",cmap="afmhot",extent=[-lim0,lim0,-lim0,lim0])
+	im = ax2.imshow(I0+I1+I2,origin="lower",cmap="afmhot",extent=[-lim0,lim0,-lim0,lim0],
+				norm=matplotlib.colors.PowerNorm(action[4],vmax=vmax))
+
+
+	ax2.set_xlim(-10,10) # units of M
+	ax2.set_ylim(-10,10) 
+		
+	ax2.set_xlabel(r"$\alpha$"+" "+r"($\mu as$)")
+	ax2.set_ylabel(r"$\beta$"+" "+r"($\mu as$)")
+	ax2.text(-9,8.5, label[action[0],0] + str(round(x_variable[i]/label[action[0],1], 2)) + ' ' + label[action[0],2], fontsize = 12, color="w")
+
+	ax2.set_xticks([-10, -7.5, -5, -2.5, 0, 2.5, 5, 7.5, 10], labels=[
+		str('{:.3}'.format(-10 * M2uas)),
+		str('{:.3}'.format(-7.5 * M2uas)),
+		str('{:.3}'.format(-5 * M2uas)),
+		str('{:.3}'.format(-2.5 * M2uas)),
+		str('{:.3}'.format(0 * M2uas)),
+		str('{:.3}'.format(2.5 * M2uas)),
+		str('{:.3}'.format(5 * M2uas)), 
+		str('{:.3}'.format(7.5 * M2uas)), 
+		str('{:.3}'.format(10 * M2uas))
+		])
+
+	ax2.set_yticks([-10, -7.5, -5, -2.5, 0, 2.5, 5, 7.5, 10], labels=[
+		str('{:.3}'.format(-10 * M2uas)),
+		str('{:.3}'.format(-7.5 * M2uas)),
+		str('{:.3}'.format(-5 * M2uas)),
+		str('{:.3}'.format(-2.5 * M2uas)),
+		str('{:.3}'.format(0 * M2uas)),
+		str('{:.3}'.format(2.5 * M2uas)),
+		str('{:.3}'.format(5 * M2uas)), 
+		str('{:.3}'.format(7.5 * M2uas)), 
+		str('{:.3}'.format(10 * M2uas))
+		])
+
+	colorbar=plt.colorbar(im, fraction=0.046, pad=0.04, format='%.1e', ticks=[
+    vmax*.8,
+    vmax*.6,
+    vmax*.4,
+    vmax*.2,
+    vmax*.05
+    ])
+	
+
+	
+	figname = 'Fig_{}.png'.format(b)
+
 	#plt.colorbar(im)
 	plt.savefig(figname,dpi=400,bbox_inches='tight')
+	plt.close()
 	names_to_delete2 += [figname]
-	plt.close(fig)
-
+	b = b + 1
 
 
 movie_name  = 'BHMovie_var_{}_start_{}_stop_{}_steps_{}_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rb_{}_nth0_{}_te0_{}_pdens_{}_ptemp_{}.mp4'.format(
@@ -263,6 +321,7 @@ speed = 8 # TODO: Check what units
 
 subprocess.run(["ffmpeg -r " + str(speed) + " -i Fig_%d.png -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -vcodec libx264 -crf 10 -pix_fmt yuv420p " + movie_name], shell=True)
 
+
 # with imageio.get_writer('BHMovie_var_{}_start_{}_stop_{}_steps_{}_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rb_{}_nth0_{}_te0_{}_pdens_{}_ptemp_{}.gif'.format(
 #     cmd_args[action[0]], "{:.3e}".format(action[1]),"{:.3e}".format(action[2]),"{:.3e}".format(action[3]),spin_case,i_case,"{:.1e}".format(brightparams[0]),"{:.1e}".format(brightparams[1]), brightparams[2],
 #     "{:.3e}".format(brightparams[3]), "{:.1e}".format(brightparams[4]),"{:.1e}".format(brightparams[5]), "{:.1e}".format(brightparams[6]),
@@ -272,8 +331,8 @@ subprocess.run(["ffmpeg -r " + str(speed) + " -i Fig_%d.png -vf 'pad=ceil(iw/2)*
 #         writer.append_data(image)
 
 
-for i in range(len(names_to_delete1)):
-	subprocess.run(['rm ' + names_to_delete1[i]], shell=True)
+for i in range(len(doth5_files)):
+	subprocess.run(['rm ' + doth5_files[i]], shell=True)
 	subprocess.run(['rm ' + names_to_delete2[i]], shell=True)
 	
      
