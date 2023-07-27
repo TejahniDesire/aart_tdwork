@@ -9,6 +9,8 @@ parser.add_argument('--mass', default=ilp.kw_mass.value, type=float)
 parser.add_argument('--scaleh', default=ilp.kw_scale_height, type=float)
 parser.add_argument('--thetab', default=ilp.kw_theta_b.value, type=float)
 parser.add_argument('--beta', default=ilp.kw_beta, type=float)
+parser.add_argument('--Rie', default=ilp.kw_beta, type=float)
+parser.add_argument('--Bchoi', default=ilp.kw_beta, type=float)
 parser.add_argument('--rb0', default=ilp.kw_rb_0, type=float)
 parser.add_argument('--nth0', default=ilp.kw_n_th0.value, type=float)
 parser.add_argument('--te0', default=ilp.kw_t_e0.value, type=float)
@@ -21,11 +23,13 @@ brightparams = [
 	args.scaleh, # 2
 	args.thetab*ilp.rads, # 3
 	args.beta, # 4
-	args.rb0, # 5
-	args.nth0*ilp.cmcubed, # 6
-	args.te0*ilp.kelv, # 7
-	args.pdens, # 8
-	args.ptemp # 9
+	args.Rie, # 5
+	args.Bchoi, # 6
+	args.rb0, # 7
+	args.nth0*ilp.cmcubed, # 8
+	args.te0*ilp.kelv, # 9
+	args.pdens, # 10
+	args.ptemp # 11
 ]
 
 

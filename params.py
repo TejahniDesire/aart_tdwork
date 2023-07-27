@@ -5,6 +5,7 @@ print("Copyright (C) 2022, A. Cardenas-Avendano, H. Zhu & A. Lupsasca\n")
 
 #BH's Spin
 spin_case=0.94
+# spin_case=.1
 
 
 #Observer's inclination  

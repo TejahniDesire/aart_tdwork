@@ -174,13 +174,13 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams):
     redshift_inner = gDisk(rs[rs>=isco],a,redshift_sign[rs>=isco],lamb[rs>=isco],eta[rs>=isco])
     redshift_outter = gGas(rs[rs<isco],a,redshift_sign[rs<isco],lamb[rs<isco],eta[rs<isco])
 
-    ilp.set_b_params(brightparams[1],brightparams[4],brightparams[5],brightparams[6],brightparams[8])
+    ilp.set_b_params(brightparams[1],brightparams[4],brightparams[7],brightparams[8],brightparams[10])
     brightness[rs>=isco]= redshift_inner**gfactor*ilp.profile(
         rs[rs>=isco], redshift_inner,brightparams[0],brightparams[1],brightparams[2],brightparams[3],brightparams[4],brightparams[5],
-        brightparams[6],brightparams[7],brightparams[8],brightparams[9])
+        brightparams[6],brightparams[7],brightparams[8],brightparams[9],brightparams[10],brightparams[11])
     brightness[rs<isco]= redshift_outter**gfactor*ilp.profile(
         rs[rs<isco], redshift_outter,brightparams[0],brightparams[1],brightparams[2],brightparams[3],brightparams[4],brightparams[5],
-        brightparams[6],brightparams[7],brightparams[8],brightparams[9])
+        brightparams[6],brightparams[7],brightparams[8],brightparams[9],brightparams[10],brightparams[11])
     
     r_p = 1+np.sqrt(1-a**2)
     brightness[rs<=r_p] = 0
@@ -283,19 +283,23 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     I1 = bghts1.reshape(N1,N1).T
     I2 = bghts2.reshape(N2,N2).T
 
-    filename=path+'Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rb_{}_nth0_{}_te0_{}_pdens_{}_ptemp_{}.h5'.format(
+    #                                      0       1         2         3       4      5        6     7       8      9       10       11
+    filename=path+'Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_Rie_{}_Bchoi_{}_rb_{}_nth0_{}_te0_{}_pdens_{}_ptemp_{}.h5'.format(
     spin_case,
     i_case,
     "{:.1e}".format(brightparams[0].value),
     "{:.1e}".format(brightparams[1].value), 
-    brightparams[2],
+    float(brightparams[2]),
     "{:.3e}".format(brightparams[3].value), 
-    "{:.1e}".format(brightparams[4]),
-    "{:.1e}".format(brightparams[5]), 
-    "{:.1e}".format(brightparams[6].value),
-    "{:.1e}".format(brightparams[7].value),
-    "{:.1e}".format(brightparams[8]),
-    "{:.1e}".format(brightparams[9]))
+    float(brightparams[4]),
+    float(brightparams[5]), 
+    float(brightparams[6]),
+    float(brightparams[7]),
+    "{:.1e}".format(brightparams[8].value),
+    "{:.1e}".format(brightparams[9].value),
+    float(brightparams[10]),
+    float(brightparams[11]))
+    
     h5f = h5py.File(filename, 'w')
 
     h5f.create_dataset('bghts0', data=I0)

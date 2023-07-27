@@ -29,18 +29,19 @@ Hz = 1 * u.Hz
 
 '''KWARGS------------------------------'''
 '''Physical'''
-# kw_nu0 = 230e9 * Hz
-kw_nu0 = 86e9 * Hz
+kw_nu0 = 230e9 * Hz
+#kw_nu0 = 86e9 * Hz
 #kw_nu0 = 345e9 * Hz
 kw_mass = (MMkg * u.kg).to(u.g)  # m87 mass as put in AART
 kw_scale_height = .5
 kw_theta_b = 60 * (np.pi / 180) * rads
 kw_beta = 1
+kw_R_ie = 10
 
 '''Math Coeff'''
-kw_rb_0 = 50
-kw_n_th0 = 1.23e4 * cmcubed
-kw_t_e0 = 8.1e9 * kelv
+kw_rb_0 = 2
+kw_n_th0 = 1.0726e+05 * cmcubed
+kw_t_e0 = 1.2428e+11 * kelv
 
 #kw_n_th0 = 1.23e6 * cmcubed
 
@@ -54,8 +55,9 @@ kw_p_dens = -.7
 '''B_field '''
 b_0 = None
 p_b = None
+kw_Bchoice = 0
 
-
+# B Function through best fit --------------------------------
 def full_b_func(r,mass=kw_mass,beta=kw_beta,rb_0=kw_rb_0,n_th0=kw_n_th0,p_dens=kw_p_dens):
     nth = nth_func(r,mass,rb_0,n_th0,p_dens)
     if n_th0.unit != u.cm ** -3:
@@ -92,7 +94,13 @@ def set_b_params(mass=kw_mass,beta=kw_beta,rb_0=kw_rb_0,n_th0=kw_n_th0,p_dens=kw
     b_0 = b_0 * gauss
 
 
-def rg_func(mass=kw_mass):
+def b_func_power(r,mass=kw_mass,rb_0=kw_rb_0):
+    rg = rg_func(mass)
+    rb = rb_func(mass,rb_0)
+    return b_0  * (r * rg / rb) ** p_b
+    # return np.sqrt(nth * 8 * np.pi * mp * c ** 2 / (6 * beta * r))
+# -----------------------------------------------------------------------------------------------------
+def rg_func(mass=kw_mass):  
     return G * mass / c ** 2
 
 
@@ -110,7 +118,6 @@ def te_func(r, mass=kw_mass,rb_0=kw_rb_0,t_e0=kw_t_e0,p_temp=kw_p_temp):
 
 def theta_e_func(r,mass=kw_mass,rb_0=kw_rb_0,t_e0=kw_t_e0,p_temp=kw_p_temp):
     temp = te_func(r,mass,rb_0,t_e0,p_temp)
-    #return (kB * temp / (me * c ** 2)+1e-10).to(u.dimensionless_unscaled)
     return (kB * temp / (me * c ** 2)).to(u.dimensionless_unscaled)
 
 
@@ -122,15 +129,20 @@ def nth_func(r, mass=kw_mass,rb_0=kw_rb_0,n_th0=kw_n_th0,p_dens=kw_p_dens):
     return n_th0 * (r * rg / rb) ** p_dens
 
 
-def b_func(r,mass=kw_mass,rb_0=kw_rb_0):
-    rg = rg_func(mass)
-    rb = rb_func(mass,rb_0)
-    return b_0  * (r * rg / rb) ** p_b
-    # return np.sqrt(nth * 8 * np.pi * mp * c ** 2 / (6 * beta * r))
+def b_func_true(r,mass=kw_mass,beta=kw_beta,R_ie=kw_R_ie,rb_0=kw_rb_0,n_th0=kw_n_th0,t_e0=kw_t_e0,p_dens=kw_p_dens,p_temp=kw_p_temp):
+    theta_e = theta_e_func(r,mass,rb_0,t_e0,p_temp)
+    nth = nth_func(r,mass,rb_0,n_th0,p_dens)
+    return np.sqrt( 8 * np.pi * me * c ** 2 * (1 + R_ie) * beta ** -1 * theta_e *  nth)
 
 
-def nu_c_func(r,mass=kw_mass,theta_b=kw_theta_b,rb_0=kw_rb_0,t_e0=kw_t_e0,p_temp=kw_p_temp):
-    b_field = b_func(r,mass,rb_0)
+def nu_c_func(r,mass=kw_mass,theta_b=kw_theta_b, beta=kw_beta,R_ie=kw_R_ie, 
+              Bchoice=kw_Bchoice, rb_0=kw_rb_0,n_th0=kw_n_th0,t_e0=kw_t_e0,p_dens=kw_p_dens,p_temp=kw_p_temp):
+
+    if Bchoice == 0:
+        b_field = b_func_true(r,mass,beta,R_ie,rb_0,n_th0,t_e0,p_dens,p_temp)
+    else:
+        b_field = b_func_power(r,mass,rb_0)
+
     nu_b = (e * b_field / (2 * np.pi * me * c)).to(u.Hz)
     theta_e = theta_e_func(r,mass,rb_0,t_e0,p_temp)
     return 3 / 2 * nu_b * np.sin(theta_b) * theta_e ** 2
@@ -141,16 +153,29 @@ def synchrotron_func(x):
 
 
 def profile(r, redshift, nu0=kw_nu0,mass=kw_mass, scale_height=kw_scale_height, theta_b=kw_theta_b, 
-            beta=kw_beta,rb_0=kw_rb_0,n_th0=kw_n_th0,t_e0=kw_t_e0,p_dens=kw_p_dens,p_temp=kw_p_temp):
+            beta=kw_beta,R_ie=kw_R_ie, Bchoice=kw_Bchoice, rb_0=kw_rb_0,n_th0=kw_n_th0,t_e0=kw_t_e0,p_dens=kw_p_dens,p_temp=kw_p_temp):
     n = nth_func(r,mass,rb_0,n_th0,p_dens)
     theta_e = theta_e_func(r,mass,rb_0,t_e0,p_temp)
-    nu_c = nu_c_func(r,mass,theta_b,rb_0,t_e0,p_temp)
+    nu_c = nu_c_func(r,mass,theta_b,beta,R_ie,Bchoice,rb_0,n_th0,t_e0,p_dens,p_temp)
     nu = nu0/redshift
     x = nu / (nu_c)
     # Returns units of [u.erg / (u.cm ** 3 * u.s * u.Hz)]
     jcoeff = n * e ** 2 * nu * synchrotron_func(x) / (2 * np.sqrt(3) * c * theta_e ** 2)
     specific_intensity = r * scale_height * rg_func(mass) * jcoeff
     return ((c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity).to(u.K)
+
+
+def emission_coeff(r, redshift, nu0=kw_nu0,mass=kw_mass, scale_height=kw_scale_height, theta_b=kw_theta_b, 
+            beta=kw_beta,R_ie=kw_R_ie, Bchoice=kw_Bchoice, rb_0=kw_rb_0,n_th0=kw_n_th0,t_e0=kw_t_e0,p_dens=kw_p_dens,p_temp=kw_p_temp):
+    n = nth_func(r,mass,rb_0,n_th0,p_dens)
+    theta_e = theta_e_func(r,mass,rb_0,t_e0,p_temp)
+    nu_c = nu_c_func(r,mass,theta_b,beta,R_ie,Bchoice,rb_0,n_th0,t_e0,p_dens,p_temp)
+    nu = nu0/redshift
+    x = nu / (nu_c)
+    # Returns units of [u.erg / (u.cm ** 3 * u.s * u.Hz)]
+    return n * e ** 2 * nu * synchrotron_func(x) / (2 * np.sqrt(3) * c * theta_e ** 2)
+
+
 
 # Assume I is ndarray without astropy units, but in kelvin
 def total_jy(I, nu, mass):
@@ -159,10 +184,25 @@ def total_jy(I, nu, mass):
     mass = mass * u.g
     one_M = rg_func(mass).to(u.m)
     M2rads = np.arctan(one_M.value / dBH)
-    rads2pxls = (M2rads * 2 * limits) / (I.shape)[0]
-    return (I * nu ** 2 * (2 * kB / c ** 2)).to(u.Jy).sum() * rads2pxls ** 2
+    rads2pxls = (M2rads * 2 * limits) / I.shape[0] # total amount M length units rads / total pixels
+    return (I * nu ** 2 * (2 * kB / c ** 2)).to(u.Jy).sum() * rads2pxls ** 2 # was this orifianlly in per radians?
 
 def ring_radius(I0):
-    count = np.zeros([(I0.shape)[0] + 1000, 4])
+    plx2rg = (limits*2) / I0.shape[0]  # pixels over M
+
+    horizontalline = np.zeros(2)
+    verticalline = np.zeros(2)
+
+    length = I0.shape[0]
+    midpoint = int(length / 2)
+    
+    horizontalline[0] = I0[midpoint,0:midpoint].argmax()
+    horizontalline[1] = midpoint + I0[midpoint,midpoint:length].argmax()
+
+    verticalline[0] = I0[0:midpoint,midpoint].argmax()
+    verticalline[1] = midpoint + I0[midpoint:length,midpoint].argmax()
+
+    return np.mean([verticalline[1] - verticalline[0], horizontalline[1] - horizontalline[0]]) * plx2rg /2
+
 
 

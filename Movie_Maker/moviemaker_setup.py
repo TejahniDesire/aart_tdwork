@@ -3,15 +3,49 @@ import subprocess
 aartpath = '/home/tej/Desktop/Code_Stuff/Repositories/aart' #insert path to aart repo
 sys.path.append(aartpath)
 
+import kgeo
 from aart_func import *
 from params import * # The file params.py contains all the relevant parameters for the simulations
 from astropy import units as u
 
 import importlib 
 
+
+def curve_params(varphi, rho):
+    """calculate Appendix B parameters for a curve rho(varphi)
+       assume varphis are equally spaced!!!"""
+          
+    # spacing in varphi  
+    dvarphi = varphi[-1]-varphi[-2]
+    
+    # area
+    area = np.trapz(0.5*rho**2,dx=dvarphi)
+    
+    # centroid
+    mux = np.trapz((rho**3*np.cos(varphi)) / (3*area), dx=dvarphi)
+    muy = np.trapz((rho**3*np.sin(varphi)) / (3*area), dx=dvarphi)  
+
+    # second moment
+    Sxx = np.trapz((rho**4*np.cos(varphi)**2) / (4*area), dx=dvarphi) - mux**2
+    Syy = np.trapz((rho**4*np.sin(varphi)**2) / (4*area), dx=dvarphi) - muy**2
+    Sxy = np.trapz((rho**4*np.sin(varphi)*np.cos(varphi)) / (4*area), dx=dvarphi) - mux*muy
+    
+    # diagonalize 2nd moment matrix
+    D = np.sqrt((Sxx-Syy)**2 + 4*Sxy*Sxy)
+    a = np.sqrt(2*(Sxx + Syy + D))
+    b = np.sqrt(2*(Sxx + Syy - D))
+    
+    #radius, eccentricity, position angle
+    r = np.sqrt(0.5*(a**2 + b**2))
+    e = np.sqrt(1-b**2/a**2)
+    chi = 0.5*np.arcsin(2*Sxy/D)
+    
+    return (area, mux, muy, r, e, chi)    
+
+
 '''Computation of the lensing bands----------------------------------'''
 subprocess.run(['python3 ' + aartpath + '/lensingbands.py'], shell=True)
-fnbands="./Results/LensingBands_a_%s_i_%s.h5"%(spin_case,i_case)
+fnbands= "./Results/LensingBands_a_%s_i_%s.h5"%(spin_case,i_case)
 
 print("Reading file: ",fnbands)
 
@@ -71,5 +105,32 @@ phi2=h5f['phi2'][:]
 
 h5f.close()
 
+
+
+
+a = spin_case        
+inc = i_case*np.pi/180 # inclination angle
+rh = 1 + np.sqrt(1-a**2) # event horizon
+# angles to sample
+varphis = np.linspace(-180,179,360)*np.pi/180
+
+
+# generate inner shadow (n=0) curve with kgeo
+data_inner = kgeo.equatorial_lensing.rho_of_req(a,inc,rh,mbar=0,varphis=varphis)
+(_, rhos_inner, alphas_inner, betas_inner) = data_inner
+
+(area_inner, mux_inner, muy_inner, r_inner, e_inner, chi_inner) = curve_params(varphis,rhos_inner)
+np.save('r_inner_spin_{}_inc_{}'.format(spin_case,  i_case), r_inner)
+np.save('alphas_inner_spin_{}_inc_{}'.format(spin_case,  i_case), alphas_inner)
+np.save('betas_inner_spin_{}_inc_{}'.format(spin_case,  i_case), betas_inner)
+
+# generate outer shadow (n=inf) curve with kgeo
+data_outer = kgeo.equatorial_lensing.rho_of_req(a,inc,rh,mbar=5,varphis=varphis)
+(_, rhos_outer, alphas_outer, betas_outer) = data_outer
+
+(area_outer, mux_outer, muy_outer, r_outer, e_outer, chi_outer) = curve_params(varphis,rhos_outer)
+np.save('r_outer_spin_{}_inc_{}'.format(spin_case,  i_case), r_outer)
+np.save('alphas_outer_spin_{}_inc_{}'.format(spin_case,  i_case), alphas_outer)
+np.save('betas_outer_spin_{}_inc_{}'.format(spin_case,  i_case), betas_outer)
 
    
