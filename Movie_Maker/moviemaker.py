@@ -207,7 +207,9 @@ brightparams = [
 
 
 
-
+# Positions [:,0] label for parameter to vary
+# Positions [:,1] what to divide output by for correct units
+# Positions [:,2] label for each units
 # [Var, Unit Magnitude, Units]
 label=np.zeros([len(brightparams),3], dtype=object)
 label[:,0] = [
@@ -255,27 +257,32 @@ label[:,2] = [
 
 num_iterations = (action[2] - action[1]) / action[3]
 doth5_files = [] #.h5 files
-names_to_delete2 = [] # images
-b = 0
-thetapointsamount = 100
+names_to_delete2 = [] # images to be deleted after movie is made
+b = 0 # counter for each iteration
+thetapointsamount = 100 # number of points int the Radii(theta) calculations
 
+# counter for independant variable
 x_variable = []
 
+# Counter for flux in janskies
 jansky_variable_total = []
 jansky_variable_n0 = []
 jansky_variable_n1 = []
 jansky_variable_n2 = []
 
+# Radius at each snapshot for each photon ring
 ring_radii_n0 = []
 ring_radii_n1 = []
 ring_radii_n2 = []
 
+# Radius as a function of theta for each snap shot -> [:,#] = radial function outputs for frame #
 # Ignore array[0,:]
 ring_radii_n0_array = np.zeros(thetapointsamount) 
 ring_radii_n1_array = np.zeros(thetapointsamount)
 ring_radii_n2_array = np.zeros(thetapointsamount)
 
 for i in range(int((action[2]-action[1])/action[3])):
+	# Incrementally increase the parameter
 	brightparams[action[0]] = action[1] + b * action[3]
 	print('Creating Data Set: ' + str(b))
 	for k in range(len(brightparams)):

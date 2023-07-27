@@ -59,6 +59,19 @@ kw_Bchoice = 0
 
 # B Function through best fit --------------------------------
 def full_b_func(r,mass=kw_mass,beta=kw_beta,rb_0=kw_rb_0,n_th0=kw_n_th0,p_dens=kw_p_dens):
+    """Full magnetic field strength equation for electons 
+
+    Args:
+        r (_Float_): radial distance from black hole
+        mass (_Float_, optional): Mass of black hole. Defaults to kw_mass.
+        beta (_Float_, optional): Ratio of gass pressure to Ion pressure. Defaults to kw_beta.
+        rb_0 (_Float_, optional): Radius at which n = nth0. Defaults to kw_rb_0.
+        n_th0 (_Float_, optional): Proportionality constant for density power law. Defaults to kw_n_th0.
+        p_dens (_Float_, optional): Exponent for density power law. Defaults to kw_p_dens.
+
+    Returns:
+        _type_: Magnetic field strength at that radius
+    """    
     nth = nth_func(r,mass,rb_0,n_th0,p_dens)
     if n_th0.unit != u.cm ** -3:
         raise ValueError('n_th0 needs units of number density')
@@ -105,10 +118,31 @@ def rg_func(mass=kw_mass):
 
 
 def rb_func(mass=kw_mass, rb_0=kw_rb_0):
+    """Value at which the power laws take on the value of their constants of proportionality 
+
+    Args:
+        mass (_type_, optional): _description_. Defaults to kw_mass.
+        rb_0 (_type_, optional): _description_. Defaults to kw_rb_0.
+
+    Returns:
+        _type_: _description_
+    """    
     return rb_0 * G * mass / (c ** 2)
 
 
 def te_func(r, mass=kw_mass,rb_0=kw_rb_0,t_e0=kw_t_e0,p_temp=kw_p_temp):
+    """Temperature as a function of distance from the black hole
+
+    Args:
+        r (Float): radial distance from black hole
+        mass (Float, optional): Mass of black hole. Defaults to kw_mass.
+        rb_0 (Float, optional): Radius at which n = nth0. Defaults to kw_rb_0.
+        t_e0 (Float, optional): Proportionality constant for temperature power law. Defaults to kw_t_e0.
+        p_temp (Float, optional): Exponent for temperature power law. Defaults to kw_p_temp.
+
+    Returns:
+        _type_: Electron temperature at that distance
+    """    
     if t_e0.unit != u.K:
         raise ValueError('n_th0 needs units of Kelvin')   
     rg = rg_func(mass)
@@ -117,11 +151,35 @@ def te_func(r, mass=kw_mass,rb_0=kw_rb_0,t_e0=kw_t_e0,p_temp=kw_p_temp):
 
 
 def theta_e_func(r,mass=kw_mass,rb_0=kw_rb_0,t_e0=kw_t_e0,p_temp=kw_p_temp):
+    """Dimensionless temperature value
+
+    Args:
+        r (Float): radial distance from black hole
+        mass (Float, optional): Mass of black hole. Defaults to kw_mass.
+        rb_0 (Float, optional): Radius at which n = nth0. Defaults to kw_rb_0.
+        t_e0 (Float, optional): Proportionality constant for temperature power law. Defaults to kw_t_e0.
+        p_temp (Float, optional): Exponent for temperature power law. Defaults to kw_p_temp.
+
+    Returns:
+        _type_: Electron Dimensionless temperature at that distance 
+    """    
     temp = te_func(r,mass,rb_0,t_e0,p_temp)
     return (kB * temp / (me * c ** 2)).to(u.dimensionless_unscaled)
 
 
 def nth_func(r, mass=kw_mass,rb_0=kw_rb_0,n_th0=kw_n_th0,p_dens=kw_p_dens):
+    """Density at as a function of distance from the black hole
+
+    Args:
+        r (Float): radial distance from black hole
+        mass (Float, optional): Mass of black hole. Defaults to kw_mass.
+        rb_0 (Float, optional): Radius at which n = nth0. Defaults to kw_rb_0.
+        n_th0 (Float, optional): Proportionality constant for density power law. Defaults to kw_n_th0.
+        p_dens (Float, optional): Exponent for density power law. Defaults to kw_p_dens.
+
+    Returns:
+        _type_: Density at that radial distance
+    """    
     if n_th0.unit != u.cm ** -3:
         raise ValueError('n_th0 needs units of number density')
     rg = rg_func(mass)
@@ -130,6 +188,24 @@ def nth_func(r, mass=kw_mass,rb_0=kw_rb_0,n_th0=kw_n_th0,p_dens=kw_p_dens):
 
 
 def b_func_true(r,mass=kw_mass,beta=kw_beta,R_ie=kw_R_ie,rb_0=kw_rb_0,n_th0=kw_n_th0,t_e0=kw_t_e0,p_dens=kw_p_dens,p_temp=kw_p_temp):
+    """Full magnetic field equation
+
+    Args:
+        r (Float): radial distance from black hole
+        mass (Float, optional): Mass of black hole. Defaults to kw_mass.
+        beta (Float, optional): Ratio of gass pressure to Ion pressure. Defaults to kw_beta.
+        R_ie (Float, optional): _description_. Defaults to kw_R_ie.
+        rb_0 (Float, optional): Radius at which n = nth0. Defaults to kw_rb_0.
+        n_th0 (Float, optional): Proportionality constant for density power law. Defaults to kw_n_th0.
+        t_e0 (Float, optional): Proportionality constant for temperature power law. Defaults to kw_t_e0.
+        p_dens (Float, optional): Exponent for density power law. Defaults to kw_p_dens.
+        p_temp (Float, optional): Exponent for temperature power law. Defaults to kw_p_temp.
+
+
+    Returns:
+        _type_: Magnetic field value in gauss at that radial distance
+    """    
+
     theta_e = theta_e_func(r,mass,rb_0,t_e0,p_temp)
     nth = nth_func(r,mass,rb_0,n_th0,p_dens)
     return np.sqrt( 8 * np.pi * me * c ** 2 * (1 + R_ie) * beta ** -1 * theta_e *  nth)
@@ -137,6 +213,25 @@ def b_func_true(r,mass=kw_mass,beta=kw_beta,R_ie=kw_R_ie,rb_0=kw_rb_0,n_th0=kw_n
 
 def nu_c_func(r,mass=kw_mass,theta_b=kw_theta_b, beta=kw_beta,R_ie=kw_R_ie, 
               Bchoice=kw_Bchoice, rb_0=kw_rb_0,n_th0=kw_n_th0,t_e0=kw_t_e0,p_dens=kw_p_dens,p_temp=kw_p_temp):
+    """ Frequnecy scaler
+
+    Args:
+        r (Float): radial distance from black hole
+        mass (Float, optional): Mass of black hole. Defaults to kw_mass.
+        theta_b (Float, optional): Angle between magnetic field and wave vector. Defaults to kw_theta_b.
+        beta (Float, optional): Ratio of gass pressure to Ion pressure. Defaults to kw_beta.
+        R_ie (Float, optional): _description_. Defaults to kw_R_ie.
+        Bchoice (Int, optional): True magnetic field equaiton 0 or Power law magnetic field 1. Defaults to kw_Bchoice.
+        rb_0 (Float, optional): Radius at which n = nth0. Defaults to kw_rb_0.
+        n_th0 (Float, optional): Proportionality constant for density power law. Defaults to kw_n_th0.
+        t_e0 (Float, optional): Proportionality constant for temperature power law. Defaults to kw_t_e0.
+        p_dens (Float, optional): Exponent for density power law. Defaults to kw_p_dens.
+        p_temp (Float, optional): Exponent for temperature power law. Defaults to kw_p_temp.
+
+
+    Returns:
+        _type_: Frequnecy scaler
+    """    
 
     if Bchoice == 0:
         b_field = b_func_true(r,mass,beta,R_ie,rb_0,n_th0,t_e0,p_dens,p_temp)
@@ -149,11 +244,39 @@ def nu_c_func(r,mass=kw_mass,theta_b=kw_theta_b, beta=kw_beta,R_ie=kw_R_ie,
 
 
 def synchrotron_func(x):
+    """Synchrotron emission function
+    Args:
+        x (_type_): dimensionless frequnecy counter
+
+    Returns:
+        _type_: synchrotron emisison at that frequency
+    """    
     return 2.5651 * (1 + 1.92 * (x ** (-1 / 3)) + (0.9977 * x ** (-2 / 3))) * np.exp(-1.8899 * x ** (1 / 3))
 
 
 def profile(r, redshift, nu0=kw_nu0,mass=kw_mass, scale_height=kw_scale_height, theta_b=kw_theta_b, 
             beta=kw_beta,R_ie=kw_R_ie, Bchoice=kw_Bchoice, rb_0=kw_rb_0,n_th0=kw_n_th0,t_e0=kw_t_e0,p_dens=kw_p_dens,p_temp=kw_p_temp):
+    """_summary_
+
+    Args:
+        r (Float): radial distance from black hole
+        redshift (Float): Amount of redshift
+        nu0 (Float, optional): Obeservation Frequency. Defaults to kw_nu0.
+        mass (Float, optional): Mass of black hole. Defaults to kw_mass.
+        scale_height (Float, optional): Slope of acretion disk height vs radius. Defaults to kw_scale_height.
+        theta_b (Float, optional): Angle between magnetic field and wave vector. Defaults to kw_theta_b.
+        beta (Float, optional): Ratio of gass pressure to Ion pressure. Defaults to kw_beta.
+        R_ie (Float, optional): _description_. Defaults to kw_R_ie.
+        Bchoice (Int, optional): True magnetic field equaiton 0 or Power law magnetic field 1. Defaults to kw_Bchoice.
+        rb_0 (Float, optional): Radius at which n = nth0. Defaults to kw_rb_0.
+        n_th0 (Float, optional): Proportionality constant for density power law. Defaults to kw_n_th0.
+        t_e0 (Float, optional): Proportionality constant for temperature power law. Defaults to kw_t_e0.
+        p_dens (Float, optional): Exponent for density power law. Defaults to kw_p_dens.
+        p_temp (Float, optional): Exponent for temperature power law. Defaults to kw_p_temp.
+
+    Returns:
+        _type_: Brightness temperature at that radial distance
+    """    
     n = nth_func(r,mass,rb_0,n_th0,p_dens)
     theta_e = theta_e_func(r,mass,rb_0,t_e0,p_temp)
     nu_c = nu_c_func(r,mass,theta_b,beta,R_ie,Bchoice,rb_0,n_th0,t_e0,p_dens,p_temp)
@@ -167,6 +290,28 @@ def profile(r, redshift, nu0=kw_nu0,mass=kw_mass, scale_height=kw_scale_height, 
 
 def emission_coeff(r, redshift, nu0=kw_nu0,mass=kw_mass, scale_height=kw_scale_height, theta_b=kw_theta_b, 
             beta=kw_beta,R_ie=kw_R_ie, Bchoice=kw_Bchoice, rb_0=kw_rb_0,n_th0=kw_n_th0,t_e0=kw_t_e0,p_dens=kw_p_dens,p_temp=kw_p_temp):
+    """Emisison Coeficient
+
+    Returns:
+    Args:
+        r (Float): radial distance from black hole
+        redshift (Float): Amount of redshift
+        nu0 (Float, optional): Obeservation Frequency. Defaults to kw_nu0.
+        mass (Float, optional): Mass of black hole. Defaults to kw_mass.
+        scale_height (Float, optional): Slope of acretion disk height vs radius. Defaults to kw_scale_height.
+        theta_b (Float, optional): Angle between magnetic field and wave vector. Defaults to kw_theta_b.
+        beta (Float, optional): Ratio of gass pressure to Ion pressure. Defaults to kw_beta.
+        R_ie (Float, optional): _description_. Defaults to kw_R_ie.
+        Bchoice (Int, optional): True magnetic field equaiton 0 or Power law magnetic field 1. Defaults to kw_Bchoice.
+        rb_0 (Float, optional): Radius at which n = nth0. Defaults to kw_rb_0.
+        n_th0 (Float, optional): Proportionality constant for density power law. Defaults to kw_n_th0.
+        t_e0 (Float, optional): Proportionality constant for temperature power law. Defaults to kw_t_e0.
+        p_dens (Float, optional): Exponent for density power law. Defaults to kw_p_dens.
+        p_temp (Float, optional): Exponent for temperature power law. Defaults to kw_p_temp.
+
+    Returns:
+        _type_: Emisison Coefficient at that temperature
+    """    
     n = nth_func(r,mass,rb_0,n_th0,p_dens)
     theta_e = theta_e_func(r,mass,rb_0,t_e0,p_temp)
     nu_c = nu_c_func(r,mass,theta_b,beta,R_ie,Bchoice,rb_0,n_th0,t_e0,p_dens,p_temp)
@@ -179,6 +324,16 @@ def emission_coeff(r, redshift, nu0=kw_nu0,mass=kw_mass, scale_height=kw_scale_h
 
 # Assume I is ndarray without astropy units, but in kelvin
 def total_jy(I, nu, mass):
+    """Calculate totalt jasnky flux of a photon ring
+
+    Args:
+        I (ndarray): Ndarray of brightness temperature values
+        nu (Float): Observation frequency
+        mass (Float): Black hole mass
+
+    Returns:
+        _type_: _description_
+    """    
     I = I * u.K
     nu = nu * u.Hz
     mass = mass * u.g
@@ -188,6 +343,14 @@ def total_jy(I, nu, mass):
     return (I * nu ** 2 * (2 * kB / c ** 2)).to(u.Jy).sum() * rads2pxls ** 2 # was this orifianlly in per radians?
 
 def ring_radius(I0):
+    """Calculates radius of each photon ring
+
+    Args:
+        I0 (ndarray): Ndarray of brightness temperature values
+
+    Returns:
+        _type_: Photon radius
+    """    
     plx2rg = (limits*2) / I0.shape[0]  # pixels over M
 
     horizontalline = np.zeros(2)
