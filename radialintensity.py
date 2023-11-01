@@ -9,29 +9,90 @@ parser.add_argument('--mass', default=ilp.kw_mass.value, type=float)
 parser.add_argument('--scaleh', default=ilp.kw_scale_height, type=float)
 parser.add_argument('--thetab', default=ilp.kw_theta_b.value, type=float)
 parser.add_argument('--beta', default=ilp.kw_beta, type=float)
-parser.add_argument('--Rie', default=ilp.kw_beta, type=float)
-parser.add_argument('--Bchoi', default=ilp.kw_beta, type=float)
+parser.add_argument('--rie', default=ilp.kw_beta, type=float)
 parser.add_argument('--rb0', default=ilp.kw_rb_0, type=float)
 parser.add_argument('--nth0', default=ilp.kw_n_th0.value, type=float)
 parser.add_argument('--te0', default=ilp.kw_t_e0.value, type=float)
 parser.add_argument('--pdens', default=ilp.kw_p_dens, type=float)
 parser.add_argument('--ptemp', default=ilp.kw_p_temp, type=float)
-args = parser.parse_args()
-brightparams = [
-	args.nu*ilp.Hz, # 0 
-	args.mass*ilp.grams, # 1 
-	args.scaleh, # 2
-	args.thetab*ilp.rads, # 3
-	args.beta, # 4
-	args.Rie, # 5
-	args.Bchoi, # 6
-	args.rb0, # 7
-	args.nth0*ilp.cmcubed, # 8
-	args.te0*ilp.kelv, # 9
-	args.pdens, # 10
-	args.ptemp # 11
-]
+parser.add_argument('--nscale', default=ilp.kw_nscale, type=float)
+parser.add_argument('--absorbkey', default=0, type=int)
+parser.add_argument('--emodelkey', default=0, type=int)
+parser.add_argument('--bkey', default=0, type=int)
+parser.add_argument('--nnoisykey', default=0, type=int)
+parser.add_argument('--tnoisykey', default=0, type=int)
+parser.add_argument('--bnoisykey', default=0, type=int)
+"""
+    coords [
+        0: r
+        1: xcoord
+        2: ycoord
+    ]
 
+    BrightParams = [
+        0: Inplus 
+        1: nu0
+        2: mass 
+        3: scale_height
+        4: theta_b 
+        5: beta
+        6: r_ie
+        7: rb_0
+        8: n_th0
+        9: t_e0
+		10: p_dens
+        11: p_temp
+        12: nscale
+    ]
+
+    kw_funckeys = [
+        0: absorbkey 
+		1: emodel
+        2: Bchoice 
+        3: nkey 
+        4: tempkey
+        5: magkey
+    ]"""
+
+args = parser.parse_args()
+brightparams = {
+	"nu0" : args.nu*ilp.Hz, # 0 
+	"mass" : args.mass*ilp.grams, # 1 
+	"scale_height": args.scaleh, # 2
+	"theta_b": args.thetab*ilp.rads, # 3
+	"beta" : args.beta, # 4
+	"r_ie" : args.rie, # 5
+	"rb_0" : args.rb0, # 6
+	"n_th0" : args.nth0*ilp.cmcubed, # 7
+	"t_e0" : args.te0*ilp.kelv, # 8
+	"p_dens" : args.pdens, # 9
+	"p_temp" : args.ptemp, # 10
+	"nscale" : args.nscale, # 11
+}
+
+funckeys = {
+	"absorbkey" : args.absorbkey, # 0
+	"emodelkey" : args.emodelkey, # 1
+	"bkey" : args.bkey, # 2
+	"nnoisykey" : args.nnoisykey, # 3
+	"tnoisykey" : args.tnoisykey, #4
+	"bnoisykey" : args.bnoisykey #5
+}
+
+# Getting angles
+fnrays="./Results/Rays_a_%s_i_%s.h5"%(spin_case,i_case)
+
+print("Reading file: ",fnrays)
+
+h5f = h5py.File(fnrays,'r')
+phi012= [
+	h5f['phi0'][:],
+	h5f['phi0'][:],
+	h5f['phi0'][:]
+	]
+
+h5f.close()
+#-------------------------
 
 print("Intensity")
 
@@ -68,7 +129,9 @@ if bvapp!=1:
 	rs2=h5f['rs2'][:]
 	sign2=h5f['sign2'][:]
 	h5f.close()
-	obsint.br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,mask2,N2,rs2,sign2,brightparams)	
+
+
+	obsint.br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,mask2,N2,rs2,sign2,brightparams,funckeys,phi012)	
 else:
 
 	h5f.close()

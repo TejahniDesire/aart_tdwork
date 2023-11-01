@@ -146,8 +146,7 @@ def gGas(r,a,b,lamb,eta):
     return 1/(ut*(1-b*np.sign(ur)*sqrt(np.abs(Rint(r,a,lamb,eta)*ur**2))/Delta(r,a)/ut-lamb*uphi/ut))
 
 #calculate the observed brightness for a purely radial profile
-def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams):
-    # ASK: is this called once or for each photon?
+def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys,phi,inplus):
     """
     Calculate the brightness of a rotationally symmetric disk
     (Eq. 50 P1)
@@ -165,23 +164,39 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams):
     beta = grid[:,1][mask]
 
     rs = rs[mask]
+    phi = phi[mask]
 
     lamb,eta = rt.conserved_quantities(alpha,beta,thetao,a)
 
     brightness = np.zeros(rs.shape[0])
     redshift_sign = redshift_sign[mask]
 
+    x_aux=rs*np.cos(phi)
+    y_aux=rs*np.sin(phi)
+
     redshift_inner = gDisk(rs[rs>=isco],a,redshift_sign[rs>=isco],lamb[rs>=isco],eta[rs>=isco])
     redshift_outter = gGas(rs[rs<isco],a,redshift_sign[rs<isco],lamb[rs<isco],eta[rs<isco])
 
-    ilp.set_b_params(brightparams[1],brightparams[4],brightparams[7],brightparams[8],brightparams[10])
-    brightness[rs>=isco]= redshift_inner**gfactor*ilp.profile(
-        rs[rs>=isco], redshift_inner,brightparams[0],brightparams[1],brightparams[2],brightparams[3],brightparams[4],brightparams[5],
-        brightparams[6],brightparams[7],brightparams[8],brightparams[9],brightparams[10],brightparams[11])
-    brightness[rs<isco]= redshift_outter**gfactor*ilp.profile(
-        rs[rs<isco], redshift_outter,brightparams[0],brightparams[1],brightparams[2],brightparams[3],brightparams[4],brightparams[5],
-        brightparams[6],brightparams[7],brightparams[8],brightparams[9],brightparams[10],brightparams[11])
+    ilp.set_b_params(brightparams["mass"],brightparams["beta"],brightparams["rb_0"],brightparams["n_th0"],brightparams["p_dens"])
+
+    coords_inner = {
+        "r" : rs[rs>=isco],
+        "x" : x_aux[rs>=isco], 
+        "y" : y_aux[rs>=isco]
+    }
+    coords_outter = {
+        "r" : rs[rs<isco],
+        "x" : x_aux[rs<isco], 
+        "y" : y_aux[rs<isco]
+    }
     
+    emissionmodel = {
+        0 : ilp.ultra_profile,
+        1 : ilp.power_profile
+    }
+    brightness[rs>=isco]= redshift_inner**gfactor*emissionmodel[funckeys["emodelkey"]](coords_inner,redshift_inner,brightparams,funckeys,inplus)
+    brightness[rs<isco]= redshift_outter**gfactor*emissionmodel[funckeys["emodelkey"]](coords_outter,redshift_outter,brightparams,funckeys,inplus)
+
     r_p = 1+np.sqrt(1-a**2)
     brightness[rs<=r_p] = 0
     
@@ -271,34 +286,42 @@ def slow_light(grid,mask,redshift_sign,a,isco,rs,th,ts,interpolation,thetao):
     I[mask] = brightness
     return(I)
 
-def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,mask2,N2,rs2,sign2,brightparams):
+def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,mask2,N2,rs2,sign2,brightparams,funckeys,phi012):
     """
     Calculate and save the radial brightness profile
     """
-    bghts0 = bright_radial(supergrid0,mask0,sign0,spin_case,rs0,isco,thetao,brightparams)
-    bghts1 = bright_radial(supergrid1,mask1,sign1,spin_case,rs1,isco,thetao,brightparams)
-    bghts2 = bright_radial(supergrid2,mask2,sign2,spin_case,rs2,isco,thetao,brightparams)
+    bghts0 = bright_radial(supergrid0,mask0,sign0,spin_case,rs0,isco,thetao,brightparams,funckeys,phi012[0],0)
+    bghts1 = bright_radial(supergrid1,mask1,sign1,spin_case,rs1,isco,thetao,brightparams,funckeys,phi012[1],bghts0)
+    bghts2 = bright_radial(supergrid2,mask2,sign2,spin_case,rs2,isco,thetao,brightparams,funckeys,phi012[2],bghts1)
 
     I0 = bghts0.reshape(N0,N0).T
     I1 = bghts1.reshape(N1,N1).T
     I2 = bghts2.reshape(N2,N2).T
 
-    #                                      0       1         2         3       4      5        6     7       8      9       10       11
-    filename=path+'Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_Rie_{}_Bchoi_{}_rb_{}_nth0_{}_te0_{}_pdens_{}_ptemp_{}.h5'.format(
+
+       #                        0    1     2       3         4         5       6      7     8       9     10       11       12        13       14       15      16       17       18       19
+    filename=path+'Intensity_a_{}|i_{}|nu_{}|mass_{}|scaleh_{}|thetab_{}|beta_{}|rie_{}|rb_{}|nth0_{}|te0_{}|pdens_{}|ptemp_{}|nscale_{}|abkey_{}|emkey_{}|bkey_{}|nkey_{}|tnkey_{}|bnkey_{}.h5'.format(
     spin_case,
     i_case,
-    "{:.1e}".format(brightparams[0].value),
-    "{:.1e}".format(brightparams[1].value), 
-    float(brightparams[2]),
-    "{:.3e}".format(brightparams[3].value), 
-    float(brightparams[4]),
-    float(brightparams[5]), 
-    float(brightparams[6]),
-    float(brightparams[7]),
-    "{:.1e}".format(brightparams[8].value),
-    "{:.1e}".format(brightparams[9].value),
-    float(brightparams[10]),
-    float(brightparams[11]))
+    "{:.1e}".format(brightparams["nu0"].value),
+    "{:.1e}".format(brightparams["mass"].value), 
+    float(brightparams["scale_height"]),
+    "{:.3f}".format(brightparams["theta_b"].value), 
+    "{:.2f}".format(float(brightparams["beta"])),
+    "{:.1f}".format(float(brightparams["r_ie"])), 
+    "{:.1f}".format(float(brightparams["rb_0"])),
+    "{:.1e}".format(brightparams["n_th0"].value),
+    "{:.1e}".format(brightparams["t_e0"].value),
+    float(brightparams["p_dens"]),
+    float(brightparams["p_temp"]),
+    "{:.1f}".format(brightparams["nscale"]),
+    funckeys["absorbkey"],
+    funckeys["emodelkey"],
+    funckeys["bkey"],
+    funckeys["nnoisykey"],
+    funckeys["tnoisykey"],
+    funckeys["bnoisykey"]
+    )
     
     h5f = h5py.File(filename, 'w')
 
