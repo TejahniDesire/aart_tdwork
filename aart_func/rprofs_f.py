@@ -337,8 +337,8 @@ def inoisy_interp(envelope,scale): # given an envelope, return noisy version to 
     density=envelope*np.exp(scale*GRF-scale**1/2)
     return RegularGridInterpolator((Xs,Ys), density,fill_value=0,bounds_error=False,method='linear')
     
-def inoisy_value(x, y, interpolation): # return value of noisy parameter
-    return interpolation(np.vstack([x,y]).T)
+def inoisy_value(x, y, interpolation, units): # return value of noisy parameter
+    return interpolation(np.vstack([x,y]).T) * units
 
 def inoisy_density(x,y,nthnoisy,scale):
         density_interp = inoisy_interp(nthnoisy, scale)
@@ -385,20 +385,21 @@ def ultra_profile(coords, redshift, bp = kw_brightparams, fk=kw_funckeys, inplus
     
     # Temperature and Theta_e---------------------
     tempnoisy = te_func(rnoisy,bp["mass"],bp["rb_0"],bp["t_e0"],bp["p_temp"])
+    temp_interp = inoisy_interp(tempnoisy,bp["nscale"])
     te_noisy_funcs = {
         0: partial(te_func,coords["r"],bp["mass"],bp["rb_0"],bp["t_e0"],bp["p_temp"]),
-        1: partial(inoisy_temp,coords["x"],coords["y"],tempnoisy,bp["nscale"])
+        1: partial(inoisy_value,coords["x"],coords["y"],temp_interp,kelv)
     }
     
     temp = te_noisy_funcs[fk["tnoisykey"]]()
-    
     theta_e = theta_e_func(temp)
     
     # Density---------------------
     nthnoisy = nth_func(rnoisy,bp["mass"],bp["rb_0"],bp["n_th0"],bp["p_dens"])
+    density_interp = inoisy_interp(nthnoisy, bp["nscale"])
     n_noisy__funcs = {
         0 : partial(nth_func,coords["r"],bp["mass"],bp["rb_0"],bp["n_th0"],bp["p_dens"]),
-        1 : partial(inoisy_density,coords["x"],coords["y"],nthnoisy,bp["nscale"])
+        1 : partial(inoisy_value,coords["x"],coords["y"],density_interp, cmcubed)
     }
     n = n_noisy__funcs[fk["nnoisykey"]]()
 
@@ -409,15 +410,16 @@ def ultra_profile(coords, redshift, bp = kw_brightparams, fk=kw_funckeys, inplus
         1 : partial(b_func_power, rnoisy,bp["mass"],bp["rb_0"])
     }
     bfieldnoisy = b_fieldnoisyfuncs[fk["bkey"]]()
-
+    
     b_field_funcs = {
         0 : partial(b_func_true, bp["beta"], bp["r_ie"], theta_e, n),
         1 : partial(b_func_power,coords["r"],bp["mass"],bp["rb_0"])
     }
 
+    b_field_interp = inoisy_interp(bfieldnoisy, bp["nscale"])
     b_field_noisy_funcs = {
         0 : b_field_funcs[fk["bkey"]],
-        1 : partial(inoisy_bfield,coords["x"],coords["y"],bfieldnoisy,bp["nscale"])
+        1 : partial(inoisy_value,coords["x"],coords["y"],b_field_interp,gauss)
     }
     b_field = b_field_noisy_funcs[fk["bnoisykey"]]()
 
@@ -450,8 +452,8 @@ def ultra_profile(coords, redshift, bp = kw_brightparams, fk=kw_funckeys, inplus
     runits = coords["r"] * rg_func(bp["mass"])
     specific_intensity = {
         0 : runits * bp["scale_height"]  * jcoeff_I,
-        1 : inplus * np.exp(-absorptionCoeff * runits * bp["scale_height"]
-                                        ) * redshift ** 3 * b_nu * (1 - np.exp(- absorptionCoeff * runits * bp["scale_height"]))
+        # 1 : inplus * np.exp(-absorptionCoeff * runits * bp["scale_height"]
+        #                                 ) * redshift ** 3 * b_nu * (1 - np.exp(- absorptionCoeff * runits * bp["scale_height"]))
     }
     # print("final max : " + str(((c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity[0]).to(u.K).max()))
     return ((c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity[0]).to(u.K)
