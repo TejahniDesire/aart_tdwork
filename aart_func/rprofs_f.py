@@ -318,6 +318,7 @@ def synchrotron_func_V(x):
 
 # beginning of Inoisy----------------------------------------------------------------------------------
 
+
 def inoisy_radius():
     lowerbound = -30
     upperbound = 30
@@ -336,27 +337,17 @@ def inoisy_interp(envelope,scale): # given an envelope, return noisy version to 
 
     density=envelope*np.exp(scale*GRF-scale**1/2)
     return RegularGridInterpolator((Xs,Ys), density,fill_value=0,bounds_error=False,method='linear')
-    
-def inoisy_value(x, y, interpolation, units): # return value of noisy parameter
+
+
+def inoisy_value(x, y, envelope, scale, units): # return value of noisy parameter
+    interpolation = inoisy_interp(envelope, scale)
     return interpolation(np.vstack([x,y]).T) * units
-
-def inoisy_density(x,y,nthnoisy,scale):
-        density_interp = inoisy_interp(nthnoisy, scale)
-        return inoisy_value(x, y, density_interp) * cmcubed
-
-def inoisy_temp(x,y,tempnoisy,scale):
-        temp_interp = inoisy_interp(tempnoisy,scale)
-        return inoisy_value(x, y, temp_interp) * kelv
-
-def inoisy_bfield(x, y, b_fieldnoisy,scale):
-        b_field_interp = inoisy_interp(b_fieldnoisy, scale)
-        return inoisy_value(x, y, b_field_interp) * gauss
 
 # Ultrarelativistic
 def ultra_profile(coords, redshift, bp = kw_brightparams, fk=kw_funckeys, inplus=0):
 
 
-    
+
     """_summary_
 
     Args:
@@ -377,18 +368,15 @@ def ultra_profile(coords, redshift, bp = kw_brightparams, fk=kw_funckeys, inplus
 
     Returns:
         _type_: Brightness temperature at that radial distance
-    """    
+    """
 
     rnoisy, Xs, Yx = inoisy_radius()
-    
-    
-    
+
     # Temperature and Theta_e---------------------
     tempnoisy = te_func(rnoisy,bp["mass"],bp["rb_0"],bp["t_e0"],bp["p_temp"])
-    temp_interp = inoisy_interp(tempnoisy,bp["nscale"])
     te_noisy_funcs = {
         0: partial(te_func,coords["r"],bp["mass"],bp["rb_0"],bp["t_e0"],bp["p_temp"]),
-        1: partial(inoisy_value,coords["x"],coords["y"],temp_interp,kelv)
+        1: partial(inoisy_value,coords["x"],coords["y"],tempnoisy,bp["nscale"],kelv)
     }
     
     temp = te_noisy_funcs[fk["tnoisykey"]]()
@@ -396,37 +384,35 @@ def ultra_profile(coords, redshift, bp = kw_brightparams, fk=kw_funckeys, inplus
     
     # Density---------------------
     nthnoisy = nth_func(rnoisy,bp["mass"],bp["rb_0"],bp["n_th0"],bp["p_dens"])
-    density_interp = inoisy_interp(nthnoisy, bp["nscale"])
     n_noisy__funcs = {
-        0 : partial(nth_func,coords["r"],bp["mass"],bp["rb_0"],bp["n_th0"],bp["p_dens"]),
-        1 : partial(inoisy_value,coords["x"],coords["y"],density_interp, cmcubed)
+        0: partial(nth_func,coords["r"],bp["mass"],bp["rb_0"],bp["n_th0"],bp["p_dens"]),
+        1: partial(inoisy_value,coords["x"],coords["y"],nthnoisy, bp["nscale"], cmcubed)
     }
     n = n_noisy__funcs[fk["nnoisykey"]]()
 
     # Magnetic Field---------------------
     
     b_fieldnoisyfuncs = {
-        0 : partial(b_func_true, bp["beta"], bp["r_ie"], theta_e_func(tempnoisy), nthnoisy),
-        1 : partial(b_func_power, rnoisy,bp["mass"],bp["rb_0"])
+        0: partial(b_func_true, bp["beta"], bp["r_ie"], theta_e_func(tempnoisy), nthnoisy),
+        1: partial(b_func_power, rnoisy,bp["mass"],bp["rb_0"])
     }
     bfieldnoisy = b_fieldnoisyfuncs[fk["bkey"]]()
     
     b_field_funcs = {
-        0 : partial(b_func_true, bp["beta"], bp["r_ie"], theta_e, n),
-        1 : partial(b_func_power,coords["r"],bp["mass"],bp["rb_0"])
+        0: partial(b_func_true, bp["beta"], bp["r_ie"], theta_e, n),
+        1: partial(b_func_power,coords["r"],bp["mass"],bp["rb_0"])
     }
 
-    b_field_interp = inoisy_interp(bfieldnoisy, bp["nscale"])
     b_field_noisy_funcs = {
-        0 : b_field_funcs[fk["bkey"]],
-        1 : partial(inoisy_value,coords["x"],coords["y"],b_field_interp,gauss)
+        0: b_field_funcs[fk["bkey"]],
+        1: partial(inoisy_value,coords["x"],coords["y"],bfieldnoisy,bp["nscale"],gauss)
     }
     b_field = b_field_noisy_funcs[fk["bnoisykey"]]()
 
     
     
     
-    #-------------------------------------
+    # -------------------------------------
    
     # print(b_field.max())
     # print(theta_e.max())
