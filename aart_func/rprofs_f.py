@@ -1,5 +1,5 @@
 from aart_func import *
-from params import * 
+from params import *
 from functools import partial
 from astropy import constants as const
 from astropy import units as u
@@ -30,6 +30,7 @@ grams = 1 * u.g
 gauss = 1 * u.cm ** (-1 / 2) * u.g ** (1 / 2) * 1 / (1 * u.s)  # Gauss units in cgs
 rads = 1 * u.rad
 Hz = 1 * u.Hz
+specific_int_units = u.Fr ** 2 * u.Hz * u.s / (u.cm ** 3)
 
 '''KWARGS------------------------------'''
 '''Physical'''
@@ -37,7 +38,7 @@ kw_nu0 = 230e9 * Hz
 #kw_nu0 = 86e9 * Hz
 #kw_nu0 = 345e9 * Hz
 kw_mass = (MMkg * u.kg).to(u.g)  # m87 mass as put in AART
-kw_scale_height = .5
+kw_scale_height = .5 # Angle
 kw_theta_b = 60 * (np.pi / 180) * rads
 kw_beta = 1
 kw_r_ie = 10
@@ -81,30 +82,30 @@ kw_emodelkey = 0
 kw_bkey = 0
 
 kw_brightparams = {
-    "inplus": 0, # 0
-	"nu0" : kw_nu0, # 1
-	"mass" : kw_mass, # 2 
+    "inplus": 0,    # 0
+	"nu0": kw_nu0,  # 1
+	"mass": kw_mass,    # 2
 	"scale_height": kw_scale_height, # 3
 	"theta_b": kw_theta_b, # 4
-	"beta" : kw_beta, # 5
-	"r_ie" : kw_r_ie, # 6
-	"rb_0" : kw_rb_0, # 7
-	"n_th0" : kw_n_th0, # 8
-	"t_e0" : kw_t_e0, # 9
-	"p_dens" : kw_p_dens, # 10
-	"p_temp" : kw_p_temp, # 11
-	"nscale" : kw_nscale, # 12
+	"beta": kw_beta, # 5
+	"r_ie": kw_r_ie, # 6
+	"rb_0": kw_rb_0, # 7
+	"n_th0": kw_n_th0, # 8
+	"t_e0": kw_t_e0, # 9
+	"p_dens": kw_p_dens, # 10
+	"p_temp": kw_p_temp, # 11
+	"nscale": kw_nscale, # 12
 }
 
 kw_funckeys = {
-    "absorbkey" : kw_absorbkey,
-    "emodelkey" : kw_emodelkey, 
-    "bkey" : kw_bkey, 
-    "nnoisykey" : kw_nnoisykey,
-    "tnoisykey" : kw_tnoisykey,
-    "bnoisykey" : kw_bnoisykey
+    "absorbkey": kw_absorbkey,
+    "emodelkey": kw_emodelkey,
+    "bkey": kw_bkey,
+    "nnoisykey": kw_nnoisykey,
+    "tnoisykey": kw_tnoisykey,
+    "bnoisykey": kw_bnoisykey
 }
-    
+
 
 # B Function through best fit --------------------------------
 def full_b_func(r,mass=kw_mass,beta=kw_beta,rb_0=kw_rb_0,n_th0=kw_n_th0,p_dens=kw_p_dens):
@@ -120,7 +121,7 @@ def full_b_func(r,mass=kw_mass,beta=kw_beta,rb_0=kw_rb_0,n_th0=kw_n_th0,p_dens=k
 
     Returns:
         _type_: Magnetic field strength at that radius
-    """    
+    """
     nth = nth_func(r,mass,rb_0,n_th0,p_dens)
     if n_th0.unit != u.cm ** -3:
         raise ValueError('n_th0 needs units of number density')
@@ -162,7 +163,9 @@ def b_func_power(r,mass=kw_mass,rb_0=kw_rb_0):
     return b_0  * (r * rg / rb) ** p_b
     # return np.sqrt(nth * 8 * np.pi * mp * c ** 2 / (6 * beta * r))
 # -----------------------------------------------------------------------------------------------------
-def rg_func(mass=kw_mass):  
+
+
+def rg_func(mass=kw_mass):
     return G * mass / c ** 2
 
 
@@ -175,7 +178,7 @@ def rb_func(mass=kw_mass, rb_0=kw_rb_0):
 
     Returns:
         _type_: _description_
-    """    
+    """
     return rb_0 * G * mass / (c ** 2)
 
 
@@ -191,9 +194,9 @@ def te_func(r, mass=kw_mass,rb_0=kw_rb_0,t_e0=kw_t_e0,p_temp=kw_p_temp):
 
     Returns:
         _type_: Electron temperature at that distance
-    """    
+    """
     if t_e0.unit != u.K:
-        raise ValueError('n_th0 needs units of Kelvin')   
+        raise ValueError('n_th0 needs units of Kelvin')
     rg = rg_func(mass)
     rb = rb_func(mass,rb_0)
     return t_e0 * (r * rg / rb) ** p_temp
@@ -211,7 +214,7 @@ def theta_e_func(temp):
 
     Returns:
         _type_: Electron Dimensionless temperature at that distance 
-    """    
+    """
     return (kB * temp / (me * c ** 2)).to(u.dimensionless_unscaled)
 
 
@@ -227,7 +230,7 @@ def nth_func(r, mass=kw_mass,rb_0=kw_rb_0,n_th0=kw_n_th0,p_dens=kw_p_dens):
 
     Returns:
         _type_: Density at that radial distance
-    """    
+    """
     if n_th0.unit != u.cm ** -3:
         raise ValueError('n_th0 needs units of number density')
     rg = rg_func(mass)
@@ -252,7 +255,7 @@ def b_func_true(beta, r_ie, theta_e, nth):
 
     Returns:
         _type_: Magnetic field value in gauss at that radial distance
-    """  
+    """
     return np.sqrt( 8 * np.pi * me * c ** 2 * (1 + r_ie) * beta ** -1 * theta_e *  nth)
 
 
@@ -278,7 +281,7 @@ def nu_c_func(b_field, theta_e, theta_b):
 
     Returns:
         _type_: Frequnecy scaler
-    """    
+    """
 
     nu_b = (e * b_field / (2 * np.pi * me * c)).to(u.Hz)
     return 3 / 2 * nu_b * np.sin(theta_b) * theta_e ** 2
@@ -291,7 +294,7 @@ def synchrotron_func_I(x):
 
     Returns:
         _type_: synchrotron emisison at that frequency
-    """    
+    """
     return 2.5651 * (1 + 1.92 * (x ** (-1 / 3)) + (0.9977 * x ** (-2 / 3))) * np.exp(-1.8899 * x ** (1 / 3))
 
 
@@ -302,7 +305,7 @@ def synchrotron_func_Q(x):
 
     Returns:
         _type_: synchrotron emisison at that frequency
-    """    
+    """
     return 2.5651 * (1 + 0.932 * (x ** (-1 / 3)) + (0.4998 * x ** (-2 / 3))) * np.exp(-1.8899 * x ** (1 / 3))
 
 
@@ -313,7 +316,7 @@ def synchrotron_func_V(x):
 
     Returns:
         _type_: synchrotron emisison at that frequency
-    """    
+    """
     return  (1.8138 * (x ** -1) + 3.423 * (x ** (-2 / 3)) + 0.02955 * x ** (-1 / 2) + 2.0377 * x ** (-1 / 3)) * np.exp(-1.8899 * x ** (1 / 3))
 
 # beginning of Inoisy----------------------------------------------------------------------------------
@@ -343,10 +346,9 @@ def inoisy_value(x, y, envelope, scale, units): # return value of noisy paramete
     interpolation = inoisy_interp(envelope, scale)
     return interpolation(np.vstack([x,y]).T) * units
 
+
 # Ultrarelativistic
-def ultra_profile(coords, redshift, bp = kw_brightparams, fk=kw_funckeys, inplus=0):
-
-
+def ultra_profile(coords, redshift, inplus, bp = kw_brightparams, fk=kw_funckeys):
 
     """_summary_
 
@@ -378,10 +380,10 @@ def ultra_profile(coords, redshift, bp = kw_brightparams, fk=kw_funckeys, inplus
         0: partial(te_func,coords["r"],bp["mass"],bp["rb_0"],bp["t_e0"],bp["p_temp"]),
         1: partial(inoisy_value,coords["x"],coords["y"],tempnoisy,bp["nscale"],kelv)
     }
-    
+
     temp = te_noisy_funcs[fk["tnoisykey"]]()
     theta_e = theta_e_func(temp)
-    
+
     # Density---------------------
     nthnoisy = nth_func(rnoisy,bp["mass"],bp["rb_0"],bp["n_th0"],bp["p_dens"])
     n_noisy__funcs = {
@@ -391,13 +393,13 @@ def ultra_profile(coords, redshift, bp = kw_brightparams, fk=kw_funckeys, inplus
     n = n_noisy__funcs[fk["nnoisykey"]]()
 
     # Magnetic Field---------------------
-    
+
     b_fieldnoisyfuncs = {
         0: partial(b_func_true, bp["beta"], bp["r_ie"], theta_e_func(tempnoisy), nthnoisy),
         1: partial(b_func_power, rnoisy,bp["mass"],bp["rb_0"])
     }
     bfieldnoisy = b_fieldnoisyfuncs[fk["bkey"]]()
-    
+
     b_field_funcs = {
         0: partial(b_func_true, bp["beta"], bp["r_ie"], theta_e, n),
         1: partial(b_func_power,coords["r"],bp["mass"],bp["rb_0"])
@@ -409,44 +411,118 @@ def ultra_profile(coords, redshift, bp = kw_brightparams, fk=kw_funckeys, inplus
     }
     b_field = b_field_noisy_funcs[fk["bnoisykey"]]()
 
-    
-    
-    
+
+
+
     # -------------------------------------
-   
+
     # print(b_field.max())
     # print(theta_e.max())
     # print(n.max())
-    
+
     nu_c = nu_c_func(b_field, theta_e, bp["theta_b"])
     nu = bp["nu0"]/redshift
-    x = nu / (nu_c)
+    x = nu / nu_c
     # J Coeff Calculations
     # Returns units of [u.erg / (u.cm ** 3 * u.s * u.Hz)]
     jcoeff_I = n * e ** 2 * nu * synchrotron_func_I(x) / (2 * np.sqrt(3) * c * theta_e ** 2)
     jcoeff_Q = n * e ** 2 * nu * synchrotron_func_Q(x) / (2 * np.sqrt(3) * c * theta_e ** 2)
     #jcoeff_V = 2 * n * e ** 2 * nu * synchrotron_func_Q(x) / (3 * np.sqrt(3) * np.tan(theta_b) * c * theta_e ** 3)
 
-    # print(jcoeff_I.max())
+
 
     # Absorption---------------
     b_nu = 2 * h * nu ** 3 / c ** 2 * (np.exp(h * nu / (theta_e * me * c ** 2) ))
     absorptionCoeff = jcoeff_I / b_nu
 
     #WARNING,REDSHIFT IN NU
-    # TODO: Fix Masked values for Iplus
     runits = coords["r"] * rg_func(bp["mass"])
     specific_intensity = {
-        0 : runits * bp["scale_height"]  * jcoeff_I,
-        # 1 : inplus * np.exp(-absorptionCoeff * runits * bp["scale_height"]
-        #                                 ) * redshift ** 3 * b_nu * (1 - np.exp(- absorptionCoeff * runits * bp["scale_height"]))
+        0: runits * bp["scale_height"] * jcoeff_I,
+        1: inplus * np.exp(-absorptionCoeff * runits * bp["scale_height"]) + redshift ** 3 * b_nu * (
+                1 - np.exp(- absorptionCoeff * runits * bp["scale_height"]))
     }
-    # print("final max : " + str(((c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity[0]).to(u.K).max()))
-    return ((c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity[0]).to(u.K)
+
+    specific_intensity = specific_intensity[fk["absorbkey"]]
+
+    brightness_temp = ((c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity).to(u.K)
+    return brightness_temp, specific_intensity
+
+    # TODO: make new function to calc brightness separately
+
+
+def tau_tester(coords, redshift, inplus, bp= kw_brightparams, fk=kw_funckeys):
+    rnoisy, Xs, Yx = inoisy_radius()
+
+    # Temperature and Theta_e---------------------
+    tempnoisy = te_func(rnoisy,bp["mass"],bp["rb_0"],bp["t_e0"],bp["p_temp"])
+    te_noisy_funcs = {
+        0: partial(te_func,coords["r"],bp["mass"],bp["rb_0"],bp["t_e0"],bp["p_temp"]),
+        1: partial(inoisy_value,coords["x"],coords["y"],tempnoisy,bp["nscale"],kelv)
+    }
+
+    temp = te_noisy_funcs[fk["tnoisykey"]]()
+    theta_e = theta_e_func(temp)
+
+    # Density---------------------
+    nthnoisy = nth_func(rnoisy,bp["mass"],bp["rb_0"],bp["n_th0"],bp["p_dens"])
+    n_noisy__funcs = {
+        0: partial(nth_func,coords["r"],bp["mass"],bp["rb_0"],bp["n_th0"],bp["p_dens"]),
+        1: partial(inoisy_value,coords["x"],coords["y"],nthnoisy, bp["nscale"], cmcubed)
+    }
+    n = n_noisy__funcs[fk["nnoisykey"]]()
+
+    # Magnetic Field---------------------
+
+    b_fieldnoisyfuncs = {
+        0: partial(b_func_true, bp["beta"], bp["r_ie"], theta_e_func(tempnoisy), nthnoisy),
+        1: partial(b_func_power, rnoisy,bp["mass"],bp["rb_0"])
+    }
+    bfieldnoisy = b_fieldnoisyfuncs[fk["bkey"]]()
+
+    b_field_funcs = {
+        0: partial(b_func_true, bp["beta"], bp["r_ie"], theta_e, n),
+        1: partial(b_func_power,coords["r"],bp["mass"],bp["rb_0"])
+    }
+
+    b_field_noisy_funcs = {
+        0: b_field_funcs[fk["bkey"]],
+        1: partial(inoisy_value,coords["x"],coords["y"],bfieldnoisy,bp["nscale"],gauss)
+    }
+    b_field = b_field_noisy_funcs[fk["bnoisykey"]]()
 
 
 
 
+    # -------------------------------------
+
+    # print(b_field.max())
+    # print(theta_e.max())
+    # print(n.max())
+
+    nu_c = nu_c_func(b_field, theta_e, bp["theta_b"])
+    nu = bp["nu0"]/redshift
+    x = nu / nu_c
+    # J Coeff Calculations
+    # Returns units of [u.erg / (u.cm ** 3 * u.s * u.Hz)]
+    jcoeff_I = n * e ** 2 * nu * synchrotron_func_I(x) / (2 * np.sqrt(3) * c * theta_e ** 2)
+
+    # Absorption---------------
+    b_nu = 2 * h * nu ** 3 / c ** 2 * (np.exp(h * nu / (theta_e * me * c ** 2) ))
+    absorptionCoeff = jcoeff_I / b_nu
+
+    #WARNING,REDSHIFT IN NU
+    runits = coords["r"] * rg_func(bp["mass"])
+    specific_intensity = {
+        0: runits * bp["scale_height"] * jcoeff_I,
+        1: inplus * np.exp(-absorptionCoeff * runits * bp["scale_height"]) + redshift ** 3 * b_nu * (
+                1 - np.exp(- absorptionCoeff * runits * bp["scale_height"]))
+    }
+
+    specific_intensity = specific_intensity[fk["absorbkey"]]
+    brightness_temp = ((c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity).to(u.K)
+    tau = absorptionCoeff * runits * bp["scale_height"]
+    return brightness_temp, specific_intensity, tau
 
 
 # Powerlaw, produce table mathematica
@@ -581,7 +657,7 @@ def total_jy(I, nu, mass):
 
     Returns:
         _type_: _description_
-    """    
+    """
     I = I * u.K
     nu = nu * u.Hz
     mass = mass * u.g
@@ -598,7 +674,7 @@ def ring_radius(I0):
 
     Returns:
         _type_: Photon radius
-    """    
+    """
     plx2rg = (limits*2) / I0.shape[0]  # pixels over M
 
     horizontalline = np.zeros(2)
@@ -606,7 +682,7 @@ def ring_radius(I0):
 
     length = I0.shape[0]
     midpoint = int(length / 2)
-    
+
     horizontalline[0] = I0[midpoint,0:midpoint].argmax()
     horizontalline[1] = midpoint + I0[midpoint,midpoint:length].argmax()
 
