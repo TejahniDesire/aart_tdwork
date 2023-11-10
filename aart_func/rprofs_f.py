@@ -346,34 +346,30 @@ def inoisy_value(x, y, envelope, scale, units): # return value of noisy paramete
     interpolation = inoisy_interp(envelope, scale)
     return interpolation(np.vstack([x,y]).T) * units
 
+"""_summary_
 
+Args:
+    r (Float): radial distance from black hole
+    redshift (Float): Amount of redshift
+    nu0 (Float, optional): Obeservation Frequency. Defaults to kw_nu0.
+    mass (Float, optional): Mass of black hole. Defaults to kw_mass.
+    scale_height (Float, optional): Slope of acretion disk height vs radius. Defaults to kw_scale_height.
+    theta_b (Float, optional): Angle between magnetic field and wave vector. Defaults to kw_theta_b.
+    beta (Float, optional): Ratio of gass pressure to Ion pressure. Defaults to kw_beta.
+    r_ie (Float, optional): _description_. Defaults to kw_r_ie.
+    Bchoice (Int, optional): True magnetic field equaiton 0 or Power law magnetic field 1. Defaults to kw_Bchoice.
+    rb_0 (Float, optional): Radius at which n = nth0. Defaults to kw_rb_0.
+    n_th0 (Float, optional): Proportionality constant for density power law. Defaults to kw_n_th0.
+    t_e0 (Float, optional): Proportionality constant for temperature power law. Defaults to kw_t_e0.
+    p_dens (Float, optional): Exponent for density power law. Defaults to kw_p_dens.
+    p_temp (Float, optional): Exponent for temperature power law. Defaults to kw_p_temp.
+
+Returns:
+    _type_: Brightness temperature at that radial distance
+"""
 # Ultrarelativistic
-def ultra_profile(coords, redshift, inplus, bp = kw_brightparams, fk=kw_funckeys):
-
-    """_summary_
-
-    Args:
-        r (Float): radial distance from black hole
-        redshift (Float): Amount of redshift
-        nu0 (Float, optional): Obeservation Frequency. Defaults to kw_nu0.
-        mass (Float, optional): Mass of black hole. Defaults to kw_mass.
-        scale_height (Float, optional): Slope of acretion disk height vs radius. Defaults to kw_scale_height.
-        theta_b (Float, optional): Angle between magnetic field and wave vector. Defaults to kw_theta_b.
-        beta (Float, optional): Ratio of gass pressure to Ion pressure. Defaults to kw_beta.
-        r_ie (Float, optional): _description_. Defaults to kw_r_ie.
-        Bchoice (Int, optional): True magnetic field equaiton 0 or Power law magnetic field 1. Defaults to kw_Bchoice.
-        rb_0 (Float, optional): Radius at which n = nth0. Defaults to kw_rb_0.
-        n_th0 (Float, optional): Proportionality constant for density power law. Defaults to kw_n_th0.
-        t_e0 (Float, optional): Proportionality constant for temperature power law. Defaults to kw_t_e0.
-        p_dens (Float, optional): Exponent for density power law. Defaults to kw_p_dens.
-        p_temp (Float, optional): Exponent for temperature power law. Defaults to kw_p_temp.
-
-    Returns:
-        _type_: Brightness temperature at that radial distance
-    """
-
+def ultra_profile(coords, redshift, inplus, bp=kw_brightparams, fk=kw_funckeys):
     rnoisy, Xs, Yx = inoisy_radius()
-
     # Temperature and Theta_e---------------------
     tempnoisy = te_func(rnoisy,bp["mass"],bp["rb_0"],bp["t_e0"],bp["p_temp"])
     te_noisy_funcs = {
@@ -411,36 +407,32 @@ def ultra_profile(coords, redshift, inplus, bp = kw_brightparams, fk=kw_funckeys
     }
     b_field = b_field_noisy_funcs[fk["bnoisykey"]]()
 
-
-
-
     # -------------------------------------
 
-    # print(b_field.max())
-    # print(theta_e.max())
-    # print(n.max())
 
     nu_c = nu_c_func(b_field, theta_e, bp["theta_b"])
     nu = bp["nu0"]/redshift
     x = nu / nu_c
-    # J Coeff Calculations
-    # Returns units of [u.erg / (u.cm ** 3 * u.s * u.Hz)]
+
+    # J Coeff Calculations Returns units of [u.erg / (u.cm ** 3 * u.s * u.Hz)]
+
     jcoeff_I = n * e ** 2 * nu * synchrotron_func_I(x) / (2 * np.sqrt(3) * c * theta_e ** 2)
-    jcoeff_Q = n * e ** 2 * nu * synchrotron_func_Q(x) / (2 * np.sqrt(3) * c * theta_e ** 2)
-    #jcoeff_V = 2 * n * e ** 2 * nu * synchrotron_func_Q(x) / (3 * np.sqrt(3) * np.tan(theta_b) * c * theta_e ** 3)
-
-
+    # jcoeff_Q = n * e ** 2 * nu * synchrotron_func_Q(x) / (2 * np.sqrt(3) * c * theta_e ** 2)
+    # jcoeff_V = 2 * n * e ** 2 * nu * synchrotron_func_Q(x) / (3 * np.sqrt(3) * np.tan(theta_b) * c * theta_e ** 3)
 
     # Absorption---------------
+
     b_nu = 2 * h * nu ** 3 / c ** 2 * (np.exp(h * nu / (theta_e * me * c ** 2) ))
     absorptionCoeff = jcoeff_I / b_nu
+    runits = coords["r"] * rg_func(bp["mass"])
+    tau = absorptionCoeff * runits * bp["scale_height"]
 
     #WARNING,REDSHIFT IN NU
-    runits = coords["r"] * rg_func(bp["mass"])
+
     specific_intensity = {
         0: runits * bp["scale_height"] * jcoeff_I,
-        1: inplus * np.exp(-absorptionCoeff * runits * bp["scale_height"]) + redshift ** 3 * b_nu * (
-                1 - np.exp(- absorptionCoeff * runits * bp["scale_height"]))
+        1: inplus * np.exp(-tau) + redshift ** 3 * b_nu * (
+                1 - np.exp(- tau))
     }
 
     specific_intensity = specific_intensity[fk["absorbkey"]]
