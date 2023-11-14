@@ -253,14 +253,14 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys
     }
 
     emissionmodel = {
-        0: ilp.ultra_profile,
+        0: ilp.thermal_profile,
         1: ilp.power_profile
     }
     # give units of specific intensity
     inplus = inplus*ilp.specific_int_units
-    brightness[rs>=isco], specific_intensity[rs>=isco] = redshift_inner**gfactor*emissionmodel[funckeys["emodelkey"]](
+    brightness[rs>=isco], specific_intensity[rs>=isco] = emissionmodel[funckeys["emodelkey"]](
         coords_inner,redshift_inner,inplus[rs>=isco],brightparams,funckeys)
-    brightness[rs<isco], specific_intensity[rs<isco]= redshift_outter**gfactor*emissionmodel[funckeys["emodelkey"]](
+    brightness[rs<isco], specific_intensity[rs<isco]= emissionmodel[funckeys["emodelkey"]](
         coords_outter,redshift_outter,inplus[rs<isco],brightparams,funckeys)
 
     # return units to specific_intensity
@@ -372,6 +372,10 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
                                 intensity3)
 
     full_intensity[mask2] = si2
+    I2 = np.zeros(mask2.shape)
+    I2[mask2] = bghts2
+
+    Absorption_I2_Temp = ilp.brightness_temp(full_intensity, brightparams["nu0"], 1)
 
 
     # I1-------------
@@ -383,6 +387,11 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
                                 intensity2)
     full_intensity[mask1] = si1
 
+    I1 = np.zeros(mask1.shape)
+    I1[mask1] = bghts1
+
+    Absorption_I1_Temp = ilp.brightness_temp(full_intensity, brightparams["nu0"], 1)
+
     # I0-------------
     rs0 = rs0[mask0]
     phi0 = phi012[0][mask0]
@@ -392,16 +401,22 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
                                 intensity1)
 
     # TODO: Fix output
-    print(full_intensity.shape)
-    print(si0.shape, bghts0.shape)
-    print(np.sum(mask0))
     full_intensity[mask0] = bghts0
-    bghts0 = full_intensity
 
+    I0 = np.zeros(mask0.shape)
+    I0[mask0] = bghts0
+    Absorption_brightness_temp = ilp.brightness_temp(full_intensity, brightparams["nu0"], 1)
 
-    I0 = bghts0.reshape(N0, N0).T
+    Absorption_I1_Temp = Absorption_I1_Temp.reshape(N0, N0).T
+    Absorption_I2_Temp = Absorption_I2_Temp.reshape(N0, N0).T
+    Absorption_brightness_temp = Absorption_brightness_temp.reshape(N0, N0).T
+    I0 = I0.reshape(N0, N0).T
+    I1 = I1.reshape(N1, N1).T
+    I2 = I2.reshape(N2, N2).T
+    # I0 = bghts0.reshape(N0, N0).T
     # I1 = bghts1.reshape(N1, N1).T
     # I2 = bghts2.reshape(N2, N2).T
+
 
     #                        0    1     2       3         4         5       6      7     8       9     10       11       12        13       14       15      16       17       18       19
     filename = path + 'Intensity_a_{}|i_{}|nu_{}|mass_{}|scaleh_{}|thetab_{}|beta_{}|rie_{}|rb_{}|nth0_{}|te0_{}|pdens_{}|ptemp_{}|nscale_{}|abkey_{}|emkey_{}|bkey_{}|nkey_{}|tnkey_{}|bnkey_{}.h5'.format(
@@ -430,8 +445,11 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     h5f = h5py.File(filename, 'w')
 
     h5f.create_dataset('bghts0', data=I0)
-    # h5f.create_dataset('bghts1', data=I1)
-    # h5f.create_dataset('bghts2', data=I2)
+    h5f.create_dataset('bghts1', data=I1)
+    h5f.create_dataset('bghts2', data=I2)
+    h5f.create_dataset('bghts2_absorbtion', data=Absorption_I2_Temp)
+    h5f.create_dataset('bghts1_absorbtion', data=Absorption_I1_Temp)
+    h5f.create_dataset('bghts_full_absorbtion', data=Absorption_brightness_temp)
 
     h5f.close()
 
