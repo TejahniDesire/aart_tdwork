@@ -423,7 +423,7 @@ def thermal_profile(coords, redshift, inplus, bp=kw_brightparams, fk=kw_funckeys
 
     # Absorption---------------
 
-    b_nu = (2 * h * nu ** 3) / c ** 2 * (np.exp(h * nu / (theta_e * me * c ** 2))) ** -1
+    b_nu = ((2 * h * nu ** 3) / c ** 2) / (np.exp(h * nu / (theta_e * me * c ** 2)) - 1)
     absorptionCoeff = jcoeff_I / b_nu
     runits = coords["r"] * rg_func(bp["mass"])
     tau = absorptionCoeff * runits * bp["scale_height"]
@@ -435,18 +435,10 @@ def thermal_profile(coords, redshift, inplus, bp=kw_brightparams, fk=kw_funckeys
                 1 - np.exp(- tau))
     brightness = ((c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity_thin).to(u.K)
     # brightness = ((c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity_absorp).to(u.K)
-    return brightness, specific_intensity_thick
+    return brightness, specific_intensity_thick, tau
 
-
-    # TODO: make new function to calc brightness separately
-def brightness_temp(specific_intensity, nu0, redshift):
-    nu = nu0 / redshift
-    return (c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity
-
-
-# def tau_tester(coords, redshift, inplus, bp= kw_brightparams, fk=kw_funckeys):
+# def profile_funcs(coords, redshift, inplus, bp=kw_brightparams, fk=kw_funckeys):
 #     rnoisy, Xs, Yx = inoisy_radius()
-#
 #     # Temperature and Theta_e---------------------
 #     tempnoisy = te_func(rnoisy,bp["mass"],bp["rb_0"],bp["t_e0"],bp["p_temp"])
 #     te_noisy_funcs = {
@@ -484,39 +476,108 @@ def brightness_temp(specific_intensity, nu0, redshift):
 #     }
 #     b_field = b_field_noisy_funcs[fk["bnoisykey"]]()
 #
-#
-#
-#
 #     # -------------------------------------
-#
-#     # print(b_field.max())
-#     # print(theta_e.max())
-#     # print(n.max())
 #
 #     nu_c = nu_c_func(b_field, theta_e, bp["theta_b"])
 #     nu = bp["nu0"]/redshift
 #     x = nu / nu_c
-#     # J Coeff Calculations
-#     # Returns units of [u.erg / (u.cm ** 3 * u.s * u.Hz)]
+#
+#     # J Coeff Calculations Returns units of [u.erg / (u.cm ** 3 * u.s * u.Hz)]
+#
 #     jcoeff_I = n * e ** 2 * nu * synchrotron_func_I(x) / (2 * np.sqrt(3) * c * theta_e ** 2)
+#     # jcoeff_Q = n * e ** 2 * nu * synchrotron_func_Q(x) / (2 * np.sqrt(3) * c * theta_e ** 2)
+#     # jcoeff_V = 2 * n * e ** 2 * nu * synchrotron_func_Q(x) / (3 * np.sqrt(3) * np.tan(theta_b) * c * theta_e ** 3)
 #
 #     # Absorption---------------
-#     b_nu = 2 * h * nu ** 3 / c ** 2 * (np.exp(h * nu / (theta_e * me * c ** 2) ))
+#
+#     b_nu = (2 * h * nu ** 3) / c ** 2 * (np.exp(h * nu / (theta_e * me * c ** 2))) ** -1
 #     absorptionCoeff = jcoeff_I / b_nu
+#     runits = coords["r"] * rg_func(bp["mass"])
+#     tau = absorptionCoeff * runits * bp["scale_height"]
 #
 #     #WARNING,REDSHIFT IN NU
-#     runits = coords["r"] * rg_func(bp["mass"])
-#     specific_intensity = {
-#         0: runits * bp["scale_height"] * jcoeff_I,
-#         1: inplus * np.exp(-absorptionCoeff * runits * bp["scale_height"]) + redshift ** 3 * b_nu * (
-#                 1 - np.exp(- absorptionCoeff * runits * bp["scale_height"]))
-#     }
 #
-#     specific_intensity = specific_intensity[fk["absorbkey"]]
-#     brightness_temp = ((c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity).to(u.K)
-#     tau = absorptionCoeff * runits * bp["scale_height"]
-#     return brightness_temp, specific_intensity, tau
-#
+#     specific_intensity_thin = runits * bp["scale_height"] * jcoeff_I * redshift ** 3
+#     specific_intensity_thick = inplus * np.exp(-tau) + redshift ** 3 * b_nu * (
+#                 1 - np.exp(- tau))
+#     brightness = ((c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity_thin).to(u.K)
+#     # brightness = ((c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity_absorp).to(u.K)
+#     return theta_e, n, b_field, tau, jcoeff_I, absorptionCoeff
+
+# TODO: make new function to calc brightness separately
+def brightness_temp(specific_intensity, nu0, redshift):
+    nu = nu0 / redshift
+    return (c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity
+
+
+def tau_tester(coords, bp= kw_brightparams, fk=kw_funckeys):
+    redshift = sqrt(1-(2 * G * bp['mass']/(c ** 2 * coords['r'] * rg_func(bp["mass"]))))
+    rnoisy, Xs, Yx = inoisy_radius()
+    # Temperature and Theta_e---------------------
+    tempnoisy = te_func(rnoisy,bp["mass"],bp["rb_0"],bp["t_e0"],bp["p_temp"])
+    te_noisy_funcs = {
+        0: partial(te_func,coords["r"],bp["mass"],bp["rb_0"],bp["t_e0"],bp["p_temp"]),
+        1: partial(inoisy_value,coords["x"],coords["y"],tempnoisy,bp["nscale"],kelv)
+    }
+
+    temp = te_noisy_funcs[fk["tnoisykey"]]()
+    theta_e = theta_e_func(temp)
+
+    # Density---------------------
+    nthnoisy = nth_func(rnoisy,bp["mass"],bp["rb_0"],bp["n_th0"],bp["p_dens"])
+    n_noisy__funcs = {
+        0: partial(nth_func,coords["r"],bp["mass"],bp["rb_0"],bp["n_th0"],bp["p_dens"]),
+        1: partial(inoisy_value,coords["x"],coords["y"],nthnoisy, bp["nscale"], cmcubed)
+    }
+    n = n_noisy__funcs[fk["nnoisykey"]]()
+
+    # Magnetic Field---------------------
+
+    b_fieldnoisyfuncs = {
+        0: partial(b_func_true, bp["beta"], bp["r_ie"], theta_e_func(tempnoisy), nthnoisy),
+        1: partial(b_func_power, rnoisy,bp["mass"],bp["rb_0"])
+    }
+    bfieldnoisy = b_fieldnoisyfuncs[fk["bkey"]]()
+
+    b_field_funcs = {
+        0: partial(b_func_true, bp["beta"], bp["r_ie"], theta_e, n),
+        1: partial(b_func_power,coords["r"],bp["mass"],bp["rb_0"])
+    }
+
+    b_field_noisy_funcs = {
+        0: b_field_funcs[fk["bkey"]],
+        1: partial(inoisy_value,coords["x"],coords["y"],bfieldnoisy,bp["nscale"],gauss)
+    }
+    b_field = b_field_noisy_funcs[fk["bnoisykey"]]()
+
+    # -------------------------------------
+
+    nu_c = nu_c_func(b_field, theta_e, bp["theta_b"])
+    nu = bp["nu0"]/redshift
+    x = nu / nu_c
+
+    # J Coeff Calculations Returns units of [u.erg / (u.cm ** 3 * u.s * u.Hz)]
+
+    jcoeff_I = n * e ** 2 * nu * synchrotron_func_I(x) / (2 * np.sqrt(3) * c * theta_e ** 2)
+    # jcoeff_Q = n * e ** 2 * nu * synchrotron_func_Q(x) / (2 * np.sqrt(3) * c * theta_e ** 2)
+    # jcoeff_V = 2 * n * e ** 2 * nu * synchrotron_func_Q(x) / (3 * np.sqrt(3) * np.tan(theta_b) * c * theta_e ** 3)
+
+    # Absorption---------------
+
+    b_nu = (2 * h * nu ** 3) / c ** 2 * (np.exp(h * nu / (theta_e * me * c ** 2))) ** -1
+    absorptionCoeff = jcoeff_I / b_nu
+    runits = coords["r"] * rg_func(bp["mass"])
+    tau = absorptionCoeff * runits * bp["scale_height"]
+
+    #WARNING,REDSHIFT IN NU
+
+    # specific_intensity_thin = runits * bp["scale_height"] * jcoeff_I * redshift ** 3
+    # specific_intensity_thick = inplus * np.exp(-tau) + redshift ** 3 * b_nu * (
+    #             1 - np.exp(- tau))
+    # brightness = ((c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity_thin).to(u.K)
+    # brightness = ((c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity_absorp).to(u.K)
+    return tau
+
 
 # Powerlaw, produce table mathematica
 def power_profile():

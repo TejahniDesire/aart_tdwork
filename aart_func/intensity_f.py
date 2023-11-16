@@ -231,6 +231,7 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys
 
     brightness = np.zeros(rs.shape[0])
     specific_intensity = np.zeros(rs.shape[0])
+    tau = np.zeros(rs.shape[0])
     redshift_sign = redshift_sign[mask]
 
     x_aux=rs*np.cos(phi)
@@ -258,11 +259,23 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys
     }
     # give units of specific intensity
     inplus = inplus*ilp.specific_int_units
-    brightness[rs>=isco], specific_intensity[rs>=isco] = emissionmodel[funckeys["emodelkey"]](
+    brightness[rs>=isco], specific_intensity[rs>=isco], tau[rs>=isco] = emissionmodel[funckeys["emodelkey"]](
         coords_inner,redshift_inner,inplus[rs>=isco],brightparams,funckeys)
-    brightness[rs<isco], specific_intensity[rs<isco]= emissionmodel[funckeys["emodelkey"]](
+    brightness[rs<isco], specific_intensity[rs<isco], tau[rs<isco] = emissionmodel[funckeys["emodelkey"]](
         coords_outter,redshift_outter,inplus[rs<isco],brightparams,funckeys)
 
+    # theta_e = np.zeros(rs.shape[0])
+    # n = np.zeros(rs.shape[0])
+    # tau= np.zeros(rs.shape[0])
+    # jcoeff_I= np.zeros(rs.shape[0])
+    # b_field = np.zeros(rs.shape[0])
+    # absorptionCoeff = np.zeros(rs.shape[0])
+    #
+    # theta_e[rs>=isco], n, b_field[rs>=isco], tau[rs>=isco], jcoeff_I[rs>=isco], absorptionCoeff[rs>=isco] = (
+    #     ilp.profile_funcs(coords_inner,redshift_inner,inplus[rs>=isco],brightparams,funckeys))
+    #
+    # theta_e[rs < isco], n, b_field[rs < isco], tau[rs < isco], jcoeff_I[rs < isco], absorptionCoeff[rs < isco] = (
+    #     ilp.profile_funcs(coords_outter,redshift_outter,inplus[rs<isco],brightparams,funckeys))
     # return units to specific_intensity
     # si = np.zeros(mask.shape)
     # si[mask] = specific_intensity
@@ -273,7 +286,7 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys
     # I = np.zeros(mask.shape)
     # I[mask] = brightness
 
-    return brightness, specific_intensity
+    return brightness, specific_intensity, tau
 
 
 #calculate the observed brightness for an arbitrary profile, passed in as the interpolation object
@@ -368,12 +381,14 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     phi2 = phi012[2][mask2]
     intensity3 = full_intensity[mask2]
 
-    bghts2, si2 = bright_radial(supergrid2, mask2, sign2, spin_case, rs2, isco, thetao, brightparams, funckeys, phi2,
+    bghts2, si2, tau2mask2 = bright_radial(supergrid2, mask2, sign2, spin_case, rs2, isco, thetao, brightparams, funckeys, phi2,
                                 intensity3)
 
     full_intensity[mask2] = si2
     I2 = np.zeros(mask2.shape)
     I2[mask2] = bghts2
+    tau2 = np.zeros(mask2.shape)
+    tau2[mask2] = tau2mask2
 
     Absorption_I2_Temp = ilp.brightness_temp(full_intensity, brightparams["nu0"], 1)
 
@@ -383,12 +398,14 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     phi1 = phi012[1][mask1]
     intensity2 = full_intensity[mask1]
 
-    bghts1, si1 = bright_radial(supergrid1, mask1, sign1, spin_case, rs1, isco, thetao, brightparams, funckeys, phi1,
+    bghts1, si1, tau1mask1 = bright_radial(supergrid1, mask1, sign1, spin_case, rs1, isco, thetao, brightparams, funckeys, phi1,
                                 intensity2)
     full_intensity[mask1] = si1
 
     I1 = np.zeros(mask1.shape)
     I1[mask1] = bghts1
+    tau1 = np.zeros(mask2.shape)
+    tau1[mask1] = tau1mask1
 
     Absorption_I1_Temp = ilp.brightness_temp(full_intensity, brightparams["nu0"], 1)
 
@@ -397,7 +414,7 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     phi0 = phi012[0][mask0]
     intensity1 = full_intensity[mask0]
 
-    bghts0, si0 = bright_radial(supergrid0, mask0, sign0, spin_case, rs0, isco, thetao, brightparams, funckeys, phi0,
+    bghts0, si0, tau0mask0 = bright_radial(supergrid0, mask0, sign0, spin_case, rs0, isco, thetao, brightparams, funckeys, phi0,
                                 intensity1)
 
     # TODO: Fix output
@@ -405,6 +422,8 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
 
     I0 = np.zeros(mask0.shape)
     I0[mask0] = bghts0
+    tau0 = np.zeros(mask0.shape)
+    tau0[mask0] = tau0mask0
     Absorption_brightness_temp = ilp.brightness_temp(full_intensity, brightparams["nu0"], 1)
 
     Absorption_I1_Temp = Absorption_I1_Temp.reshape(N0, N0).T
@@ -413,9 +432,13 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     I0 = I0.reshape(N0, N0).T
     I1 = I1.reshape(N1, N1).T
     I2 = I2.reshape(N2, N2).T
+    tau0 = tau0.reshape(N0, N0).T
+    tau1 = tau1.reshape(N0, N0).T
+    tau2 = tau2.reshape(N0, N0).T
     # I0 = bghts0.reshape(N0, N0).T
     # I1 = bghts1.reshape(N1, N1).T
     # I2 = bghts2.reshape(N2, N2).T
+
 
 
     #                        0    1     2       3         4         5       6      7     8       9     10       11       12        13       14       15      16       17       18       19
@@ -450,6 +473,9 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     h5f.create_dataset('bghts2_absorbtion', data=Absorption_I2_Temp)
     h5f.create_dataset('bghts1_absorbtion', data=Absorption_I1_Temp)
     h5f.create_dataset('bghts_full_absorbtion', data=Absorption_brightness_temp)
+    h5f.create_dataset('tau2', data=tau2)
+    h5f.create_dataset('tau1', data=tau1)
+    h5f.create_dataset('tau0', data=tau0)
 
     h5f.close()
 

@@ -369,10 +369,10 @@ for i in range(int((action[2]-action[1])/action[3])):
 	one_M = ilp.rg_func(brightparams[1] * u.g).to(u.m)
 	M2uas = np.arctan(one_M.value / dBH)/muas_to_rad 	# Mass to micro arcseconds
 
-	if b == 0:
-		vmax = np.max(I0+I1+I2)
+	# if b == 0:
+	# 	vmax = np.max(I0+I1+I2)
 
-	# vmax = np.max(I0+I1+I2)
+	vmax = np.max(I0+I1+I2)
 
 	if b != 0:
 		p1.remove() 
