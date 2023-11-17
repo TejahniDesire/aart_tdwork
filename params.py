@@ -40,13 +40,14 @@ bvapp=0
 p_image=1
 limits=25
 #Resolution for the n=0 image [M]
-dx0 =0.02
-# dx0 = .2
+# dx0 =0.02
+dx0 = 0.2
 #Resolution for the n=1 image [M]
-dx1 =0.02
-# dx1 = 0.2
+# dx1 =0.02
+dx1 = 0.2
 #Resolution for the n=2 image [M]
-dx2 =0.02
+# dx2 =0.02
+dx2 =0.2
 
 
 # Projection angles for the radon transformation
@@ -119,7 +120,8 @@ fov_Real=np.arctan(sizeim_Real/(dBH))/muas_to_rad #muas
 #print("FOV= ",np.round(2*fov,2),"muas")
 
 #Path where the results will be stored
-path = './Results/'
+# path = './Results/'
+path = '../aart_results/path_results/'
 
 # Create a directory for the results
 isExist = os.path.exists(path)

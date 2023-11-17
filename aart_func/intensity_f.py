@@ -145,66 +145,6 @@ def gGas(r,a,b,lamb,eta):
 
     return 1/(ut*(1-b*np.sign(ur)*sqrt(np.abs(Rint(r,a,lamb,eta)*ur**2))/Delta(r,a)/ut-lamb*uphi/ut))
 
-#
-# #calculate the observed brightness for a purely radial profile
-# def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys,phi,inplus):
-#     """
-#     Calculate the brightness of a rotationally symmetric disk
-#     (Eq. 50 P1)
-#     :param grid: alpha and beta grid on the observer plane on which we evaluate the observables
-#     :param mask: mask out the lensing band, see lb_f.py for detail
-#     :param redshift_sign: sign of the redshift
-#     :param a: black hole spin
-#     :param rs: source radius
-#     :param isco: radius of the inner-most stable circular orbit
-#     :param thetao: observer inclination
-#
-#     :return: image of a lensed equitorial source with only radial dependence.
-#     """
-#     alpha = grid[:,0][mask]
-#     beta = grid[:,1][mask]
-#
-#     rs = rs[mask]
-#     phi = phi[mask]
-#
-#     lamb,eta = rt.conserved_quantities(alpha,beta,thetao,a)
-#
-#     brightness = np.zeros(rs.shape[0])
-#     redshift_sign = redshift_sign[mask]
-#
-#     x_aux=rs*np.cos(phi)
-#     y_aux=rs*np.sin(phi)
-#
-#     redshift_inner = gDisk(rs[rs>=isco],a,redshift_sign[rs>=isco],lamb[rs>=isco],eta[rs>=isco])
-#     redshift_outter = gGas(rs[rs<isco],a,redshift_sign[rs<isco],lamb[rs<isco],eta[rs<isco])
-#
-#     ilp.set_b_params(brightparams["mass"],brightparams["beta"],brightparams["rb_0"],brightparams["n_th0"],brightparams["p_dens"])
-#
-#     coords_inner = {
-#         "r" : rs[rs>=isco],
-#         "x" : x_aux[rs>=isco],
-#         "y" : y_aux[rs>=isco]
-#     }
-#     coords_outter = {
-#         "r" : rs[rs<isco],
-#         "x" : x_aux[rs<isco],
-#         "y" : y_aux[rs<isco]
-#     }
-#
-#     emissionmodel = {
-#         0 : ilp.ultra_profile,
-#         1 : ilp.power_profile
-#     }
-#     brightness[rs>=isco]= redshift_inner**gfactor*emissionmodel[funckeys["emodelkey"]](coords_inner,redshift_inner,inplus,brightparams,funckeys)
-#     brightness[rs<isco]= redshift_outter**gfactor*emissionmodel[funckeys["emodelkey"]](coords_outter,redshift_outter,inplus,brightparams,funckeys)
-#
-#     r_p = 1+np.sqrt(1-a**2)
-#     brightness[rs<=r_p] = 0
-#
-#     I = np.zeros(mask.shape)
-#     I[mask] = brightness
-#
-#     return(I)
 
 #calculate the observed brightness for a purely radial profile
 def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys,phi,inplus):
@@ -224,13 +164,11 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys
     alpha = grid[:,0][mask]
     beta = grid[:,1][mask]
 
-    # rs = rs[mask]
-    # phi = phi[mask]
-
     lamb,eta = rt.conserved_quantities(alpha,beta,thetao,a)
 
-    brightness = np.zeros(rs.shape[0])
-    specific_intensity = np.zeros(rs.shape[0])
+    si_thin = np.zeros(rs.shape[0])
+    si_thick = np.zeros(rs.shape[0])
+    full_profiles = np.zeros(shape=(7,rs.shape[0]))
     tau = np.zeros(rs.shape[0])
     redshift_sign = redshift_sign[mask]
 
@@ -259,34 +197,15 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys
     }
     # give units of specific intensity
     inplus = inplus*ilp.specific_int_units
-    brightness[rs>=isco], specific_intensity[rs>=isco], tau[rs>=isco] = emissionmodel[funckeys["emodelkey"]](
+    si_thin[rs>=isco], si_thick[rs>=isco], tau[rs>=isco], full_profiles[:,rs>=isco] = emissionmodel[funckeys["emodelkey"]](
         coords_inner,redshift_inner,inplus[rs>=isco],brightparams,funckeys)
-    brightness[rs<isco], specific_intensity[rs<isco], tau[rs<isco] = emissionmodel[funckeys["emodelkey"]](
+    si_thin[rs<isco], si_thick[rs<isco], tau[rs<isco], full_profiles[:,rs<isco] = emissionmodel[funckeys["emodelkey"]](
         coords_outter,redshift_outter,inplus[rs<isco],brightparams,funckeys)
 
-    # theta_e = np.zeros(rs.shape[0])
-    # n = np.zeros(rs.shape[0])
-    # tau= np.zeros(rs.shape[0])
-    # jcoeff_I= np.zeros(rs.shape[0])
-    # b_field = np.zeros(rs.shape[0])
-    # absorptionCoeff = np.zeros(rs.shape[0])
-    #
-    # theta_e[rs>=isco], n, b_field[rs>=isco], tau[rs>=isco], jcoeff_I[rs>=isco], absorptionCoeff[rs>=isco] = (
-    #     ilp.profile_funcs(coords_inner,redshift_inner,inplus[rs>=isco],brightparams,funckeys))
-    #
-    # theta_e[rs < isco], n, b_field[rs < isco], tau[rs < isco], jcoeff_I[rs < isco], absorptionCoeff[rs < isco] = (
-    #     ilp.profile_funcs(coords_outter,redshift_outter,inplus[rs<isco],brightparams,funckeys))
-    # return units to specific_intensity
-    # si = np.zeros(mask.shape)
-    # si[mask] = specific_intensity
-
     r_p = 1+np.sqrt(1-a**2)
-    brightness[rs<=r_p] = 0
+    si_thin[rs<=r_p] = 0
 
-    # I = np.zeros(mask.shape)
-    # I[mask] = brightness
-
-    return brightness, specific_intensity, tau
+    return si_thin, si_thick, tau, full_profiles
 
 
 #calculate the observed brightness for an arbitrary profile, passed in as the interpolation object
@@ -327,6 +246,7 @@ def fast_light(grid,mask,redshift_sign,a,isco,rs,th,interpolation,thetao):
     I = np.zeros(mask.shape)
     I[mask] = brightness
     return(I)
+
 
 #calculate the observed brightness for an arbitrary, evolving profile, passed in as the interpolation object
 def slow_light(grid,mask,redshift_sign,a,isco,rs,th,ts,interpolation,thetao):
@@ -375,66 +295,85 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     Calculate and save the radial brightness profile
     """
 
+    # Warning: si_thin is a decomposition while si_thick is cumulative
+
     full_intensity = np.zeros(rs2.shape)
     # I2-------------
     rs2 = rs2[mask2]
     phi2 = phi012[2][mask2]
     intensity3 = full_intensity[mask2]
 
-    bghts2, si2, tau2mask2 = bright_radial(supergrid2, mask2, sign2, spin_case, rs2, isco, thetao, brightparams, funckeys, phi2,
-                                intensity3)
+    print("init2: ", np.any(intensity3!=0), intensity3.max())
+    si_thin2, si_thick2, tau2mask2, full_profiles2 = bright_radial(supergrid2,mask2,sign2,spin_case,
+                                                           rs2,isco,thetao,brightparams,funckeys,phi2,intensity3*0)
 
-    full_intensity[mask2] = si2
-    I2 = np.zeros(mask2.shape)
-    I2[mask2] = bghts2
+
+    I2_thin = np.zeros(mask2.shape)
+    I2_thin[mask2] = si_thin2
+    I2_thick = np.zeros(mask2.shape)
+    I2_thick[mask2] = si_thick2
     tau2 = np.zeros(mask2.shape)
     tau2[mask2] = tau2mask2
+    full_intensity = full_intensity * np.exp(-tau2) + I2_thick
 
-    Absorption_I2_Temp = ilp.brightness_temp(full_intensity, brightparams["nu0"], 1)
-
+    I2_temp_thin = ilp.brightness_temp(I2_thin*ilp.specific_int_units, brightparams["nu0"])
+    I2_temp_thick = ilp.brightness_temp(I2_thick*ilp.specific_int_units, brightparams["nu0"])
 
     # I1-------------
     rs1 = rs1[mask1]
     phi1 = phi012[1][mask1]
     intensity2 = full_intensity[mask1]
 
-    bghts1, si1, tau1mask1 = bright_radial(supergrid1, mask1, sign1, spin_case, rs1, isco, thetao, brightparams, funckeys, phi1,
-                                intensity2)
-    full_intensity[mask1] = si1
+    print("init1: ", np.any(intensity2 != 0), intensity2.max())
+    si_thin1, si_thick1, tau1mask1, full_profiles1 = bright_radial(supergrid1, mask1, sign1, spin_case,
+                                                           rs1, isco, thetao, brightparams, funckeys, phi1,intensity2*0)
 
-    I1 = np.zeros(mask1.shape)
-    I1[mask1] = bghts1
+    I1_thin = np.zeros(mask1.shape)
+    I1_thin[mask1] = si_thin1
+    I1_thick = np.zeros(mask1.shape)
+    I1_thick[mask1] = si_thick1
     tau1 = np.zeros(mask2.shape)
     tau1[mask1] = tau1mask1
+    full_intensity = full_intensity * np.exp(-tau1) + I1_thick
 
-    Absorption_I1_Temp = ilp.brightness_temp(full_intensity, brightparams["nu0"], 1)
+
+
+    I1_temp_thin = ilp.brightness_temp(I1_thin * ilp.specific_int_units, brightparams["nu0"])
+    I1_temp_thick = ilp.brightness_temp(I1_thick*ilp.specific_int_units, brightparams["nu0"])
 
     # I0-------------
     rs0 = rs0[mask0]
     phi0 = phi012[0][mask0]
     intensity1 = full_intensity[mask0]
 
-    bghts0, si0, tau0mask0 = bright_radial(supergrid0, mask0, sign0, spin_case, rs0, isco, thetao, brightparams, funckeys, phi0,
-                                intensity1)
+    print("init0: ", np.any(intensity1 != 0), intensity1.max())
+    si_thin0, si_thick0, tau0mask0, full_profiles0 = bright_radial(supergrid0, mask0, sign0, spin_case,
+                                                           rs0, isco, thetao, brightparams, funckeys, phi0, intensity1*0)
 
     # TODO: Fix output
-    full_intensity[mask0] = bghts0
 
-    I0 = np.zeros(mask0.shape)
-    I0[mask0] = bghts0
+    I0_thin = np.zeros(mask0.shape)
+    I0_thin[mask0] = si_thin0
+    I0_thick = np.zeros(mask0.shape)
+    I0_thick[mask0] = si_thick0
     tau0 = np.zeros(mask0.shape)
     tau0[mask0] = tau0mask0
-    Absorption_brightness_temp = ilp.brightness_temp(full_intensity, brightparams["nu0"], 1)
+    full_intensity = full_intensity * np.exp(-tau0) + I0_thick
 
-    Absorption_I1_Temp = Absorption_I1_Temp.reshape(N0, N0).T
-    Absorption_I2_Temp = Absorption_I2_Temp.reshape(N0, N0).T
-    Absorption_brightness_temp = Absorption_brightness_temp.reshape(N0, N0).T
-    I0 = I0.reshape(N0, N0).T
-    I1 = I1.reshape(N1, N1).T
-    I2 = I2.reshape(N2, N2).T
+    I0_temp_thin = ilp.brightness_temp(I0_thin * ilp.specific_int_units, brightparams["nu0"])
+    I0_temp_thick = ilp.brightness_temp(I0_thick*ilp.specific_int_units, brightparams["nu0"])
+    full_temp = ilp.brightness_temp(full_intensity*ilp.specific_int_units, brightparams["nu0"])
+
+    I1_temp_thick = I1_temp_thick.reshape(N0, N0).T
+    I2_temp_thick = I2_temp_thick.reshape(N0, N0).T
+    I0_temp_thick = I0_temp_thick.reshape(N0, N0).T
+    I0_temp_thin = I0_temp_thin.reshape(N0, N0).T
+    I1_temp_thin = I1_temp_thin.reshape(N1, N1).T
+    I2_temp_thin = I2_temp_thin.reshape(N2, N2).T
     tau0 = tau0.reshape(N0, N0).T
     tau1 = tau1.reshape(N0, N0).T
     tau2 = tau2.reshape(N0, N0).T
+    full_temp = full_temp.reshape(N0, N0).T
     # I0 = bghts0.reshape(N0, N0).T
     # I1 = bghts1.reshape(N1, N1).T
     # I2 = bghts2.reshape(N2, N2).T
@@ -467,67 +406,24 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
 
     h5f = h5py.File(filename, 'w')
 
-    h5f.create_dataset('bghts0', data=I0)
-    h5f.create_dataset('bghts1', data=I1)
-    h5f.create_dataset('bghts2', data=I2)
-    h5f.create_dataset('bghts2_absorbtion', data=Absorption_I2_Temp)
-    h5f.create_dataset('bghts1_absorbtion', data=Absorption_I1_Temp)
-    h5f.create_dataset('bghts_full_absorbtion', data=Absorption_brightness_temp)
+    h5f.create_dataset('bghts0', data=I0_temp_thin)
+    h5f.create_dataset('bghts1', data=I1_temp_thin)
+    h5f.create_dataset('bghts2', data=I2_temp_thin)
+    h5f.create_dataset('bghts2_absorbtion', data=I2_temp_thick)
+    h5f.create_dataset('bghts1_absorbtion', data=I1_temp_thick)
+    h5f.create_dataset('bghts0_absorbtion', data=I0_temp_thick)
+    h5f.create_dataset('bghts_full_absorbtion', data=full_temp)
     h5f.create_dataset('tau2', data=tau2)
     h5f.create_dataset('tau1', data=tau1)
     h5f.create_dataset('tau0', data=tau0)
+    h5f.create_dataset('full_profiles2', data=full_profiles2)
+    h5f.create_dataset('full_profiles1', data=full_profiles1)
+    h5f.create_dataset('full_profiles0', data=full_profiles0)
+
 
     h5f.close()
 
     print("File ", filename, " created.")
-
-# def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,mask2,N2,rs2,sign2,brightparams,funckeys,phi012):
-#     """
-#     Calculate and save the radial brightness profile
-#     """
-#     bghts0 = bright_radial(supergrid0, mask0, sign0, spin_case, rs0, isco, thetao, brightparams, funckeys, phi012[0], 0)
-#     bghts1 = bright_radial(supergrid1, mask1, sign1, spin_case, rs1, isco, thetao, brightparams, funckeys, phi012[1],
-#                            bghts0)
-#     bghts2 = bright_radial(supergrid2, mask2, sign2, spin_case, rs2, isco, thetao, brightparams, funckeys, phi012[2],
-#                            bghts1)
-#
-#     I0 = bghts0.reshape(N0, N0).T
-#     I1 = bghts1.reshape(N1, N1).T
-#     I2 = bghts2.reshape(N2, N2).T
-#
-#     #                        0    1     2       3         4         5       6      7     8       9     10       11       12        13       14       15      16       17       18       19
-#     filename = path + 'Intensity_a_{}|i_{}|nu_{}|mass_{}|scaleh_{}|thetab_{}|beta_{}|rie_{}|rb_{}|nth0_{}|te0_{}|pdens_{}|ptemp_{}|nscale_{}|abkey_{}|emkey_{}|bkey_{}|nkey_{}|tnkey_{}|bnkey_{}.h5'.format(
-#         spin_case,
-#         i_case,
-#         "{:.1e}".format(brightparams["nu0"].value),
-#         "{:.1e}".format(brightparams["mass"].value),
-#         float(brightparams["scale_height"]),
-#         "{:.3f}".format(brightparams["theta_b"].value),
-#         "{:.2f}".format(float(brightparams["beta"])),
-#         "{:.1f}".format(float(brightparams["r_ie"])),
-#         "{:.1f}".format(float(brightparams["rb_0"])),
-#         "{:.1e}".format(brightparams["n_th0"].value),
-#         "{:.1e}".format(brightparams["t_e0"].value),
-#         float(brightparams["p_dens"]),
-#         float(brightparams["p_temp"]),
-#         "{:.1f}".format(brightparams["nscale"]),
-#         funckeys["absorbkey"],
-#         funckeys["emodelkey"],
-#         funckeys["bkey"],
-#         funckeys["nnoisykey"],
-#         funckeys["tnoisykey"],
-#         funckeys["bnoisykey"]
-#     )
-#
-#     h5f = h5py.File(filename, 'w')
-#
-#     h5f.create_dataset('bghts0', data=I0)
-#     h5f.create_dataset('bghts1', data=I1)
-#     h5f.create_dataset('bghts2', data=I2)
-#
-#     h5f.close()
-#
-#     print("File ", filename, " created.")
 
 def br_bv(supergrid0,mask0,N0,rs0,sign0):
     """
