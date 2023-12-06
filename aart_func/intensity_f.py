@@ -209,7 +209,8 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys
         funckeys["emodelkey"]](coords_outter,redshift_outter,CosAng_outter,brightparams,funckeys)
 
     r_p = 1+np.sqrt(1-a**2)
-    si_thin[rs<=r_p] = 0
+    # si_thin[rs<=r_p] = 0
+    si_thin[rs <= r_p] = -np.inf
 
     cosAngReturn[rs>=isco] = CosAng_inner
     cosAngReturn[rs<isco] = CosAng_outter
@@ -561,16 +562,35 @@ def flare_model(grid,mask,redshift_sign,a,rs,th,ts,thetao,rwidth,delta_t):
 #     thth=1/r
 #     return thth*gDisk(r,a,b,lamb,eta)*kthkt
 
+# def CosAng(r,a,b,lamb,eta):
+#     """
+#     Calculates the cosine of the emission angle
+#     :param r: radius of the source
+#     :param a: spin of the black hole
+#     :param lamb: angular momentum
+#     :return: the  cosine of the emission angle
+#     """
+#     #From eta, solve for Sqrt(p_\theta/p_t)
+#     kthkt=np.sqrt(eta)
+#     #Sqrt(g^{\theta\theta}) Evaluated at the equatorial plane
+#     thth=1/r
+#     return thth*gDisk(r,a,b,lamb,eta)*kthkt
+
 def CosAng(r,a,b,lamb,eta):
     """
     Calculates the cosine of the emission angle
     :param r: radius of the source
     :param a: spin of the black hole
     :param lamb: angular momentum
+
     :return: the  cosine of the emission angle
     """
     #From eta, solve for Sqrt(p_\theta/p_t)
+
     kthkt=np.sqrt(eta)
+    #kthkt=np.sqrt(eta+a**2*np.cos(thetao)**2-lamb**2/(np.tan(thetao)**2))
+
+
     #Sqrt(g^{\theta\theta}) Evaluated at the equatorial plane
     thth=1/r
     return thth*gDisk(r,a,b,lamb,eta)*kthkt

@@ -10,8 +10,8 @@ spin_case=.001
 
 
 #Observer's inclination  
-# i_case=17
-i_case=1
+i_case=17
+# i_case=1
 
 
 # Distance to the BH in meters (default: M87)
