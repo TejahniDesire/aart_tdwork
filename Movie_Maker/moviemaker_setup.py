@@ -9,7 +9,7 @@ from params import * # The file params.py contains all the relevant parameters f
 from astropy import units as u
 
 import importlib 
-
+path_sub = "../aart_results/"
 
 def curve_params(varphi, rho):
     """calculate Appendix B parameters for a curve rho(varphi)
@@ -45,7 +45,7 @@ def curve_params(varphi, rho):
 
 '''Computation of the lensing bands----------------------------------'''
 subprocess.run(['python3 ' + aartpath + '/lensingbands.py'], shell=True)
-fnbands= "./Results/LensingBands_a_%s_i_%s.h5"%(spin_case,i_case)
+fnbands= path + "LensingBands_a_%s_i_%s.h5"%(spin_case,i_case)
 
 print("Reading file: ",fnbands)
 
@@ -82,7 +82,7 @@ h5f.close()
 
 '''Analytical Ray-tracing----------------------------------'''
 subprocess.run(['python3 ' + aartpath + '/raytracing.py'], shell=True)
-fnrays="./Results/Rays_a_%s_i_%s.h5"%(spin_case,i_case)
+fnrays= path + "Rays_a_%s_i_%s.h5"%(spin_case,i_case)
 
 print("Reading file: ",fnrays)
 

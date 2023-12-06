@@ -15,6 +15,7 @@ from scipy.special import gamma
 # TODO Units of the images pixel value
 # TODO find values to change j coeff peak to occur between 3-20rg
 
+inoisy_path = "/home/tej/Desktop/Code_Stuff/Repositories/aart/"
 # Constants
 G = const.G.cgs
 c = const.c.cgs
@@ -71,13 +72,10 @@ gamma_1 = 1
 gamma_2 = 10 ** 6
 
 '''Noisy'''
-kw_nscale = 1 # 0.4
-kw_nnoisykey = 0 # 1 for on, 0 for off
+kw_nscale = .4 # 0.4
+kw_nnoisykey = 1 # 1 for on, 0 for off
 kw_tnoisykey = 0
 kw_bnoisykey = 0
-
-'''Absorption'''
-kw_absorbkey = 0
 
 '''Parameters'''
 kw_emodelkey = 0
@@ -99,7 +97,6 @@ kw_brightparams = {
 }
 
 kw_funckeys = {
-    "absorbkey": kw_absorbkey,
     "emodelkey": kw_emodelkey,
     "bkey": kw_bkey,
     "nnoisykey": kw_nnoisykey,
@@ -327,8 +324,8 @@ def inoisy_radius():
     lowerbound = -30
     upperbound = 30
     gridsize = 512
-    Xs=np.arange(lowerbound,upperbound , (upperbound - lowerbound) / gridsize)
-    Ys=np.arange(lowerbound,upperbound , (upperbound - lowerbound) / gridsize)
+    Xs=np.arange(lowerbound,upperbound, (upperbound - lowerbound) / gridsize)
+    Ys=np.arange(lowerbound,upperbound, (upperbound - lowerbound) / gridsize)
 
     xx, yy = np.meshgrid(Xs, Ys)
     xx, yy = np.meshgrid(Xs, Ys)
@@ -336,7 +333,7 @@ def inoisy_radius():
 
 
 def inoisy_interp(envelope,scale): # given an envelope, return noisy version to be evaluated at x and y grid
-    GRF=np.load("Inoisysnapshot.npy")
+    GRF=np.load(inoisy_path + "Inoisysnapshot.npy")
     radius, Xs, Ys = inoisy_radius()
 
     density=envelope*np.exp(scale*GRF-scale**1/2)
@@ -356,8 +353,9 @@ def inoisy_value(x, y, envelope, scale, units): # return value of noisy paramete
     interpolation = inoisy_interp(envelope, scale)
     return interpolation(np.vstack([x,y]).T) * units
 
+
 # Ultrarelativistic
-def thermal_profile(coords, redshift, inplus, bp=kw_brightparams, fk=kw_funckeys):
+def thermal_profile(coords, redshift,cosAng, bp=kw_brightparams, fk=kw_funckeys):
     """
 
     Calculate the radial profile emission according to a thermal distribution
@@ -433,7 +431,7 @@ def thermal_profile(coords, redshift, inplus, bp=kw_brightparams, fk=kw_funckeys
 
     runits = coords["r"] * rg_func(bp["mass"])
     # l' (l in the fluid frame)
-    path_length_fluid = runits * bp["scale_height"]
+    path_length_fluid = runits * bp["scale_height"] / cosAng
 
     # J Coeff Calculations Returns units of [u.erg / (u.cm ** 3 * u.s * u.Hz)]------------------------------------------
     jcoeff_I_fluid = n * e ** 2 * nu * synchrotron_func_I(x) / (2 * np.sqrt(3) * c * theta_e ** 2)
@@ -453,7 +451,8 @@ def thermal_profile(coords, redshift, inplus, bp=kw_brightparams, fk=kw_funckeys
     #             1 - np.exp(- tau))
     specific_intensity_thick = redshift ** 3 * b_nu_fluid * (1 - np.exp(- tau))
 
-    print("inplus: ", np.any(inplus != 0), inplus.max())
+    # Convert planck to brightness radial
+    b_nu_fluid = brightness_temp(b_nu_fluid, bp["nu0"])
     # Packing radial curves
     theta_e = theta_e.reshape(1, theta_e.shape[0])
     n = n.reshape(1, n.shape[0])
@@ -462,10 +461,12 @@ def thermal_profile(coords, redshift, inplus, bp=kw_brightparams, fk=kw_funckeys
     acoeff_I_fluid = acoeff_I_fluid.reshape(1, acoeff_I_fluid.shape[0])
     tau_curve = tau.reshape(1, tau.shape[0])
     r =coords["r"].reshape(1, coords["r"].shape[0])
-    full_profiles = np.concatenate([r, theta_e.value, n.value, b_field.value, b_nu_fluid.value, acoeff_I_fluid.value, tau_curve.value], axis=0)
-
+    full_profiles = np.concatenate([r, theta_e.value, n.value, b_field.value, b_nu_fluid.value,
+                                    acoeff_I_fluid.value, tau_curve.value], axis=0)
+    full_profiles_units = [str(theta_e.unit), str(n.unit), str(b_field.unit), str(b_nu_fluid.unit),
+                           str(acoeff_I_fluid.unit), str(tau_curve.unit)]
     # return brightness, specific_intensity_thick, tau, full_profiles
-    return specific_intensity_thin, specific_intensity_thick, tau, full_profiles
+    return specific_intensity_thin, specific_intensity_thick, tau, full_profiles, full_profiles_units
 
 
 # TODO: remove redshift

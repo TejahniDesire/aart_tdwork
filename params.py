@@ -4,12 +4,14 @@ print("\nThanks for using AART")
 print("Copyright (C) 2022, A. Cardenas-Avendano, H. Zhu & A. Lupsasca\n")
 
 #BH's Spin
-spin_case=0.94
+# spin_case=0.94
 # spin_case=.1
+spin_case=.001
 
 
 #Observer's inclination  
-i_case=17
+# i_case=17
+i_case=1
 
 
 # Distance to the BH in meters (default: M87)
@@ -121,7 +123,7 @@ fov_Real=np.arctan(sizeim_Real/(dBH))/muas_to_rad #muas
 
 #Path where the results will be stored
 # path = './Results/'
-path = '../aart_results/path_results/'
+path = '/home/tej/Desktop/Code_Stuff/Repositories/aart_results/path_results/'
 
 # Create a directory for the results
 isExist = os.path.exists(path)

@@ -479,7 +479,6 @@ for i in range(int((action[2]-action[1])/action[3])):
 		str('{:.3}'.format(10 * M2uas))
 		])
 
-
 	ax[2].plot(alpha0[b+1,:], beta0[b+1,:], color='tab:red', linestyle='--')	
 	ax[2].plot(alpha1[b+1,:], beta1[b+1,:], color='tab:orange', linestyle='--')	
 	ax[2].plot(alpha2[b+1,:], beta2[b+1,:], color='tab:blue', linestyle='--')	

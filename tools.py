@@ -104,8 +104,8 @@ def radii_of_theta(I0, thetapointsamount):
     rarray = r @ onesr # (2rmax+1) x thetapointsamount
 
     # Convert to pixel coords from aart plot coords
-    xaart = np.multiply(rarray , np.cos(thetarray))
-    yaart = np.multiply(rarray , np.sin(thetarray))
+    xaart = np.multiply(rarray, np.cos(thetarray))
+    yaart = np.multiply(rarray, np.sin(thetarray))
     xprime = xaart + I0.shape[0] / 2
     yprime = yaart + I0.shape[0] / 2
 

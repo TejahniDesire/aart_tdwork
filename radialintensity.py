@@ -16,7 +16,6 @@ parser.add_argument('--te0', default=ilp.kw_t_e0.value, type=float)
 parser.add_argument('--pdens', default=ilp.kw_p_dens, type=float)
 parser.add_argument('--ptemp', default=ilp.kw_p_temp, type=float)
 parser.add_argument('--nscale', default=ilp.kw_nscale, type=float)
-parser.add_argument('--absorbkey', default=0, type=int)
 parser.add_argument('--emodelkey', default=0, type=int)
 parser.add_argument('--bkey', default=0, type=int)
 parser.add_argument('--nnoisykey', default=0, type=int)
@@ -41,12 +40,11 @@ brightparams = {
 }
 
 funckeys = {
-	"absorbkey": args.absorbkey,		# 0
-	"emodelkey": args.emodelkey, 		# 1
-	"bkey": args.bkey, 					# 2
-	"nnoisykey": args.nnoisykey, 		# 3
-	"tnoisykey": args.tnoisykey, 		# 4
-	"bnoisykey": args.bnoisykey 		# 5
+	"emodelkey": args.emodelkey, 		# 0
+	"bkey": args.bkey, 					# 1
+	"nnoisykey": args.nnoisykey, 		# 2
+	"tnoisykey": args.tnoisykey, 		# 3
+	"bnoisykey": args.bnoisykey 		# 4
 }
 
 # Getting angles
