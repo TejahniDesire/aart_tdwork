@@ -176,7 +176,7 @@ brightparams = [
 # #  LOWER PTEMP
 # brightparams = [
 # 	230e9, # nu0
-# 	(MMkg * u.kg).to(u.g).value, # mass
+# 	(MMkg * u.kg).to(u.g).value, # mass-.7
 # 	.5, # scale_height
 # 	50.0 * (np.pi / 180), # theta_b
 # 	1.0, # beta

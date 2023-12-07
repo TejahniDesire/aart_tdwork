@@ -254,7 +254,7 @@ def b_func_true(beta, r_ie, theta_e, nth):
     Returns:
         _type_: Magnetic field value in gauss at that radial distance
     """
-    return np.sqrt( 8 * np.pi * me * c ** 2 * (1 + r_ie) * beta ** -1 * theta_e *  nth)
+    return np.sqrt(8 * np.pi * me * c ** 2 * (1 + r_ie) * beta ** -1 * theta_e * nth)
 
 
 
@@ -431,7 +431,7 @@ def thermal_profile(coords, redshift,cosAng, bp=kw_brightparams, fk=kw_funckeys)
 
     runits = coords["r"] * rg_func(bp["mass"])
     # l' (l in the fluid frame)
-    path_length_fluid = runits * bp["scale_height"] / cosAng
+    path_length_fluid = runits * bp["scale_height"]  # / cosAng
 
     # J Coeff Calculations Returns units of [u.erg / (u.cm ** 3 * u.s * u.Hz)]------------------------------------------
     jcoeff_I_fluid = n * e ** 2 * nu * synchrotron_func_I(x) / (2 * np.sqrt(3) * c * theta_e ** 2)

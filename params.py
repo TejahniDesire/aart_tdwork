@@ -4,9 +4,9 @@ print("\nThanks for using AART")
 print("Copyright (C) 2022, A. Cardenas-Avendano, H. Zhu & A. Lupsasca\n")
 
 #BH's Spin
-# spin_case=0.94
+spin_case=0.94
 # spin_case=.1
-spin_case=.001
+# spin_case=.001
 
 
 #Observer's inclination  
@@ -42,14 +42,14 @@ bvapp=0
 p_image=1
 limits=25
 #Resolution for the n=0 image [M]
-# dx0 =0.02
-dx0 = 0.2
+dx0 =0.02
+# dx0 = 0.2
 #Resolution for the n=1 image [M]
-# dx1 =0.02
-dx1 = 0.2
+dx1 =0.02
+# dx1 = 0.2
 #Resolution for the n=2 image [M]
-# dx2 =0.02
-dx2 =0.2
+dx2 =0.02
+# dx2 =0.2
 
 
 # Projection angles for the radon transformation
