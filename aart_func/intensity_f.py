@@ -180,11 +180,20 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys
     x_aux=rs*np.cos(phi)
     y_aux=rs*np.sin(phi)
 
+    # rs_inner = rs[rs>=isco]
+    # rs_outer = rs[rs<isco]
     redshift_inner = gDisk(rs[rs>=isco],a,redshift_sign[rs>=isco],lamb[rs>=isco],eta[rs>=isco])
     redshift_outter = gGas(rs[rs<isco],a,redshift_sign[rs<isco],lamb[rs<isco],eta[rs<isco])
 
-    CosAng_inner = CosAng(rs[rs>=isco],a,redshift_sign[rs>=isco],lamb[rs>=isco],eta[rs>=isco])
-    CosAng_outter = CosAng(rs[rs<isco],a,redshift_sign[rs<isco],lamb[rs<isco],eta[rs<isco])
+    CosAng_inner = CosAng(rs[rs>=isco],a,redshift_inner,lamb[rs>=isco],eta[rs>=isco])
+    CosAng_outter = CosAng(rs[rs<isco],a,redshift_outter,lamb[rs<isco],eta[rs<isco])
+
+    # r_p = 1 + np.sqrt(1 - a ** 2)
+    # CosAng_inner[rs_inner<=r_p] = 1
+    # CosAng_outter[rs_outer<=r_p] = 1
+
+    # CosAng_inner[np.isnan(CosAng_inner)] = 1
+    # CosAng_outter[np.isnan(CosAng_outter)] = 1
 
     ilp.set_b_params(brightparams["mass"],brightparams["beta"],brightparams["rb_0"],brightparams["n_th0"],brightparams["p_dens"])
 
@@ -359,6 +368,7 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
 
     si_thin0, si_thick0, tau0mask0, full_profiles0, full_profiles_unit, cosAngReturn0, testa, testb, eta = bright_radial(
         supergrid0, mask0, sign0, spin_case,rs0, isco, thetao, brightparams, funckeys, phi0)
+
 
     cosAngReturn0Full = np.zeros(mask0.shape)
     cosAngReturn0Full[mask0] = cosAngReturn0
@@ -576,7 +586,7 @@ def flare_model(grid,mask,redshift_sign,a,rs,th,ts,thetao,rwidth,delta_t):
 #     thth=1/r
 #     return thth*gDisk(r,a,b,lamb,eta)*kthkt
 
-def CosAng(r,a,b,lamb,eta):
+def CosAng(r,a,redshift,lamb,eta):
     """
     Calculates the cosine of the emission angle
     :param r: radius of the source
@@ -587,10 +597,12 @@ def CosAng(r,a,b,lamb,eta):
     """
     #From eta, solve for Sqrt(p_\theta/p_t)
 
+
     kthkt=np.sqrt(eta)
     #kthkt=np.sqrt(eta+a**2*np.cos(thetao)**2-lamb**2/(np.tan(thetao)**2))
 
-
     #Sqrt(g^{\theta\theta}) Evaluated at the equatorial plane
     thth=1/r
-    return thth*gDisk(r,a,b,lamb,eta)*kthkt
+
+    return thth*redshift*kthkt
+

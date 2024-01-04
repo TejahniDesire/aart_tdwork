@@ -257,8 +257,6 @@ radii_I0_Thin = np.zeros(size)
 radii_I1_Thin = np.zeros(size)
 radii_I2_Thin = np.zeros(size)
 
-
-
 radii_FullAbsorption_Thick = np.zeros(size)
 radii_I0_Thick = np.zeros(size)
 radii_I1_Thick = np.zeros(size)
@@ -479,6 +477,7 @@ for i in range(num_iterations):
     ax[1].plot(xaxis, mean_radii_Thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
     ax[1].plot(xaxis, mean_radii_Thin[:, 2], '-.', label='n=2', color='tab:blue', linewidth=3)
     # Labels
+    # TODO: Fix y label 10^0
     ax[1].set_xlabel(var_label[action["var"]].replace('=', '') + ' (' + units_label[action["var"]] + ')')
     ax[1].set_ylabel("Ring Radii ({})".format(R'$R_g$'))
     ax[1].xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))

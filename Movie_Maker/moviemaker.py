@@ -507,44 +507,44 @@ for i in range(int((action[2]-action[1])/action[3])):
 
 movie_name  = 'BHMovie_var_{}_start_{}_stop_{}_steps_{}_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_Rie_{}_Bchoi_{}_rb_{}_nth0_{}_te0_{}_pdens_{}_ptemp_{}.mp4'.format(
 	cmd_args[action[0]],
-	"{:.3e}".format(action[1]), # start
-	"{:.3e}".format(action[2]), # stop
-	"{:.3e}".format(action[3]), # steps
-	spin_case, # Spin
-	i_case, # Observing angle
-	"{:.1e}".format(brightparams[0]), # Nu 
-	"{:.1e}".format(brightparams[1]), # blkhole mass
-	brightparams[2], # scale height
-    "{:.3e}".format(brightparams[3]), # theta b
-	"{:.1e}".format(brightparams[4]), # beta
-	"{:.1e}".format(brightparams[5]), # Rie
-	"{:.1e}".format(brightparams[6]), # Bchoice
-    "{:.1e}".format(brightparams[7]), # rb
-	"{:.1e}".format(brightparams[8]), # nth0
-	"{:.1e}".format(brightparams[9]), # te0
-	"{:.1e}".format(brightparams[10]), # pdens
-	"{:.1e}".format(brightparams[11]) # ptemp
+	"{:.3e}".format(action[1]),  # start
+	"{:.3e}".format(action[2]),  # stop
+	"{:.3e}".format(action[3]),  # steps
+	spin_case,  # Spin
+	i_case,  # Observing angle
+	"{:.1e}".format(brightparams[0]),  # Nu
+	"{:.1e}".format(brightparams[1]),  # blkhole mass
+	brightparams[2],  # scale height
+    "{:.3e}".format(brightparams[3]),  # theta b
+	"{:.1e}".format(brightparams[4]),  # beta
+	"{:.1e}".format(brightparams[5]),  # Rie
+	"{:.1e}".format(brightparams[6]),  # Bchoice
+    "{:.1e}".format(brightparams[7]),  # rb
+	"{:.1e}".format(brightparams[8]),  # nth0
+	"{:.1e}".format(brightparams[9]),  # te0
+	"{:.1e}".format(brightparams[10]),  # pdens
+	"{:.1e}".format(brightparams[11])  # ptemp
 	) 
 
 ring_name  = '_var_{}_start_{}_stop_{}_steps_{}_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_Rie_{}_Bchoi_{}_rb_{}_nth0_{}_te0_{}_pdens_{}_ptemp_{}.mp4'.format(
 	cmd_args[action[0]],
-	"{:.3e}".format(action[1]), # start
-	"{:.3e}".format(action[2]), # stop
-	"{:.3e}".format(action[3]), # steps
+	"{:.3e}".format(action[1]),  # start
+	"{:.3e}".format(action[2]),  # stop
+	"{:.3e}".format(action[3]),  # steps
 	spin_case, # Spin
 	i_case, # Observing angle
-	"{:.1e}".format(brightparams[0]), # Nu 
-	"{:.1e}".format(brightparams[1]), # blkhole mass
+	"{:.1e}".format(brightparams[0]),  # Nu
+	"{:.1e}".format(brightparams[1]),  # blkhole mass
 	brightparams[2], # scale height
-    "{:.3e}".format(brightparams[3]), # theta b
-	"{:.1e}".format(brightparams[4]), # beta
-	"{:.1e}".format(brightparams[5]), # Rie
-	"{:.1e}".format(brightparams[6]), # Bchoice
-    "{:.1e}".format(brightparams[7]), # rb
-	"{:.1e}".format(brightparams[8]), # nth0
-	"{:.1e}".format(brightparams[9]), # te0
-	"{:.1e}".format(brightparams[10]), # pdens
-	"{:.1e}".format(brightparams[11]) # ptemp
+    "{:.3e}".format(brightparams[3]),  # theta b
+	"{:.1e}".format(brightparams[4]),  # beta
+	"{:.1e}".format(brightparams[5]),  # Rie
+	"{:.1e}".format(brightparams[6]),  # Bchoice
+    "{:.1e}".format(brightparams[7]),  # rb
+	"{:.1e}".format(brightparams[8]),  # nth0
+	"{:.1e}".format(brightparams[9]),  # te0
+	"{:.1e}".format(brightparams[10]),  # pdens
+	"{:.1e}".format(brightparams[11])  # ptemp
 	) 
 
 if os.path.isfile('./' + movie_name):

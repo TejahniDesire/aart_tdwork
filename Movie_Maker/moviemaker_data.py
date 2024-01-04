@@ -2,6 +2,8 @@ import os.path
 import sys
 import subprocess
 
+import scipy
+
 aartpath = '/home/tej/Desktop/Code_Stuff/Repositories/aart'  # insert path to aart repo
 sys.path.append(aartpath)
 
@@ -12,17 +14,17 @@ from astropy import units as u
 import image_tools as tls
 import numpy as np
 
-aart_results = "/home/tej/Desktop/Code_Stuff/Repositories/aart_results/"
-movie_path = "Movie/"
-high_rez = "high_rez/"
-low_rez = "low_rez/"
-# rez = low_rez
-rez = high_rez
+from moviemaker_params import (
+    brightparams,
+    funckeys,
+    var_label,
+    scale_label,
+    units_label,
+    aart_results,
+    rez
+                               )
 
-vid_path = rez + "video/"
-graph_path = rez + "graph/"
-temp_path = rez + "temporary/"
-data_path = aart_results + movie_path + rez + "data_sets/"
+
 speed = 8
 
 parser = argparse.ArgumentParser(description='Movies', formatter_class=argparse.RawTextHelpFormatter)
@@ -41,21 +43,17 @@ p_dens: (dimensionless)
 p_temp: (dimensionless) 
 nscale: (dimensionless)
 ''',
-
                     type=str)
 
 parser.add_argument('start', type=float)
 parser.add_argument('stop', help='Inclusive Stop', type=float)
 parser.add_argument("step_size", type=float)
-parser.add_argument("power_val", type=float,
-                    help="Colorbar power norm value. Lower for anticipated higher brightness range")
 args = parser.parse_args()
 action = {
     "var": args.var,
     "start": args.start,
     "stop": args.stop,
     "step": args.step_size,
-    "bright_power": args.power_val
 }
 
 '''Reading of the lensing bands----------------------------------'''
@@ -142,94 +140,63 @@ cmd2_args = {
     "tnoisykey": '--tnoisykey ',
     "bnoisykey": '--bnoisykey ',
 }
+brightparams_label = dict(brightparams)
+# brightparam_items = brightparams.items()
+# brightparams_init = np.array(list(brightparam_items))[:,1]  # Convert object to a list
 
-brightparams = {
-    "nu0": 230e9,  # 0 nu0
-    "mass": (MMkg * u.kg).to(u.g).value,  # 1 mass
-    "scale_height": .5,  # 2 scale_height
-    "theta_b": 50.0 * (np.pi / 180),  # 3 theta_b
-    "beta": 1.0,  # 4 beta
-    "r_ie": 10.0,  # 5 rie
-    "rb_0": 2,  # 7 rb_0
-    "n_th0": 2e5,  # ,4e5 # 8 n_th0
-    "t_e0": 2e11,  # 9 t_e0 1e12
-    "p_dens": -.7,  # 10 p_dens
-    "p_temp": -.84,  # 11 p_temp
-    "nscale": .4  # Scale of Inoisy
-}
+# File paths-------------------------
+iteration = (
+    'Var_{}_Start_{}_Stop_{}_Step_{}_a_{}_i_{}_nu_{}'
+    '_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}'
+    '_pdens_{}_ptemp_{}_nscale_{}_keys_{}_{}_{}_{}_{}'
+).format(
+    action["var"],
+    "{:.2e}".format(action["start"]),
+    "{:.2e}".format(action["stop"]),
+    "{:.2e}".format(action["step"]),
+    spin_case,
+    i_case,
+    "{:.1e}".format(brightparams_label["nu0"]),
+    "{:.1e}".format(brightparams_label["mass"]),
+    float(brightparams_label["scale_height"]),
+    "{:.3f}".format(brightparams_label["theta_b"]),
+    "{:.2f}".format(float(brightparams_label["beta"])),
+    "{:.1f}".format(float(brightparams_label["r_ie"])),
+    "{:.1f}".format(float(brightparams_label["rb_0"])),
+    "{:.1e}".format(brightparams_label["n_th0"]),
+    "{:.1e}".format(brightparams_label["t_e0"]),
+    float(brightparams_label["p_dens"]),
+    float(brightparams_label["p_temp"]),
+    "{:.1f}".format(brightparams_label["nscale"]),
+    funckeys["emodelkey"],
+    funckeys["bkey"],
+    funckeys["nnoisykey"],
+    funckeys["tnoisykey"],
+    funckeys["bnoisykey"]
+)
 
-funckeys = {
-    "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
-    "bkey": 1,  # bkey
-    "nnoisykey": 0,  # nnoisykey Inoisy density. 0 = no noise, 1 = noise
-    "tnoisykey": 0,  # tnoisykey Inoisy temperature
-    "bnoisykey": 0  # bnoisykey Inoisy magnetic field
-}
+movie_path = "Movie/"
+vid_path = rez + "video/"
+data_path = aart_results + movie_path + rez + "data_sets/"
+new_directory = iteration + '/'
 
-# i = 0
-# for arg in cmd1_args:
-#     args = args + cmd1_args[arg] + str(brightparams[arg]) + ' '
-#     i += 1
-#
-# i = 0
-# for arg in cmd2_args:
-#     args = args + cmd2_args[arg] + str(funckeys[arg]) + ' '
-#
-# # for i in range(len(brightparams)):
-# #     args = args + cmd1_args[i] + str(brightparams[i]) + ' '
-# aartpath = '/home/tej/Desktop/Code_Stuff/Repositories/aart'
+final_vid_path = aart_results + movie_path + vid_path + new_directory
+final_data_path = final_vid_path + "data_sets/"
 
-# Labeling Image--------------------------------------------------------------------------------------------------------
-var_label = {
-    'nu0': r'$\nu= $',
-    'mass': 'BlkHole Mass= ',
-    'scale_height': 'Scale Height= ',
-    'theta_b': r'$\theta_b= $',
-    'beta': r'$\beta= $',
-    'r_ie': r'$R_ie= $',
-    'rb_0': r'$R_b= $',
-    'n_th0': r'$n_{th,0}= $',
-    't_e0': r'$T_{e,0}= $',
-    'p_dens': r'$p_{dens}= $',
-    'p_temp': r'$p_{temp}= $',
-    'nscale': r'$n_{scale}$'
-}
-scale_label = {
-    'nu0': 1e9,  # GHz
-    'mass': 1e9 * 1.989e33,  # Billion Solar Masses
-    'scale_height': 1,  # Rg
-    'theta_b': 1,  # Rads
-    'beta': 1,
-    'r_ie': 1,
-    'rb_0': 1,  # Rg
-    'n_th0': 1 / 1e6,  # 1/cm^3
-    't_e0': 1e9,  # GK
-    'p_dens': 1,
-    'p_temp': 1,
-    'nscale': 1
-}
-units_label = {
-    'nu0': 'GHz',  # GHz
-    'mass': r'Billion $M_{\odot}$',  # Billion Solar Masses
-    'scale_height': r'$R_g$',  # Rg
-    'theta_b': 'Rads',  # Rads
-    'beta': '',
-    'r_ie': '',
-    'rb_0': r'$R_g$',  # Rg
-    'n_th0': r'$1/m^{3}$',  # 1/m^3
-    't_e0': 'GK',  # GK
-    'p_dens': '',
-    'p_temp': '',
-    'nscale': ''
-}
+if os.path.isdir(final_vid_path):
+    subprocess.run(['rm -r ' + final_vid_path], shell=True)
+    subprocess.run(["mkdir " + final_vid_path], shell=True)
+else:
+    subprocess.run(["mkdir " + final_vid_path], shell=True)
+
+subprocess.run(["mkdir " + final_data_path], shell=True)
+
 # ----------------------------------------------------------------------------------------------------------------------
-size = 1000  # array size for radii calcs
+# size = 1000  # array size for radii calcs
+# size = 500  # array size for radii calcs
+size = 100  # array size for radii calcs
 num_iterations = int((action["stop"] - action["start"]) / action["step"])
 doth5_files = []  # .h5 files
-thin_names = []  # thin images to be deleted after movie is made
-thick_names = []
-thin_I2_names = []
-thick_I2_names = []
 
 # Secondary Graphs
 x_variable = np.zeros(num_iterations)  # counter for independant variable
@@ -247,6 +214,13 @@ radii_FullAbsorption_Thick = np.zeros(size)
 radii_I0_Thick = np.zeros(size)
 radii_I1_Thick = np.zeros(size)
 radii_I2_Thick = np.zeros(size)
+
+# Intensity images
+# I_thins = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
+# I_thicks = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
+#
+
+hdot5_names = []
 
 for i in range(num_iterations):
     print('Creating Data Set: ' + str(i))
@@ -287,17 +261,36 @@ for i in range(num_iterations):
         funckeys["tnoisykey"],
         funckeys["bnoisykey"]
     )
+
     doth5_files += [fnrays]
 
     h5f = h5py.File(doth5_files[i], 'r')
+
     I0 = h5f['bghts0'][:]
     I1 = h5f['bghts1'][:]
     I2 = h5f['bghts2'][:]
 
-    I2_Absorb = h5f['bghts2_absorbtion'][:]
-    I1_Absorb = h5f['bghts1_absorbtion'][:]
     I0_Absorb = h5f['bghts0_absorbtion'][:]
+    I1_Absorb = h5f['bghts1_absorbtion'][:]
+    I2_Absorb = h5f['bghts2_absorbtion'][:]
     Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+
+    filename = final_data_path + "doth5" + str(i) + "_" + iteration
+
+    h5f = h5py.File(filename, 'w')
+
+    h5f.create_dataset('I0', data=I0)
+    h5f.create_dataset('I1', data=I1)
+    h5f.create_dataset('I2', data=I2)
+
+    h5f.create_dataset('I0_Absorb', data=I0_Absorb)
+    h5f.create_dataset('I1_Absorb', data=I1_Absorb)
+    h5f.create_dataset('I2_Absorb', data=I2_Absorb)
+    h5f.create_dataset('Absorbtion_Image', data=Absorbtion_Image)
+
+    h5f.close()
+
+    hdot5_names += [filename]
     # tau2 = h5f['tau2'][:]
     # tau1 = h5f['tau1'][:]
     # tau0 = h5f['tau0'][:]
@@ -305,6 +298,7 @@ for i in range(num_iterations):
     # full_profiles1 = h5f['full_profiles1'][:]
     # full_profiles2 = h5f['full_profiles2'][:]
     # full_profiles_unit = h5f['full_profiles_unit'][:]
+
 
     # Thin Radii Calcs--------------------------------------------------------------------------------------------------
 
@@ -330,8 +324,6 @@ for i in range(num_iterations):
     radii_I2_Thick_i, theta = tls.radii_of_theta(I2_Absorb, size)
     radii_FullAbsorption_Thick_i, theta = tls.radii_of_theta(Absorbtion_Image, size)
 
-
-
     r0_thick = tls.curve_params(theta, radii_I0_Thick_i)
     r1_thick = tls.curve_params(theta, radii_I1_Thick_i)
     r2_thick = tls.curve_params(theta, radii_I2_Thick_i)
@@ -348,7 +340,7 @@ for i in range(num_iterations):
     radii_FullAbsorption_Thick = np.vstack((radii_FullAbsorption_Thick, radii_FullAbsorption_Thick_i))
 
     # Total Flux Calcualtions
-    janksys_thin[i,0] = ilp.total_jy(I0, brightparams["nu0"], brightparams["mass"]).value
+    janksys_thin[i, 0] = ilp.total_jy(I0, brightparams["nu0"], brightparams["mass"]).value
     janksys_thin[i, 1] = ilp.total_jy(I1, brightparams["nu0"], brightparams["mass"]).value
     janksys_thin[i, 2] = ilp.total_jy(I2, brightparams["nu0"], brightparams["mass"]).value
     janksys_thin[i, 3] = ilp.total_jy(I0 + I1 + I2, brightparams["nu0"], brightparams["mass"]).value
@@ -360,157 +352,21 @@ for i in range(num_iterations):
 
     h5f.close()
 
-# Black Hole Inner Shadow Calc--------------------------
-r_inner = np.load('r_inner_spin_{}_inc_{}.npy'.format(spin_case, i_case))
-alphas_inner = np.load('alphas_inner_spin_{}_inc_{}.npy'.format(spin_case,  i_case))
-betas_inner = np.load('betas_inner_spin_{}_inc_{}.npy'.format(spin_case,  i_case))
-
-# Black Hole Outer Shadow Calc--------------------------
-r_outer = np.load('r_outer_spin_{}_inc_{}.npy'.format(spin_case,  i_case))
-alphas_outer = np.load('alphas_outer_spin_{}_inc_{}.npy'.format(spin_case,  i_case))
-betas_outer = np.load('betas_outer_spin_{}_inc_{}.npy'.format(spin_case,  i_case))
-
-
-
-# ------------------------------------------------------
-
-dim = [16, 8]
-xaxis = np.array(x_variable) / scale_label[action['var']]
-temp_plots_path = aart_results + movie_path + temp_path
-for i in range(num_iterations):
-    print('Creating Frame : ' + str(i))
-
-    one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
-    M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
-
-    h5f = h5py.File(doth5_files[i], 'r')
-    I0 = h5f['bghts0'][:]
-    I1 = h5f['bghts1'][:]
-    I2 = h5f['bghts2'][:]
-
-    I2_Absorb = h5f['bghts2_absorbtion'][:]
-    I1_Absorb = h5f['bghts1_absorbtion'][:]
-    I0_Absorb = h5f['bghts0_absorbtion'][:]
-    Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
-    # tau2 = h5f['tau2'][:]
-    # tau1 = h5f['tau1'][:]
-    # tau0 = h5f['tau0'][:]
-    # full_profiles0 = h5f['full_profiles0'][:]
-    # full_profiles1 = h5f['full_profiles1'][:]
-    # full_profiles2 = h5f['full_profiles2'][:]
-    # full_profiles_unit = h5f['full_profiles_unit'][:]
-
-    h5f.close()
     subprocess.run(['rm ' + doth5_files[i]], shell=True)
 
-    max_factor = 1.2
-    if i == 0:
-        vmax0 = np.max(I0 + I1 + I2) * max_factor
-        vmax1 = Absorbtion_Image.max() * max_factor
-        vmax2 = np.max(I2) * max_factor * max_factor
-        vmax3 = np.max(I2_Absorb) * max_factor
-
-    if i != 0:
-        for b in range(len(p_full_thin)):
-            p_full_thin[b].remove()
-            if b != 6:
-                p_full_thick[b].remove()
-            # p_I2_thin[i].remove()
-            # p_I2_thick[i].remove()
-    else:
-        p_full_thin = [None, None, None, None, None, None, None]
-        p_full_thick = [None, None, None, None, None, None, None, None]
-
-
-# FMPEG Stiching--------------------------------------------------------------------------------------------------------
-iteration = (
-    'Var_{}_Start_{}_Stop_{}_Step_{}_BP_{}_a_{}_i_{}_nu_{}'
-    '_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}'
-    '_pdens_{}_ptemp_{}_nscale_{}_keys_{}_{}_{}_{}_{}'
-).format(
-    action["var"],
-    "{:.2e}".format(action["start"]),
-    "{:.2e}".format(action["stop"]),
-    "{:.2e}".format(action["step"]),
-    action["bright_power"],
-    spin_case,
-    i_case,
-    "{:.1e}".format(brightparams["nu0"]),
-    "{:.1e}".format(brightparams["mass"]),
-    float(brightparams["scale_height"]),
-    "{:.3f}".format(brightparams["theta_b"]),
-    "{:.2f}".format(float(brightparams["beta"])),
-    "{:.1f}".format(float(brightparams["r_ie"])),
-    "{:.1f}".format(float(brightparams["rb_0"])),
-    "{:.1e}".format(brightparams["n_th0"]),
-    "{:.1e}".format(brightparams["t_e0"]),
-    float(brightparams["p_dens"]),
-    float(brightparams["p_temp"]),
-    "{:.1f}".format(brightparams["nscale"]),
-    funckeys["emodelkey"],
-    funckeys["bkey"],
-    funckeys["nnoisykey"],
-    funckeys["tnoisykey"],
-    funckeys["bnoisykey"]
-)
-
-new_directory = iteration + '/'
-
-final_vid_path = aart_results + movie_path + vid_path + new_directory
-final_data_path = data_path + new_directory
-
-# if os.path.isdir(final_vid_path):
-#     subprocess.run(['rm -r ' + final_vid_path], shell=True)
-#     subprocess.run(["mkdir " + final_vid_path], shell=True)
-# else:
-#     subprocess.run(["mkdir " + final_vid_path], shell=True)
-if os.path.isdir(final_data_path):
-    subprocess.run(['rm -r ' + final_data_path], shell=True)
-    subprocess.run(["mkdir " + final_data_path], shell=True)
-else:
-    subprocess.run(["mkdir " + final_data_path], shell=True)
-
-# Saving Data
-np.save(data_path + "theta_" + iteration, theta)
-np.save(doth5_files + "doth5_" + iteration)
-
-# if os.path.isdir(final_vid_path):
-#     subprocess.run(['rm -r ' + final_vid_path], shell=True)
-#     subprocess.run(["mkdir " + final_vid_path], shell=True)
-# else:
-#     subprocess.run(["mkdir " + final_vid_path], shell=True)
-
-# Thin Full movie-------------------------------------------------------------------------------------------------------
-thin_full_movie_name = (final_vid_path + 'ThinFull_' + iteration + '.mp4')
-
-subprocess.run(["ffmpeg -r " + str(speed) + " -i " + temp_plots_path +
-                "Thin_Full_Fig_%d.png -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -vcodec "
-                "libx264 -crf 10 -pix_fmt yuv420p " + thin_full_movie_name], shell=True)
-
-# Thick Full movie------------------------------------------------------------------------------------------------------
-thick_full_movie_name = final_vid_path + 'ThickFull_' + iteration + '.mp4'
-
-subprocess.run(["ffmpeg -r " + str(
-    speed) + " -i " + temp_plots_path + "Thick_Full_Fig_%d.png -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -vcodec "
-                                        "libx264 -crf 10 -pix_fmt yuv420p " + thick_full_movie_name], shell=True)
-
-# Thin I2 movie---------------------------------------------------------------------------------------------------------
-thin_I2_movie_name = final_vid_path + 'ThinI2_' + iteration + '.mp4'
-
-subprocess.run(["ffmpeg -r " + str(
-    speed) + " -i " + temp_plots_path + "Thin_I2_Fig_%d.png -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -vcodec "
-                                        "libx264 -crf 10 -pix_fmt yuv420p " + thin_I2_movie_name], shell=True)
-
-# Thick I2 movie--------------------------------------------------------------------------------------------------------
-thick_I2_movie_name = final_vid_path + 'ThickI2_' + iteration + '.mp4'
-
-subprocess.run(["ffmpeg -r " + str(
-    speed) + " -i " + temp_plots_path + "Thick_I2_Fig_%d.png -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -vcodec "
-                                        "libx264 -crf 10 -pix_fmt yuv420p " + thick_I2_movie_name], shell=True)
-
-# remove temporary files------------------------------------------------------------------------------------------------
-for i in range(num_iterations):
-    subprocess.run(['rm ' + thin_names[i] + ".png"], shell=True)
-    subprocess.run(['rm ' + thick_names[i] + ".png"], shell=True)
-    subprocess.run(['rm ' + thin_I2_names[i] + ".png"], shell=True)
-    subprocess.run(['rm ' + thick_I2_names[i] + ".png"], shell=True)
+hdot5_names = np.array(hdot5_names)
+# Saving Data--------------------------------------------------------------------------------------------------------
+np.save(final_data_path + "hdot5_names_" + iteration, hdot5_names)
+np.save(final_data_path + "x_variable_" + iteration, x_variable)
+np.save(final_data_path + "janksys_thick_" + iteration, janksys_thick)
+np.save(final_data_path + "janksys_thin_" + iteration, janksys_thin)
+np.save(final_data_path + "mean_radii_Thin_" + iteration, mean_radii_Thin)
+np.save(final_data_path + "mean_radii_Thick_" + iteration, mean_radii_Thick)
+np.save(final_data_path + "radii_I0_Thin_" + iteration, radii_I0_Thin)
+np.save(final_data_path + "radii_I1_Thin_" + iteration, radii_I1_Thin)
+np.save(final_data_path + "radii_I2_Thin_" + iteration, radii_I2_Thin)
+np.save(final_data_path + "radii_FullAbsorption_Thick_" + iteration, radii_FullAbsorption_Thick)
+np.save(final_data_path + "radii_I0_Thick_" + iteration, radii_I0_Thick)
+np.save(final_data_path + "radii_I1_Thick_" + iteration, radii_I1_Thick)
+np.save(final_data_path + "radii_I2_Thick_" + iteration, radii_I2_Thick)
+np.save(final_data_path + "theta_" + iteration, theta)

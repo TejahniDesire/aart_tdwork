@@ -12,16 +12,16 @@ from astropy import units as u
 import image_tools as tls
 import numpy as np
 
-aart_results = "/home/tej/Desktop/Code_Stuff/Repositories/aart_results/"
-movie_path = "Movie/"
-high_rez = "high_rez/"
-low_rez = "low_rez/"
-# rez = low_rez
-rez = high_rez
+from moviemaker_params import (
+    brightparams,
+    funckeys,
+    var_label,
+    scale_label,
+    units_label,
+    aart_results,
+    rez
+                               )
 
-vid_path = rez + "video/"
-graph_path = rez + "graph/"
-temp_path = rez + "temporary/"
 speed = 8
 
 parser = argparse.ArgumentParser(description='Movies', formatter_class=argparse.RawTextHelpFormatter)
@@ -48,13 +48,19 @@ parser.add_argument('stop', help='Inclusive Stop', type=float)
 parser.add_argument("step_size", type=float)
 parser.add_argument("power_val", type=float,
                     help="Colorbar power norm value. Lower for anticipated higher brightness range")
+parser.add_argument("absorb_power_key", type=int,
+                    help="0 for no power normalization. 1 for power normalization")
+parser.add_argument("absorb_power_val", type=float,
+                    help="Colorbar power norm value in absorption. Lower for anticipated higher brightness range")
 args = parser.parse_args()
 action = {
     "var": args.var,
     "start": args.start,
     "stop": args.stop,
     "step": args.step_size,
-    "bright_power": args.power_val
+    "bright_power": args.power_val,
+    "absorb_power_key": args.absorb_power_key,
+    "absorb_power": args.absorb_power_val
 }
 
 '''Reading of the lensing bands----------------------------------'''
@@ -116,224 +122,114 @@ phi2 = h5f['phi2'][:]
 
 h5f.close()
 
-
-brightparams = {
-    "nu0": 230e9,  # 0 nu0
-    "mass": (MMkg * u.kg).to(u.g).value,  # 1 mass
-    "scale_height": .5,  # 2 scale_height
-    "theta_b": 50.0 * (np.pi / 180),  # 3 theta_b
-    "beta": 1.0,  # 4 beta
-    "r_ie": 10.0,  # 5 rie
-    "rb_0": 2,  # 7 rb_0
-    "n_th0": 2e5,  # ,4e5 # 8 n_th0
-    "t_e0": 2e11,  # 9 t_e0 1e12
-    "p_dens": -.7,  # 10 p_dens
-    "p_temp": -.84,  # 11 p_temp
-    "p_temp": , # Lower Temp
-    "p_temp":
-    "nscale": .4  # Scale of Inoisy
-}
-
-funckeys = {
-    "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
-    "bkey": 1,  # bkey
-    "nnoisykey": 0,  # nnoisykey Inoisy density. 0 = no noise, 1 = noise
-    "tnoisykey": 0,  # tnoisykey Inoisy temperature
-    "bnoisykey": 0  # bnoisykey Inoisy magnetic field
-}
-
-# Labeling Image--------------------------------------------------------------------------------------------------------
-var_label = {
-    'nu0': r'$\nu= $',
-    'mass': 'BlkHole Mass= ',
-    'scale_height': 'Scale Height= ',
-    'theta_b': r'$\theta_b= $',
-    'beta': r'$\beta= $',
-    'r_ie': r'$R_ie= $',
-    'rb_0': r'$R_b= $',
-    'n_th0': r'$n_{th,0}= $',
-    't_e0': r'$T_{e,0}= $',
-    'p_dens': r'$p_{dens}= $',
-    'p_temp': r'$p_{temp}= $',
-    'nscale': r'$n_{scale}$'
-}
-scale_label = {
-    'nu0': 1e9,  # GHz
-    'mass': 1e9 * 1.989e33,  # Billion Solar Masses
-    'scale_height': 1,  # Rg
-    'theta_b': 1,  # Rads
-    'beta': 1,
-    'r_ie': 1,
-    'rb_0': 1,  # Rg
-    'n_th0': 1 / 1e6,  # 1/cm^3
-    't_e0': 1e9,  # GK
-    'p_dens': 1,
-    'p_temp': 1,
-    'nscale': 1
-}
-units_label = {
-    'nu0': 'GHz',  # GHz
-    'mass': r'Billion $M_{\odot}$',  # Billion Solar Masses
-    'scale_height': r'$R_g$',  # Rg
-    'theta_b': 'Rads',  # Rads
-    'beta': '',
-    'r_ie': '',
-    'rb_0': r'$R_g$',  # Rg
-    'n_th0': r'$1/m^{3}$',  # 1/m^3
-    't_e0': 'GK',  # GK
-    'p_dens': '',
-    'p_temp': '',
-    'nscale': ''
-}
 # ----------------------------------------------------------------------------------------------------------------------
+
+# Data Reading_________________________________________---
+
+iteration = (
+    'Var_{}_Start_{}_Stop_{}_Step_{}_a_{}_i_{}_nu_{}'
+    '_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}'
+    '_pdens_{}_ptemp_{}_nscale_{}_keys_{}_{}_{}_{}_{}'
+).format(
+    action["var"],
+    "{:.2e}".format(action["start"]),
+    "{:.2e}".format(action["stop"]),
+    "{:.2e}".format(action["step"]),
+    spin_case,
+    i_case,
+    "{:.1e}".format(brightparams["nu0"]),
+    "{:.1e}".format(brightparams["mass"]),
+    float(brightparams["scale_height"]),
+    "{:.3f}".format(brightparams["theta_b"]),
+    "{:.2f}".format(float(brightparams["beta"])),
+    "{:.1f}".format(float(brightparams["r_ie"])),
+    "{:.1f}".format(float(brightparams["rb_0"])),
+    "{:.1e}".format(brightparams["n_th0"]),
+    "{:.1e}".format(brightparams["t_e0"]),
+    float(brightparams["p_dens"]),
+    float(brightparams["p_temp"]),
+    "{:.1f}".format(brightparams["nscale"]),
+    funckeys["emodelkey"],
+    funckeys["bkey"],
+    funckeys["nnoisykey"],
+    funckeys["tnoisykey"],
+    funckeys["bnoisykey"]
+)
+
+# doth5_Var_nu0_Start_3.00e+10_Stop_6.00e+10_Step_1.00e+10_BP_0.4_a_0.94_i_17_nu_2.3e+11_mass_1.3e+43_scaleh_0.5_thetab_0.873_beta_1.00_rie_10.0_rb_2.0_nth0_2.0e+05_te0_2.0e+11_pdens_-0.7_ptemp_-0.84_nscale_0.4_keys_0_1_0_0_0
+#
+# File paths
+temporary_path = aart_results + "Movie/" + rez + "temporary/"
+final_vid_path = aart_results + "Movie/" + rez + "video/" + iteration + '/'
+data_path = final_vid_path + "data_sets/"
+final_graph_path = final_vid_path + "graph"
+
+if os.path.isdir(final_vid_path):
+    print("File for data of input found")
+else:
+    raise ValueError("File (" + final_vid_path + ") not found")
+
+print("Loading Data...")
+# Loading
+
+hdot5_names = np.load(data_path + "hdot5_names_" + iteration + ".npy")
+x_variable = np.load(data_path + "x_variable_" + iteration + ".npy")
+janksys_thick = np.load(data_path + "janksys_thick_" + iteration + ".npy")
+janksys_thin = np.load(data_path + "janksys_thin_" + iteration + ".npy")
+mean_radii_Thin = np.load(data_path + "mean_radii_Thin_" + iteration + ".npy")
+mean_radii_Thick = np.load(data_path + "mean_radii_Thick_" + iteration + ".npy")
+radii_I0_Thin = np.load(data_path + "radii_I0_Thin_" + iteration + ".npy")
+radii_I1_Thin = np.load(data_path + "radii_I1_Thin_" + iteration + ".npy")
+radii_I2_Thin = np.load(data_path + "radii_I2_Thin_" + iteration + ".npy")
+radii_FullAbsorption_Thick = np.load(data_path + "radii_FullAbsorption_Thick_" + iteration + ".npy")
+radii_I0_Thick = np.load(data_path + "radii_I0_Thick_" + iteration + ".npy")
+radii_I1_Thick = np.load(data_path + "radii_I1_Thick_" + iteration + ".npy")
+radii_I2_Thick = np.load(data_path + "radii_I2_Thick_" + iteration + ".npy")
+theta = np.load(data_path + "theta_" + iteration + ".npy")
+
+# --------------------------
 size = 1000  # array size for radii calcs
 num_iterations = int((action["stop"] - action["start"]) / action["step"])
 
-
-for i in range(num_iterations):
-    print('Creating Data Set: ' + str(i))
-    # Update varing parameter
-    brightparams[action["var"]] = action["start"] + i * action["step"]
-    x_variable[i] = brightparams[action["var"]]
-
-    for arg in cmd1_args:
-        args = args + cmd1_args[arg] + str(brightparams[arg]) + ' '
-
-    for arg in cmd2_args:
-        args = args + cmd2_args[arg] + str(funckeys[arg]) + ' '
-
-    subprocess.run(['python3 ' + aartpath + '/radialintensity.py' + args], shell=True)
-
-    # Read created file
-
-    fnrays = aart_results + (
-        'path_results/Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}_'
-        'pdens_{}_ptemp_{}_nscale_{}_emkey_{}_bkey_{}_nkey_{}_tnkey_{}_bnkey_{}.h5').format(
-        spin_case,
-        i_case,
-        "{:.5e}".format(brightparams["nu0"]),
-        "{:.5e}".format(brightparams["mass"]),
-        float(brightparams["scale_height"]),
-        "{:.3f}".format(brightparams["theta_b"]),
-        "{:.2f}".format(float(brightparams["beta"])),
-        "{:.1f}".format(float(brightparams["r_ie"])),
-        "{:.1f}".format(float(brightparams["rb_0"])),
-        "{:.1e}".format(brightparams["n_th0"]),
-        "{:.1e}".format(brightparams["t_e0"]),
-        float(brightparams["p_dens"]),
-        float(brightparams["p_temp"]),
-        "{:.1f}".format(brightparams["nscale"]),
-        funckeys["emodelkey"],
-        funckeys["bkey"],
-        funckeys["nnoisykey"],
-        funckeys["tnoisykey"],
-        funckeys["bnoisykey"]
-    )
-    doth5_files += [fnrays]
-
-    h5f = h5py.File(doth5_files[i], 'r')
-    I0 = h5f['bghts0'][:]
-    I1 = h5f['bghts1'][:]
-    I2 = h5f['bghts2'][:]
-
-    I2_Absorb = h5f['bghts2_absorbtion'][:]
-    I1_Absorb = h5f['bghts1_absorbtion'][:]
-    I0_Absorb = h5f['bghts0_absorbtion'][:]
-    Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
-    # tau2 = h5f['tau2'][:]
-    # tau1 = h5f['tau1'][:]
-    # tau0 = h5f['tau0'][:]
-    # full_profiles0 = h5f['full_profiles0'][:]
-    # full_profiles1 = h5f['full_profiles1'][:]
-    # full_profiles2 = h5f['full_profiles2'][:]
-    # full_profiles_unit = h5f['full_profiles_unit'][:]
-
-    # Thin Radii Calcs--------------------------------------------------------------------------------------------------
-
-    radii_I0_Thin_i, theta = tls.radii_of_theta(I0, size)
-    radii_I1_Thin_i, theta = tls.radii_of_theta(I1, size)
-    radii_I2_Thin_i, theta = tls.radii_of_theta(I2, size)
-
-    r0_thin = tls.curve_params(theta, radii_I0_Thin_i)
-    r1_thin = tls.curve_params(theta, radii_I1_Thin_i)
-    r2_thin = tls.curve_params(theta, radii_I2_Thin_i)
-
-    mean_radii_Thin[i, 0] = r0_thin
-    mean_radii_Thin[i, 1] = r1_thin
-    mean_radii_Thin[i, 2] = r2_thin
-
-    radii_I0_Thin = np.vstack((radii_I0_Thin, radii_I0_Thin_i))
-    radii_I1_Thin = np.vstack((radii_I1_Thin, radii_I1_Thin_i))
-    radii_I2_Thin = np.vstack((radii_I2_Thin, radii_I2_Thin_i))
-
-    # Thick Radii Calcs-------------------------------------------------------------------------------------------------
-    radii_I0_Thick_i, theta = tls.radii_of_theta(I0_Absorb, size)
-    radii_I1_Thick_i, theta = tls.radii_of_theta(I1_Absorb, size)
-    radii_I2_Thick_i, theta = tls.radii_of_theta(I2_Absorb, size)
-    radii_FullAbsorption_Thick_i, theta = tls.radii_of_theta(Absorbtion_Image, size)
-
-
-
-    r0_thick = tls.curve_params(theta, radii_I0_Thick_i)
-    r1_thick = tls.curve_params(theta, radii_I1_Thick_i)
-    r2_thick = tls.curve_params(theta, radii_I2_Thick_i)
-    full_thick = tls.curve_params(theta, radii_FullAbsorption_Thick_i)
-
-    mean_radii_Thick[i, 0] = r0_thick
-    mean_radii_Thick[i, 1] = r1_thick
-    mean_radii_Thick[i, 2] = r2_thick
-    mean_radii_Thick[i, 3] = full_thick
-
-    radii_I0_Thick = np.vstack((radii_I0_Thick, radii_I0_Thick_i))
-    radii_I1_Thick = np.vstack((radii_I1_Thick, radii_I1_Thick_i))
-    radii_I2_Thick = np.vstack((radii_I2_Thick, radii_I2_Thick_i))
-    radii_FullAbsorption_Thick = np.vstack((radii_FullAbsorption_Thick, radii_FullAbsorption_Thick_i))
-
-    # Total Flux Calcualtions
-    janksys_thin[i,0] = ilp.total_jy(I0, brightparams["nu0"], brightparams["mass"]).value
-    janksys_thin[i, 1] = ilp.total_jy(I1, brightparams["nu0"], brightparams["mass"]).value
-    janksys_thin[i, 2] = ilp.total_jy(I2, brightparams["nu0"], brightparams["mass"]).value
-    janksys_thin[i, 3] = ilp.total_jy(I0 + I1 + I2, brightparams["nu0"], brightparams["mass"]).value
-
-    janksys_thick[i, 0] = ilp.total_jy(I0_Absorb, brightparams["nu0"], brightparams["mass"]).value
-    janksys_thick[i, 1] = ilp.total_jy(I1_Absorb, brightparams["nu0"], brightparams["mass"]).value
-    janksys_thick[i, 2] = ilp.total_jy(I2_Absorb, brightparams["nu0"], brightparams["mass"]).value
-    janksys_thick[i, 3] = ilp.total_jy(Absorbtion_Image, brightparams["nu0"], brightparams["mass"]).value
-
-    h5f.close()
+thin_names = []  # thin images to be deleted after movie is made
+thick_names = []
+thin_I2_names = []
+thick_I2_names = []
 
 # Black Hole Inner Shadow Calc--------------------------
 r_inner = np.load('r_inner_spin_{}_inc_{}.npy'.format(spin_case, i_case))
-alphas_inner = np.load('alphas_inner_spin_{}_inc_{}.npy'.format(spin_case,  i_case))
-betas_inner = np.load('betas_inner_spin_{}_inc_{}.npy'.format(spin_case,  i_case))
+alphas_inner = np.load('alphas_inner_spin_{}_inc_{}.npy'.format(spin_case, i_case))
+betas_inner = np.load('betas_inner_spin_{}_inc_{}.npy'.format(spin_case, i_case))
 
 # Black Hole Outer Shadow Calc--------------------------
-r_outer = np.load('r_outer_spin_{}_inc_{}.npy'.format(spin_case,  i_case))
-alphas_outer = np.load('alphas_outer_spin_{}_inc_{}.npy'.format(spin_case,  i_case))
-betas_outer = np.load('betas_outer_spin_{}_inc_{}.npy'.format(spin_case,  i_case))
-
-
+r_outer = np.load('r_outer_spin_{}_inc_{}.npy'.format(spin_case, i_case))
+alphas_outer = np.load('alphas_outer_spin_{}_inc_{}.npy'.format(spin_case, i_case))
+betas_outer = np.load('betas_outer_spin_{}_inc_{}.npy'.format(spin_case, i_case))
 
 # ------------------------------------------------------
 
 dim = [16, 8]
 xaxis = np.array(x_variable) / scale_label[action['var']]
-temp_plots_path = aart_results + movie_path + temp_path
+one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
+M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
+
 for i in range(num_iterations):
     print('Creating Frame : ' + str(i))
 
-    one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
-    M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
+    h5f = h5py.File(hdot5_names[i], 'r')
 
-    h5f = h5py.File(doth5_files[i], 'r')
-    I0 = h5f['bghts0'][:]
-    I1 = h5f['bghts1'][:]
-    I2 = h5f['bghts2'][:]
+    I0 = h5f['I0'][:]  # This implies I0 is 1 pass
+    I1 = h5f['I1'][:]
+    I2 = h5f['I2'][:]
 
-    I2_Absorb = h5f['bghts2_absorbtion'][:]
-    I1_Absorb = h5f['bghts1_absorbtion'][:]
-    I0_Absorb = h5f['bghts0_absorbtion'][:]
-    Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+
+
+    I0_Absorb = h5f['I0_Absorb'][:]
+    I1_Absorb = h5f['I1_Absorb'][:]
+    I2_Absorb = h5f['I2_Absorb'][:]
+    Absorbtion_Image = h5f['Absorbtion_Image'][:]
+
+    h5f.close()
     # tau2 = h5f['tau2'][:]
     # tau1 = h5f['tau1'][:]
     # tau0 = h5f['tau0'][:]
@@ -341,9 +237,6 @@ for i in range(num_iterations):
     # full_profiles1 = h5f['full_profiles1'][:]
     # full_profiles2 = h5f['full_profiles2'][:]
     # full_profiles_unit = h5f['full_profiles_unit'][:]
-
-    h5f.close()
-    subprocess.run(['rm ' + doth5_files[i]], shell=True)
 
     max_factor = 1.2
     if i == 0:
@@ -374,43 +267,69 @@ for i in range(num_iterations):
     fig = plt.subplots(2, 2, figsize=[16, 8], dpi=400, width_ratios=[1, 1.3])
     ax = [None, None, None]
     ax[0] = plt.subplot(2, 2, 1)
-    ax[0].plot(xaxis, janksys_thin[:,0], '-', label='n=0', color='tab:red',linewidth=3)
-    ax[0].plot(xaxis, janksys_thin[:,1], ':', label='n=1', color='tab:orange',linewidth=3)
-    ax[0].plot(xaxis, janksys_thin[:,2], '--', label='n=2', color='tab:blue',linewidth=3)
-    ax[0].plot(xaxis, janksys_thin[:,3], '-.', label='Total', color='tab:purple',linewidth=3)
+    ax[0].plot(xaxis, janksys_thin[:, 0], '-', label='n=0', color='tab:red', linewidth=3)
+    ax[0].plot(xaxis, janksys_thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
+    ax[0].plot(xaxis, janksys_thin[:, 2], '--', label='n=2', color='tab:blue', linewidth=3)
+    ax[0].plot(xaxis, janksys_thin[:, 3], '-.', label='Total', color='tab:purple', linewidth=3)
+
+    ax[0].axhline(.5, color='k', label=R'.5 $J_y$', linestyle=":")
+    ax[0].axvline(230, color='k', linestyle=":")
+
     # Labels
     ax[0].set_ylabel("Total Flux ({})".format(R'$J_y$'))
-    ax[0].xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
-    ax[0].xaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
     ax[0].set_xscale('log')
     ax[0].set_yscale('log')
-    ax[0].tick_params('x', labelbottom=False)
+
+    ax[0].xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
+    ax[0].xaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
+    ax[0].yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
+    ax[0].yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
+
+    ax[0].tick_params('x', which="both", labelbottom=False)
+    ax[0].tick_params('y', which="minor", labelleft=False)
     n = 4  # Keeps every 4th label
     [l.set_visible(False) for (i, l) in enumerate(ax[0].xaxis.get_minorticklabels()) if i % n != 0]
-    ax[0].tick_params('both', length=10, width=1, which='major')
+    ax[0].tick_params('both', length=10, width=1, which='major', labelrotation=80)
     ax[0].set_xlim(xaxis[0], xaxis[xaxis.size - 1])
-    ax[0].legend(frameon=False)
+    ax[0].legend(loc='lower left')
     # Markers
-    p_full_thin[0] = ax[0].scatter(xaxis[i], janksys_thin[i,3], color='tab:purple')
-    p_full_thin[1] = ax[0].scatter(xaxis[i], janksys_thin[i,0], color='tab:red')
-    p_full_thin[2] = ax[0].scatter(xaxis[i], janksys_thin[i,1], color='tab:orange')
-    p_full_thin[3] = ax[0].scatter(xaxis[i], janksys_thin[i,2], color='tab:blue')
-
+    p_full_thin[0] = ax[0].scatter(xaxis[i], janksys_thin[i, 3], color='tab:purple')
+    p_full_thin[1] = ax[0].scatter(xaxis[i], janksys_thin[i, 0], color='tab:red')
+    p_full_thin[2] = ax[0].scatter(xaxis[i], janksys_thin[i, 1], color='tab:orange')
+    p_full_thin[3] = ax[0].scatter(xaxis[i], janksys_thin[i, 2], color='tab:blue')
 
     # RADII PLOTS___________________________________
     ax[1] = plt.subplot(2, 2, 3, sharex=ax[0])
-    ax[1].axhline(r_inner, color='k', label='Blackhole Inner Shadow', linewidth=3, linestyle=":")
-    ax[1].axhline(r_outer, color='dimgrey', label='Blackhole Outer Shadow', linewidth=3)
+    # ax[1].axhline(r_inner, color='k', linewidth=3, linestyle=":")  # label='Blackhole Inner Shadow'
+    ax[1].axhline(r_outer, color='dimgrey', linewidth=5)  # label='Blackhole Outer Shadow'
     ax[1].plot(xaxis, mean_radii_Thin[:, 0], '-', label='n=0', color='tab:red', linewidth=3)
     ax[1].plot(xaxis, mean_radii_Thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
     ax[1].plot(xaxis, mean_radii_Thin[:, 2], '-.', label='n=2', color='tab:blue', linewidth=3)
+
+    ax[1].axvline(230, color='k', linestyle=":")
     # Labels
     ax[1].set_xlabel(var_label[action["var"]].replace('=', '') + ' (' + units_label[action["var"]] + ')')
     ax[1].set_ylabel("Ring Radii ({})".format(R'$R_g$'))
-    ax[1].xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
-    ax[1].xaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
+
+    ax[1].set_xscale('log')
+    ax[1].set_yscale('log')
+
+    ax[1].xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.0f'))
+    ax[1].xaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
+    ax[1].yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
+    ax[1].yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
+
+    n = 4  # Keeps every 4th label
+    [l.set_visible(False) for (i, l) in enumerate(ax[1].xaxis.get_minorticklabels()) if i % n != 0]
+
     ax[1].legend(frameon=False)
+
     ax[1].set_xlim(xaxis[0], xaxis[xaxis.size - 1])
+
+    new_ticks = [xaxis[0], 230, xaxis[xaxis.size - 1]]
+    ax[1].set_xticks(new_ticks)
+    ax[1].tick_params('x', length=20, width=1, which='major')
+
     # Markers
     p_full_thin[4] = ax[1].scatter(xaxis[i], mean_radii_Thin[i, 0], color='tab:red')
     p_full_thin[5] = ax[1].scatter(xaxis[i], mean_radii_Thin[i, 1], color='tab:orange')
@@ -437,7 +356,7 @@ for i in range(num_iterations):
     ax[2].set_xlabel(r"$\alpha$" + " " + r"($\mu as$)")
     ax[2].set_ylabel(r"$\beta$" + " " + r"($\mu as$)")
     ax[2].text(-9, 8.5, var_label[action["var"]] + str(round(x_variable[i] / scale_label[action["var"]], 2))
-               + ' ' + units_label[action["var"]],fontsize=12, color="w")
+               + ' ' + units_label[action["var"]], fontsize=12, color="w")
 
     ax[2].set_xlim(-10, 10)  # units of M
     ax[2].set_ylim(-10, 10)
@@ -484,7 +403,7 @@ for i in range(num_iterations):
                              ax=ax[2]
                              )
 
-    thin_names += [temp_plots_path + 'Thin_Full_Fig_' + str(i)]
+    thin_names += [temporary_path + 'Thin_Full_Fig_' + str(i)]
     plt.savefig(
         thin_names[i],
         bbox_inches='tight'
@@ -493,56 +412,86 @@ for i in range(num_iterations):
 
     # Thick Full Image--------------------------------------------------------------------------------------------------
 
+    conv_1 = action["start"] + action["step"] * ilp.ring_convergance(mean_radii_Thick[:, 2], mean_radii_Thick[:, 3], 1)
+    conv_1 = conv_1 / scale_label[action['var']]
+
+    # Janksy Plots------------------------------------
     fig = plt.subplots(2, 2, figsize=[16, 8], dpi=400, width_ratios=[1, 1.3])
     ax1 = [None, None, None]
     ax1[0] = plt.subplot(2, 2, 1)
-    ax1[0].plot(xaxis, janksys_thick[:,0], '-', label='One pass', color='tab:red',linewidth=3)
-    ax1[0].plot(xaxis, janksys_thick[:,1], ':', label='Two passes', color='tab:orange',linewidth=3)
-    ax1[0].plot(xaxis, janksys_thick[:,2], '--', label='Three passes', color='tab:blue',linewidth=3)
-    ax1[0].plot(xaxis, janksys_thick[:,3], '-.', label='Cumulative', color='tab:purple',linewidth=3)
+    ax1[0].plot(xaxis, janksys_thick[:, 0], '-', label='One pass', color='tab:red', linewidth=3)
+    ax1[0].plot(xaxis, janksys_thick[:, 1], ':', label='Two passes', color='tab:orange', linewidth=3)
+    ax1[0].plot(xaxis, janksys_thick[:, 2], '--', label='Three passes', color='tab:blue', linewidth=3)
+    ax1[0].plot(xaxis, janksys_thick[:, 3], '-.', label='Cumulative', color='tab:purple', linewidth=3)
+
+    flux_peak = action["start"] + action["step"] * np.argmax(janksys_thick[:, 3])
+    flux_peak = flux_peak / scale_label[action['var']]
+
+    ax1[0].axhline(.5, color='k', label=R'.5 $J_y$', linestyle=":")
+    ax1[0].axvline(230, color='k', linestyle=":")
+    ax1[0].axvline(conv_1, color='k', linestyle="--", linewidth=3)
+    ax1[0].axvline(flux_peak, color='dimgrey', linestyle="-", linewidth=2)
+
     # Labels
     ax1[0].set_ylabel("Total Flux ({})".format(R'$J_y$'))
-    ax1[0].xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
-    ax1[0].xaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
     ax1[0].set_xscale('log')
     ax1[0].set_yscale('log')
-    ax1[0].tick_params('x', labelbottom=False)
+
+    ax1[0].xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
+    ax1[0].xaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
+    ax1[0].yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0e"))
+
+    ax1[0].tick_params('x', which="both", labelbottom=False)
+    ax1[0].tick_params('y', which="minor", labelleft=False)
     n = 4  # Keeps every 4th label
     [l.set_visible(False) for (i, l) in enumerate(ax1[0].xaxis.get_minorticklabels()) if i % n != 0]
     ax1[0].tick_params('both', length=10, width=1, which='major')
     ax1[0].set_xlim(xaxis[0], xaxis[xaxis.size - 1])
-    ax1[0].legend()
+    ax1[0].legend(loc='lower left')
 
     # Markers
-    p_full_thick[0] = ax1[0].scatter(xaxis[i], janksys_thick[i,0], color='tab:red')
-    p_full_thick[1] = ax1[0].scatter(xaxis[i], janksys_thick[i,1], color='tab:orange')
-    p_full_thick[2] = ax1[0].scatter(xaxis[i], janksys_thick[i,2], color='tab:blue')
+    p_full_thick[0] = ax1[0].scatter(xaxis[i], janksys_thick[i, 0], color='tab:red')
+    p_full_thick[1] = ax1[0].scatter(xaxis[i], janksys_thick[i, 1], color='tab:orange')
+    p_full_thick[2] = ax1[0].scatter(xaxis[i], janksys_thick[i, 2], color='tab:blue')
     p_full_thick[3] = ax1[0].scatter(xaxis[i], janksys_thick[i, 3], color='tab:purple')
+
+
 
     # RADII PLOTS___________________________________
     ax1[1] = plt.subplot(2, 2, 3, sharex=ax1[0])
-    ax1[1].axhline(r_inner, color='k', label='Blackhole Inner Shadow', linewidth=3, linestyle=":")
-    ax1[1].axhline(r_outer, color='dimgrey', label='Blackhole Outer Shadow', linewidth=3)
+    # ax1[1].axhline(r_inner, color='k', linewidth=3, linestyle=":")  # , label='Blackhole Inner Shadow'
+    ax1[1].axhline(r_outer, color='dimgrey', linewidth=5)  # , label='Blackhole Outer Shadow'
     ax1[1].plot(xaxis, mean_radii_Thick[:, 0], '-', label='One pass', color='tab:red', linewidth=3)
     ax1[1].plot(xaxis, mean_radii_Thick[:, 1], ':', label='Two passes', color='tab:orange', linewidth=3)
     ax1[1].plot(xaxis, mean_radii_Thick[:, 2], '--', label='Three passes', color='tab:blue', linewidth=3)
     ax1[1].plot(xaxis, mean_radii_Thick[:, 3], '-.', label='Cumulative', color='tab:purple', linewidth=3)
+    ax1[1].axvline(230, color='k', linestyle=":")
+    ax1[1].axvline(conv_1, color='k', linestyle="--", linewidth=3)
+    ax1[1].axvline(flux_peak, color='dimgrey', linestyle="-", linewidth=2)
+
     # Labels
     ax1[1].set_xlabel(var_label[action["var"]].replace('=', '') + ' (' + units_label[action["var"]] + ')')
     ax1[1].set_ylabel("Ring Radii ({})".format(R'$R_g$'))
     ax1[1].set_xscale('log')
     ax1[1].set_yscale('log')
-    ax1[1].xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
-    ax1[1].xaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
-    ax1[1].legend()
+    n = 4  # Keeps every 4th label
+    [l.set_visible(False) for (i, l) in enumerate(ax1[1].xaxis.get_minorticklabels()) if i % n != 0]
+
+    ax1[1].xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.0f'))
+    ax1[1].xaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
+    ax1[1].yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
+    ax1[1].yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
+
+    ax1[1].legend(frameon=False)
     ax1[1].set_xlim(xaxis[0], xaxis[xaxis.size - 1])
+    new_ticks = [xaxis[0], 230, conv_1, flux_peak, xaxis[xaxis.size - 1]]
+    ax1[1].set_xticks(new_ticks)
+    ax1[1].tick_params('x', length=20, width=1, which='major', labelrotation=80)
     # Markers
     p_full_thick[4] = ax1[1].scatter(xaxis[i], mean_radii_Thick[i, 0], color='tab:red')
     p_full_thick[5] = ax1[1].scatter(xaxis[i], mean_radii_Thick[i, 1], color='tab:orange')
     p_full_thick[6] = ax1[1].scatter(xaxis[i], mean_radii_Thick[i, 2], color='tab:blue')
     p_full_thick[7] = ax1[1].scatter(xaxis[i], mean_radii_Thick[i, 3], color='tab:purple')
-
-
 
     # MAIN IMAGE____________________________________
     # TODO: Should there be other labels for I2 and I1?
@@ -558,7 +507,12 @@ for i in range(num_iterations):
     beta3 = radii_FullAbsorption_Thick[i + 1, :] * np.sin(theta)
 
     ax1[2] = plt.subplot(1, 2, 2)
-    im1 = ax1[2].imshow(Absorbtion_Image, vmax=vmax1, origin="lower", cmap="afmhot", extent=[-lim0, lim0, -lim0, lim0])
+
+    if action["absorb_power_key"] == 1:
+        im1 = ax1[2].imshow(Absorbtion_Image, origin="lower", cmap="afmhot", extent=[-lim0, lim0, -lim0, lim0],
+                            norm=matplotlib.colors.PowerNorm(action["absorb_power"], vmax=vmax1))
+    else:
+        im1 = ax1[2].imshow(Absorbtion_Image, vmax=vmax1, origin="lower", cmap="afmhot",extent=[-lim0, lim0, -lim0, lim0])
 
     ax1[2].set_xlim(-10, 10)  # units of M
     ax1[2].set_ylim(-10, 10)
@@ -566,7 +520,7 @@ for i in range(num_iterations):
     ax1[2].set_xlabel(r"$\alpha$" + " " + r"($\mu as$)", fontsize=14)
     ax1[2].set_ylabel(r"$\beta$" + " " + r"($\mu as$)", fontsize=14)
     ax1[2].text(-9, 8.5, var_label[action["var"]] + str(round(x_variable[i] / scale_label[action["var"]], 2))
-                + ' ' + units_label[action["var"]],fontsize=12, color="w")
+                + ' ' + units_label[action["var"]], fontsize=12, color="w")
 
     ax1[2].set_xlim(-10, 10)  # units of M
     ax1[2].set_ylim(-10, 10)
@@ -615,7 +569,7 @@ for i in range(num_iterations):
                              ax=ax1[2]
                              )
 
-    thick_names += [temp_plots_path + 'Thick_Full_Fig_' + str(i)]
+    thick_names += [temporary_path + 'Thick_Full_Fig_' + str(i)]
     plt.savefig(
         thick_names[i],
         bbox_inches='tight'
@@ -623,7 +577,6 @@ for i in range(num_iterations):
     plt.close()
 
     # Thin I2 Image-----------------------------------------------------------------------------------------------------
-
 
     fig, ax2 = plt.subplots(figsize=dim, dpi=400)
 
@@ -647,9 +600,9 @@ for i in range(num_iterations):
                              )
 
     ax2.text(-9, 8.5, var_label[action["var"]] + str(round(x_variable[i] / scale_label[action["var"]], 2))
-             + ' ' + units_label[action["var"]],fontsize=12, color="w")
+             + ' ' + units_label[action["var"]], fontsize=12, color="w")
 
-    thin_I2_names += [temp_plots_path + 'Thin_I2_Fig_' + str(i)]
+    thin_I2_names += [temporary_path + 'Thin_I2_Fig_' + str(i)]
     plt.savefig(
         thin_I2_names[i],
         bbox_inches='tight'
@@ -678,9 +631,9 @@ for i in range(num_iterations):
                              )
 
     ax3.text(-9, 8.5, var_label[action["var"]] + str(round(x_variable[i] / scale_label[action["var"]], 2))
-             + ' ' + units_label[action["var"]],fontsize=12, color="w")
+             + ' ' + units_label[action["var"]], fontsize=12, color="w")
 
-    thick_I2_names += [temp_plots_path + 'Thick_I2_Fig_' + str(i)]
+    thick_I2_names += [temporary_path + 'Thick_I2_Fig_' + str(i)]
     plt.savefig(
         thick_I2_names[i],
         bbox_inches='tight'
@@ -692,71 +645,50 @@ for i in range(num_iterations):
     # '''Radii Calc'''
 
 # FMPEG Stiching--------------------------------------------------------------------------------------------------------
-iteration = (
-    'Var_{}_Start_{}_Stop_{}_Step_{}_BP_{}_a_{}_i_{}_nu_{}'
-    '_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}'
-    '_pdens_{}_ptemp_{}_nscale_{}_keys_{}_{}_{}_{}_{}'
-).format(
-    action["var"],
-    "{:.2e}".format(action["start"]),
-    "{:.2e}".format(action["stop"]),
-    "{:.2e}".format(action["step"]),
-    action["bright_power"],
-    spin_case,
-    i_case,
-    "{:.1e}".format(brightparams["nu0"]),
-    "{:.1e}".format(brightparams["mass"]),
-    float(brightparams["scale_height"]),
-    "{:.3f}".format(brightparams["theta_b"]),
-    "{:.2f}".format(float(brightparams["beta"])),
-    "{:.1f}".format(float(brightparams["r_ie"])),
-    "{:.1f}".format(float(brightparams["rb_0"])),
-    "{:.1e}".format(brightparams["n_th0"]),
-    "{:.1e}".format(brightparams["t_e0"]),
-    float(brightparams["p_dens"]),
-    float(brightparams["p_temp"]),
-    "{:.1f}".format(brightparams["nscale"]),
-    funckeys["emodelkey"],
-    funckeys["bkey"],
-    funckeys["nnoisykey"],
-    funckeys["tnoisykey"],
-    funckeys["bnoisykey"]
-)
 
-new_directory = iteration + '/'
-
-final_vid_path = aart_results + movie_path + vid_path + new_directory
-
-if os.path.isdir(final_vid_path):
-    subprocess.run(['rm -r ' + final_vid_path], shell=True)
-    subprocess.run(["mkdir " + final_vid_path], shell=True)
-else:
-    subprocess.run(["mkdir " + final_vid_path], shell=True)
 
 # Thin Full movie-------------------------------------------------------------------------------------------------------
 thin_full_movie_name = (final_vid_path + 'ThinFull_' + iteration + '.mp4')
 
-subprocess.run(["ffmpeg -r " + str(speed) + " -i " + temp_plots_path +
+if os.path.isfile(thin_full_movie_name):
+    subprocess.run(['rm ' + thin_full_movie_name], shell=True)
+
+subprocess.run(["ffmpeg -r " + str(speed) + " -i " + temporary_path +
                 "Thin_Full_Fig_%d.png -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -vcodec "
                 "libx264 -crf 10 -pix_fmt yuv420p " + thin_full_movie_name], shell=True)
 
 # Thick Full movie------------------------------------------------------------------------------------------------------
 thick_full_movie_name = final_vid_path + 'ThickFull_' + iteration + '.mp4'
 
+if os.path.isfile(thick_full_movie_name):
+    subprocess.run(['rm ' + thick_full_movie_name], shell=True)
+
 subprocess.run(["ffmpeg -r " + str(
-    speed) + " -i " + temp_plots_path + "Thick_Full_Fig_%d.png -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -vcodec "
-                                        "libx264 -crf 10 -pix_fmt yuv420p " + thick_full_movie_name], shell=True)
+    speed) + " -i " + temporary_path + "Thick_Full_Fig_%d.png -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -vcodec "
+                                       "libx264 -crf 10 -pix_fmt yuv420p " + thick_full_movie_name], shell=True)
 
 # Thin I2 movie---------------------------------------------------------------------------------------------------------
 thin_I2_movie_name = final_vid_path + 'ThinI2_' + iteration + '.mp4'
 
+if os.path.isfile(thin_I2_movie_name):
+    subprocess.run(['rm ' + thin_I2_movie_name], shell=True)
+
 subprocess.run(["ffmpeg -r " + str(
-    speed) + " -i " + temp_plots_path + "Thin_I2_Fig_%d.png -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -vcodec "
-                                        "libx264 -crf 10 -pix_fmt yuv420p " + thin_I2_movie_name], shell=True)
+    speed) + " -i " + temporary_path + "Thin_I2_Fig_%d.png -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -vcodec "
+                                       "libx264 -crf 10 -pix_fmt yuv420p " + thin_I2_movie_name], shell=True)
 
 # Thick I2 movie--------------------------------------------------------------------------------------------------------
 thick_I2_movie_name = final_vid_path + 'ThickI2_' + iteration + '.mp4'
 
+if os.path.isfile(thick_I2_movie_name):
+    subprocess.run(['rm ' + thick_I2_movie_name], shell=True)
+
 subprocess.run(["ffmpeg -r " + str(
-    speed) + " -i " + temp_plots_path + "Thick_I2_Fig_%d.png -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -vcodec "
-                                        "libx264 -crf 10 -pix_fmt yuv420p " + thick_I2_movie_name], shell=True)
+    speed) + " -i " + temporary_path + "Thick_I2_Fig_%d.png -vf 'pad=ceil(iw/2)*2:ceil(ih/2)*2' -vcodec "
+                                       "libx264 -crf 10 -pix_fmt yuv420p " + thick_I2_movie_name], shell=True)
+
+for i in range(num_iterations):
+    subprocess.run(['rm ' + thin_names[i] + ".png"], shell=True)
+    subprocess.run(['rm ' + thick_names[i] + ".png"], shell=True)
+    subprocess.run(['rm ' + thick_I2_names[i] + ".png"], shell=True)
+    subprocess.run(['rm ' + thin_I2_names[i] + ".png"], shell=True)
