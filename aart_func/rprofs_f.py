@@ -467,9 +467,10 @@ def thermal_profile(coords, redshift, cosAng, bp=kw_brightparams, fk=kw_funckeys
     #             1 - np.exp(- tau))
     specific_intensity_thick = redshift ** 3 * b_nu_fluid * (1 - np.exp(- tau))
 
-    # Convert planck to brightness radial
+    # Convert planck to brightness radial--------------------
     b_nu_fluid = brightness_temp(b_nu_fluid, bp["nu0"])
-    # Packing radial curves
+    # Packing radial curves--------------------
+    jcoeff_I_fluid_packed = jcoeff_I_fluid.reshape(1, jcoeff_I_fluid.shape[0])
     theta_e = theta_e.reshape(1, theta_e.shape[0])
     n = n.reshape(1, n.shape[0])
     b_field = b_field.reshape(1, b_field.shape[0])
@@ -477,11 +478,18 @@ def thermal_profile(coords, redshift, cosAng, bp=kw_brightparams, fk=kw_funckeys
     acoeff_I_fluid = acoeff_I_fluid.reshape(1, acoeff_I_fluid.shape[0])
     tau_curve = tau.reshape(1, tau.shape[0])
     r = coords["r"].reshape(1, coords["r"].shape[0])
+
+    specific_intensity_thin_packed = specific_intensity_thin.reshape(1, specific_intensity_thin.shape[0])
+    specific_intensity_thick_packed = specific_intensity_thick.reshape(1, specific_intensity_thick.shape[0])
+
+    # full_profiles = np.concatenate([r, theta_e.value, n.value, b_field.value, b_nu_fluid.value,
+    #                                 acoeff_I_fluid.value, tau_curve.value], axis=0)
+
     full_profiles = np.concatenate([r, theta_e.value, n.value, b_field.value, b_nu_fluid.value,
-                                    acoeff_I_fluid.value, tau_curve.value], axis=0)
+                                    acoeff_I_fluid.value, tau_curve.value, jcoeff_I_fluid_packed.value], axis=0)
+
     full_profiles_units = [str(theta_e.unit), str(n.unit), str(b_field.unit), str(b_nu_fluid.unit),
                            str(acoeff_I_fluid.unit), str(tau_curve.unit)]
-    # return brightness, specific_intensity_thick, tau, full_profiles
     # print("b_0: ", b_0)
     # print("p: ", p_b)
     return specific_intensity_thin, specific_intensity_thick, tau, full_profiles, full_profiles_units

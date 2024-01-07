@@ -172,7 +172,8 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys
 
     si_thin = np.zeros(rs.shape[0])
     si_thick = np.zeros(rs.shape[0])
-    full_profiles = np.zeros(shape=(7,rs.shape[0]))
+    # full_profiles = np.zeros(shape=(7,rs.shape[0]))
+    full_profiles = np.zeros(shape=(8, rs.shape[0]))
     tau = np.zeros(rs.shape[0])
     cosAngReturn = np.zeros(rs.shape[0])
     redshift_sign = redshift_sign[mask]
@@ -596,7 +597,6 @@ def CosAng(r,a,redshift,lamb,eta):
     :return: the  cosine of the emission angle
     """
     #From eta, solve for Sqrt(p_\theta/p_t)
-
 
     kthkt=np.sqrt(eta)
     #kthkt=np.sqrt(eta+a**2*np.cos(thetao)**2-lamb**2/(np.tan(thetao)**2))

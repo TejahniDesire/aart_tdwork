@@ -275,14 +275,14 @@ ax[1].set_xlim(xaxis[0], xaxis[xaxis.size - 1])
 
 new_ticks = [xaxis[0], 230, xaxis[xaxis.size - 1]]
 ax[1].set_xticks(new_ticks)
-ax[1].tick_params('x', length=20, width=1, which='major', labelrotation=80)
+ax[1].tick_params('x', length=20, width=1, which='major', labelrotation=90)
 plt.savefig(final_graph_path + "Thin_" + iteration + ".png")
 # Markers
 plt.close()
 
 # Thick Full Image--------------------------------------------------------------------------------------------------
 
-conv_1 = action["start"] + action["step"] * ilp.ring_convergance(mean_radii_Thick[:, 2], mean_radii_Thick[:, 3], 1)
+conv_1 = action["start"] + action["step"] * ilp.ring_convergance(mean_radii_Thick[:, 2], mean_radii_Thick[:, 3], 5)
 conv_1 = conv_1 / scale_label[action['var']]
 
 fig = plt.subplots(2, 1, figsize=dim, dpi=400)

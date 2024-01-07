@@ -10,21 +10,26 @@ import scipy.interpolate
 from matplotlib import ticker
 import importlib
 from functools import partial
+import final_paper_params as fpp
 
-brightparams = {
-    "nu0": 230e9,  # 0 nu0
-    "mass": (MMkg * u.kg).to(u.g).value,  # 1 mass
-    "scale_height": .5,  # 2 scale_height
-    "theta_b": 50.0 * (np.pi / 180),  # 3 theta_b
-    "beta": 1.0,  # 4 beta
-    "r_ie": 10.0,  # 5 rie
-    "rb_0": 2,  # 7 rb_0
-    "n_th0": 7.2e4,  # ,4e5 # 8 n_th0
-    "t_e0": 2e11,  # 9 t_e0 1e12
-    "p_dens": -.7,  # 10 p_dens
-    "p_temp": -.84,  # 11 p_temp
-    "nscale": .4  # Scale of Inoisy
-}
+# brightparams = {
+#     "nu0": 230e9,  # 0 nu0
+#     "mass": (MMkg * u.kg).to(u.g).value,  # 1 mass
+#     "scale_height": .5,  # 2 scale_height
+#     "theta_b": 50.0 * (np.pi / 180),  # 3 theta_b
+#     "beta": 1.0,  # 4 beta
+#     "r_ie": 10.0,  # 5 rie
+#     "rb_0": 2,  # 7 rb_0
+#     "n_th0": 7.2e4,  # ,4e5 # 8 n_th0
+#     "t_e0": 2e11,  # 9 t_e0 1e12
+#     "p_dens": -.7,  # 10 p_dens
+#     "p_temp": -.84,  # 11 p_temp
+#     "nscale": .4  # Scale of Inoisy
+# }
+# brightparams = fpp.bp_fiducial230
+# brightparams = fpp.bp_steeperT230
+brightparams = fpp.bp_shallowT230
+
 
 funckeys = {
     "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
