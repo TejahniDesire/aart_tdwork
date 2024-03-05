@@ -3,6 +3,8 @@ from aart_func import *
 print("\nThanks for using AART")
 print("Copyright (C) 2022, A. Cardenas-Avendano, H. Zhu & A. Lupsasca\n")
 
+# TEA fa  faf 
+
 #BH's Spin
 spin_case=0.94
 # spin_case=.1
@@ -42,17 +44,11 @@ bvapp=0
 p_image=1
 limits=25
 #Resolution for the n=0 image [M]
-# dx0 =0.02
-# dx0 = 0.2
-dx0 = 0.09
+dx0 = 0.0333333
 #Resolution for the n=1 image [M]
-# dx1 =0.02
-# dx1 = 0.2
-dx1 = 0.09
+dx1 = 0.0333333
 #Resolution for the n=2 image [M]
-# dx2 =0.02
-# dx2 =0.2
-dx2 =0.09
+dx2 = 0.0333333
 
 
 # Projection angles for the radon transformation
