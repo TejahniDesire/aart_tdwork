@@ -169,8 +169,8 @@ def b_func_power(r, mass=kw_mass, rb_0=kw_rb_0):
 
 # TODO: pick better name, fix parameters
 def b_func_power_variable(r, mass=kw_mass, rb_0=kw_rb_0, bv_0=kw_bv_0, p_bv=kw_p_bv):
-    if bv_0 != gauss:
-        raise ValueError('n_th0 needs units of gauss')
+    if bv_0.unit != gauss:
+        raise ValueError('b_0 needs units of gauss')
     rg = rg_func(mass)
     rb = rb_func(mass, rb_0)
     bv_0 = bv_0
