@@ -49,8 +49,7 @@ kw_r_ie = 10
 kw_rb_0 = 2
 kw_n_th0 = 1.0726e+05 * cmcubed
 kw_t_e0 = 1.2428e+11 * kelv
-# TODO: define below
-kw_bv_0 = 8.131273135591028  # set from fitting b_func power law
+kw_bv_0 = 8.131273135591028 * gauss  # set from fitting b_func power law
 
 # kw_n_th0 = 1.23e6 * cmcubed
 
@@ -92,11 +91,14 @@ kw_brightparams = {
     "r_ie": kw_r_ie,  # 6
     "rb_0": kw_rb_0,  # 7
     "n_th0": kw_n_th0,  # 8
+    "b_0": kw_bv_0,
     "t_e0": kw_t_e0,  # 9
     "p_dens": kw_p_dens,  # 10
     "p_temp": kw_p_temp,  # 11
+    "p_mag": kw_p_bv,  # 11 p_temp
     "nscale": kw_nscale,  # 12
 }
+
 
 kw_funckeys = {
     "emodelkey": kw_emodelkey,
@@ -167,9 +169,11 @@ def b_func_power(r, mass=kw_mass, rb_0=kw_rb_0):
 
 # TODO: pick better name, fix parameters
 def b_func_power_variable(r, mass=kw_mass, rb_0=kw_rb_0, bv_0=kw_bv_0, p_bv=kw_p_bv):
+    if bv_0 != gauss:
+        raise ValueError('n_th0 needs units of gauss')
     rg = rg_func(mass)
     rb = rb_func(mass, rb_0)
-    bv_0 = bv_0 * gauss
+    bv_0 = bv_0
     return bv_0 * (r * rg / rb) ** p_bv
 
 
@@ -206,6 +210,7 @@ def te_func(r, mass=kw_mass, rb_0=kw_rb_0, t_e0=kw_t_e0, p_temp=kw_p_temp):
     Returns:
         _type_: Electron temperature at that distance
     """
+
     if t_e0.unit != u.K:
         raise ValueError('n_th0 needs units of Kelvin')
     rg = rg_func(mass)
@@ -421,14 +426,14 @@ def thermal_profile(coords, redshift, cosAng, bp=kw_brightparams, fk=kw_funckeys
     b_fieldnoisyfuncs = {
         0: partial(b_func_true, bp["beta"], bp["r_ie"], theta_e_func(tempnoisy), nthnoisy),
         1: partial(b_func_power, rnoisy, bp["mass"], bp["rb_0"]),
-        2: partial(b_func_power_variable, rnoisy, bp["mass"], bp["rb_0"], kw_bv_0, kw_p_bv)
+        2: partial(b_func_power_variable, rnoisy, bp["mass"], bp["rb_0"], bp["b_0"], bp["p_mag"])
     }
     bfieldnoisy = b_fieldnoisyfuncs[fk["bkey"]]()
 
     b_field_funcs = {
         0: partial(b_func_true, bp["beta"], bp["r_ie"], theta_e, n),
         1: partial(b_func_power, coords["r"], bp["mass"], bp["rb_0"]),
-        2: partial(b_func_power_variable, coords["r"], bp["mass"], bp["rb_0"], kw_bv_0, kw_p_bv)
+        2: partial(b_func_power_variable, coords["r"], bp["mass"], bp["rb_0"], bp["b_0"], ["p_mag"])
     }
 
     b_field_noisy_funcs = {

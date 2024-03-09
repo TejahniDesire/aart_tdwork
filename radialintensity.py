@@ -13,8 +13,10 @@ parser.add_argument('--rie', default=ilp.kw_beta, type=float)
 parser.add_argument('--rb0', default=ilp.kw_rb_0, type=float)
 parser.add_argument('--nth0', default=ilp.kw_n_th0.value, type=float)
 parser.add_argument('--te0', default=ilp.kw_t_e0.value, type=float)
+parser.add_argument('--b0', default=ilp.kw_t_e0.value, type=float)
 parser.add_argument('--pdens', default=ilp.kw_p_dens, type=float)
 parser.add_argument('--ptemp', default=ilp.kw_p_temp, type=float)
+parser.add_argument('--pmag', default=ilp.kw_p_temp, type=float)
 parser.add_argument('--nscale', default=ilp.kw_nscale, type=float)
 parser.add_argument('--emodelkey', default=0, type=int)
 parser.add_argument('--bkey', default=0, type=int)
@@ -34,9 +36,11 @@ brightparams = {
 	"rb_0": args.rb0,  					# 6
 	"n_th0": args.nth0*ilp.cmcubed, 	# 7
 	"t_e0": args.te0*ilp.kelv,  		# 8
-	"p_dens": args.pdens,				# 9
-	"p_temp": args.ptemp, 				# 10
-	"nscale": args.nscale, 				# 11
+	"b_0": args.b0*ilp.gauss,		# 9
+	"p_dens": args.pdens,				# 10
+	"p_temp": args.ptemp, 				# 11
+	"p_mag": args.pmag,  				# 12
+	"nscale": args.nscale, 				# 13
 }
 
 funckeys = {

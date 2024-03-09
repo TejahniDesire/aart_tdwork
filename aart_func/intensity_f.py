@@ -1,3 +1,4 @@
+import fileloading
 from aart_func import *
 from params import *
 
@@ -400,28 +401,30 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     tau2 = tau2.reshape(N0, N0).T
     full_temp = full_temp.reshape(N0, N0).T
 
-    filename = path + ('Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}_'
-                       'pdens_{}_ptemp_{}_nscale_{}_emkey_{}_bkey_{}_nkey_{}_tnkey_{}_bnkey_{}.h5').format(
-        spin_case,
-        i_case,
-        "{:.5e}".format(brightparams["nu0"].value),
-        "{:.5e}".format(brightparams["mass"].value),
-        float(brightparams["scale_height"]),
-        "{:.3f}".format(brightparams["theta_b"].value),
-        "{:.2f}".format(float(brightparams["beta"])),
-        "{:.1f}".format(float(brightparams["r_ie"])),
-        "{:.1f}".format(float(brightparams["rb_0"])),
-        "{:.1e}".format(brightparams["n_th0"].value),
-        "{:.1e}".format(brightparams["t_e0"].value),
-        float(brightparams["p_dens"]),
-        float(brightparams["p_temp"]),
-        "{:.1f}".format(brightparams["nscale"]),
-        funckeys["emodelkey"],
-        funckeys["bkey"],
-        funckeys["nnoisykey"],
-        funckeys["tnoisykey"],
-        funckeys["bnoisykey"]
-    )
+    filename = fileloading.intensityNameWrite(brightparams,funckeys)
+
+    # filename = path + ('Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}_'
+    #                    'pdens_{}_ptemp_{}_nscale_{}_emkey_{}_bkey_{}_nkey_{}_tnkey_{}_bnkey_{}.h5').format(
+    #     spin_case,
+    #     i_case,
+    #     "{:.5e}".format(brightparams["nu0"].value),
+    #     "{:.5e}".format(brightparams["mass"].value),
+    #     float(brightparams["scale_height"]),
+    #     "{:.3f}".format(brightparams["theta_b"].value),
+    #     "{:.2f}".format(float(brightparams["beta"])),
+    #     "{:.1f}".format(float(brightparams["r_ie"])),
+    #     "{:.1f}".format(float(brightparams["rb_0"])),
+    #     "{:.1e}".format(brightparams["n_th0"].value),
+    #     "{:.1e}".format(brightparams["t_e0"].value),
+    #     float(brightparams["p_dens"]),
+    #     float(brightparams["p_temp"]),
+    #     "{:.1f}".format(brightparams["nscale"]),
+    #     funckeys["emodelkey"],
+    #     funckeys["bkey"],
+    #     funckeys["nnoisykey"],
+    #     funckeys["tnoisykey"],
+    #     funckeys["bnoisykey"]
+    # )
 
     h5f = h5py.File(filename, 'w')
 
