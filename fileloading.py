@@ -5,7 +5,6 @@ from aart_func import *
 from params import *
 
 
-
 def intensityNameWrite(brightparams,funckeys):
     filename = path + ('Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}_'
                        'b0_{}_pdens_{}_ptemp_{}_pmag_{}_nscale_{}_emkey_{}_bkey_{}_nkey_{}_tnkey_{}_bnkey_{}.h5').format(
@@ -38,19 +37,19 @@ def intensityNameWrite(brightparams,funckeys):
 def intensityNameRead(brightparams,funckeys):
 
     filename = path + ('Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}_'
-                       'b0_{}_pdens_{}_ptemp_{}_pmag_{}_nscale_{}_emkey_{}_bkey_{}_nkey_{}_tnkey_{}_bnkey_{}').format(
+                       'b0_{}_pdens_{}_ptemp_{}_pmag_{}_nscale_{}_emkey_{}_bkey_{}_nkey_{}_tnkey_{}_bnkey_{}.h5').format(
         spin_case,
         i_case,
-        "{:.5e}".format(brightparams["nu0"].value),
-        "{:.5e}".format(brightparams["mass"].value),
+        "{:.5e}".format(brightparams["nu0"]),
+        "{:.5e}".format(brightparams["mass"]),
         float(brightparams["scale_height"]),
-        "{:.3f}".format(brightparams["theta_b"].value),
+        "{:.3f}".format(brightparams["theta_b"]),
         "{:.2f}".format(float(brightparams["beta"])),
         "{:.1f}".format(float(brightparams["r_ie"])),
         "{:.1f}".format(float(brightparams["rb_0"])),
-        "{:.1e}".format(brightparams["n_th0"].value),
-        "{:.1e}".format(brightparams["t_e0"].value),
-        "{:.3e}".format(brightparams["b_0"].value),
+        "{:.1e}".format(brightparams["n_th0"]),
+        "{:.1e}".format(brightparams["t_e0"]),
+        "{:.3e}".format(brightparams["b_0"]),
         float(brightparams["p_dens"]),
         float(brightparams["p_temp"]),
         float(brightparams["p_mag"]),
