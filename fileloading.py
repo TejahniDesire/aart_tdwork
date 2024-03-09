@@ -5,6 +5,7 @@ from aart_func import *
 from params import *
 
 
+
 def intensityNameWrite(brightparams,funckeys):
     filename = path + ('Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}_'
                        'b0_{}_pdens_{}_ptemp_{}_pmag_{}_nscale_{}_emkey_{}_bkey_{}_nkey_{}_tnkey_{}_bnkey_{}.h5').format(
@@ -65,7 +66,8 @@ def intensityNameRead(brightparams,funckeys):
 
 
 def loadGeoModel(model_name:str, run:str):
-    paramFile = "./params.py"
+    print("iteration")
+    paramFile = EZPaths.aartPath + "/params.py"
     model_is_loaded = os.path.exists(paramFile)
     if model_is_loaded:
         print("MODEL ALREADY LOADED, REMOVING PREVIOUS MODEL")
@@ -78,14 +80,11 @@ def loadGeoModel(model_name:str, run:str):
 
 def unloadGeoModel(model_name:str, run):
 
-    cmd = "mv " + "./params.py" + " " + EZPaths.modeldir + run + "/geoParams/" + model_name + ".py"
+    cmd = "cp " + "./params.py" + " " + EZPaths.modeldir + run + "/geoParams/" + model_name + ".py"
     print(cmd)
     subprocess.run([cmd], shell=True)
 
 
-
-
-#
-# loadGeoModel("ModelA", "run1")
+loadGeoModel("ModelA", "run1")
 # unloadGeoModel("ModelA","run1")
 
