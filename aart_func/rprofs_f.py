@@ -433,7 +433,7 @@ def thermal_profile(coords, redshift, cosAng, bp=kw_brightparams, fk=kw_funckeys
     b_field_funcs = {
         0: partial(b_func_true, bp["beta"], bp["r_ie"], theta_e, n),
         1: partial(b_func_power, coords["r"], bp["mass"], bp["rb_0"]),
-        2: partial(b_func_power_variable, coords["r"], bp["mass"], bp["rb_0"], bp["b_0"], ["p_mag"])
+        2: partial(b_func_power_variable, coords["r"], bp["mass"], bp["rb_0"], bp["b_0"], bp["p_mag"])
     }
 
     b_field_noisy_funcs = {
