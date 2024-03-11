@@ -35,7 +35,7 @@ def intensityNameWrite(brightparams,funckeys):
     return filename
 
 
-def intensityNameRead(brightparams,funckeys):
+def intensityNameNoUnits(brightparams,funckeys):
 
     filename = path + ('Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}_'
                        'b0_{}_pdens_{}_ptemp_{}_pmag_{}_nscale_{}_emkey_{}_bkey_{}_nkey_{}_tnkey_{}_bnkey_{}.h5').format(
