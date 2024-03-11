@@ -3,6 +3,8 @@ import EZPaths
 import os
 from aart_func import *
 from params import *
+import importlib
+import params
 import astroModels
 import fileloading
 
@@ -56,6 +58,7 @@ def createIntensityArgs(brightparams):
 def createGeoGrid(sub_path,input_geo_grid,run):
     for i in range(len(input_geo_grid)):
         fileloading.loadGeoModel(input_geo_grid[i], run)
+        importlib.reload(params)
 
         new_lband = sub_path["GeoDoth5Path"] + input_geo_grid[i] + "Lensing" + ".h5"
         new_rtray = sub_path["GeoDoth5Path"] + input_geo_grid[i] + "RayTracing" + ".h5"
@@ -63,7 +66,7 @@ def createGeoGrid(sub_path,input_geo_grid,run):
         """Computation of the lensing bands______________________________________________________"""
         subprocess.run(['python3 ' + EZPaths.aartPath + '/lensingbands.py '], shell=True)
 
-        fnbands = path + "LensingBands_a_%s_i_%s.h5" % (spin_case, i_case)
+        fnbands = path + "LensingBands_a_%s_i_%s.h5" % (params.spin_case, params.i_case)
 
         print("Reading file: ", fnbands)
 
