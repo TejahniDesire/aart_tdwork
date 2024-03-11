@@ -105,6 +105,8 @@ if bvapp!=1:
 	mask2=h5f['mask2'][:]
 	N2=int(h5f["N2"][0])
 
+	fnbands=rtray
+
 	print("Reading file: ",fnbands)
 
 	h5f = h5py.File(fnbands,'r')
@@ -123,6 +125,7 @@ else:
 
 	h5f.close()
 
+	fnrays=rtray
 	print("Reading file: ",fnrays)
 
 	h5f = h5py.File(fnrays,'r')
