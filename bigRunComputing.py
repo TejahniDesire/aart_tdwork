@@ -66,6 +66,9 @@ def createGeoGrid(sub_path,input_geo_grid,run):
         """Computation of the lensing bands______________________________________________________"""
         subprocess.run(['python3 ' + EZPaths.aartPath + '/lensingbands.py '], shell=True)
 
+        spin_case = params.spin_case
+        i_case = params.i_case
+
         fnbands = path + "LensingBands_a_%s_i_%s.h5" % (params.spin_case, params.i_case)
 
         print("Reading file: ", fnbands)
