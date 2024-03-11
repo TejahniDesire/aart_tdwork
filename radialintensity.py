@@ -60,6 +60,7 @@ funckeys = {
 rtray = args.rtray
 lband = args.lband
 if rtray == "0":
+	print("reading default rtray")
 	fnrays = path + "Rays_a_%s_i_%s.h5"%(spin_case,i_case)
 else:
 	fnrays = rtray
@@ -81,6 +82,7 @@ print("Intensity")
 
 if lband == "0":
 	fnbands = path + "LensingBands_a_%s_i_%s.h5" % (spin_case, i_case)
+	print("reading default lband")
 else:
 	fnbands = lband
 
