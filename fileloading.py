@@ -2,14 +2,16 @@ import subprocess
 import EZPaths
 import os
 from aart_func import *
+import params
 from params import *
+import importlib
 import astroModels
 
 
 def intensityNameWrite(brightparams,funckeys):
     filename = path + ('Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}_'
                        'b0_{}_pdens_{}_ptemp_{}_pmag_{}_nscale_{}_emkey_{}_bkey_{}_nkey_{}_tnkey_{}_bnkey_{}.h5').format(
-        spin_case,
+        params.spin_case,
         i_case,
         "{:.5e}".format(brightparams["nu0"].value),
         "{:.5e}".format(brightparams["mass"].value),
@@ -39,7 +41,7 @@ def intensityNameNoUnits(brightparams,funckeys):
 
     filename = path + ('Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}_'
                        'b0_{}_pdens_{}_ptemp_{}_pmag_{}_nscale_{}_emkey_{}_bkey_{}_nkey_{}_tnkey_{}_bnkey_{}.h5').format(
-        spin_case,
+        params.spin_case,
         i_case,
         "{:.5e}".format(brightparams["nu0"]),
         "{:.5e}".format(brightparams["mass"]),
@@ -76,6 +78,7 @@ def loadGeoModel(current_model:str, run:str):
     loaded_model = EZPaths.aartPath + "/" + "params.py"
     cmd = "cp " + loading_model + " " + loaded_model
     print("file {} Loaded as {}".format(loading_model,loaded_model))
+    importlib.reload(params)
 
     subprocess.run([cmd], shell=True)
 
