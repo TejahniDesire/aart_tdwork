@@ -34,6 +34,44 @@ def radii_of_theta(I0, size):
     return (peak * ((limits * 2) / I0.shape[0])), np.ravel(theta)  # units of Rg
 
 
+size = 200
+rsize = 10000
+
+
+def radii_of_thetaV2(I0, dx=None):
+    x = np.arange(I0.shape[0])  # number of pixels
+    y = x
+    rmax = I0.shape[0] * .4
+    interp = RegularGridInterpolator((x, y), I0.T)
+    theta = np.matrix(np.linspace(0, 2 * np.pi, size))  # 1 x size
+
+    # rmax = I0.shape[0] * .4
+    rmax = I0.shape[0] * .4
+
+    r = np.matrix(np.linspace(0, rmax, rsize)).T  # rsize x 1
+
+    onest = np.matrix(np.ones(r.shape[0])).T  # (rsize) x 1
+    onesr = np.matrix(np.ones(size))  # 1 x size
+
+    thetarray = onest @ theta  # (rsize) x size
+    rarray = r @ onesr  # (rsize) x size
+
+    xaart = np.multiply(rarray, np.cos(thetarray))
+    yaart = np.multiply(rarray, np.sin(thetarray))
+
+    # Convert to pixel coords from aart plot coords
+    xprime = xaart + I0.shape[0] / 2
+    yprime = yaart + I0.shape[0] / 2
+
+    coords = np.array([xprime, yprime]).T
+    peak = np.argmax(interp(coords), 1)
+    if dx is None:
+        dx = (limits * 2) / I0.shape[0]
+
+    peaks = np.ravel(r[peak])  # value of r at that argument
+    return (peaks * dx), np.ravel(theta)  # units of Rg
+
+
 def curve_params(varphi, rho):
     """calculate Appendix B parameters for a curve rho(varphi)
        assume varphis are equally spaced!!!"""

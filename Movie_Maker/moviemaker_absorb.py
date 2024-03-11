@@ -174,7 +174,7 @@ brightparams = {
 
 funckeys = {
     "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
-    "bkey": 1,  # bkey
+    "bkey": 2,  # bkey
     "nnoisykey": 0,  # nnoisykey Inoisy density. 0 = no noise, 1 = noise
     "tnoisykey": 0,  # tnoisykey Inoisy temperature
     "bnoisykey": 0  # bnoisykey Inoisy magnetic field
