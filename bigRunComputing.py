@@ -132,7 +132,7 @@ def createGeoGrid(sub_path,input_geo_grid,run):
         subprocess.run(["mv " + fnrays1 + ' ' + new_rtray], shell=True)
 
 
-def creatIntensityGrid(sub_path,input_geo_grid,run,intensity_models):
+def creatIntensityGrid(sub_path,input_geo_grid,run,intensity_models,full_string,geo_grid_values):
     funckeys = {
         "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
         "bkey": 2,  # bkey
@@ -140,6 +140,8 @@ def creatIntensityGrid(sub_path,input_geo_grid,run,intensity_models):
         "tnoisykey": 0,  # tnoisykey Inoisy temperature
         "bnoisykey": 0  # bnoisykey Inoisy magnetic field
     }
+
+    all_intent_names = []
 
     for j in range(len(input_geo_grid)):
         for i in range(len(intensity_models)):
@@ -215,16 +217,65 @@ def creatIntensityGrid(sub_path,input_geo_grid,run,intensity_models):
             fnrays = fileloading.intensityNameNoUnits(current_intensity_model, funckeys)
 
             subprocess.run(["mv " + fnrays + ' ' + new_intensity_path], shell=True)
+            all_intent_names += [full_current_model_name]
+
+    # Make Docstring
+    doc_string_file = EZPaths.modelRunsDir + run + "/" + "AllModels.txt"
+    cmd = "touch " + doc_string_file
+    subprocess.run([cmd], shell=True)
+
+    geo_models_string = "GEOMODELS\n"
+    for i in range(len(geo_grid_values)):
+        geo_models_string += input_geo_grid[i] + "| "
+        for j in range(len(geo_grid_values[i][0])):
+            geo_models_string += geo_grid_values[i][0][j] + ": " + geo_grid_values[i][1][j]
+
+    doc_string_file = open(doc_string_file,'w')
+    doc_string_file.write(full_string + geo_models_string)
+    doc_string_file.close()
+
+    all_intent_names=np.array(all_intent_names)
+    numpy_name = EZPaths.modelRunsDir + run + "/" + "AllModelsList"
+    np.save(numpy_name, all_intent_names)
+
+
+# def creatDataGrids(sub_path,run,intensity_models):
+#     """
+#         sub_paths = {
+#         "GeoDoth5Path"
+#         "intensityPath"
+#         "fluxPath"
+#         "radPath"
+#         "imagePath"
+#
+#     """
+#     run_path = EZPaths.modelRunsDir + run + "/"
+#     all_intent_names = np.load(run_path + "AllModelsList.npy")
+#
+#     for model in all_intent_names:
+#
+#
+#
+#     for name in intensity_models:
+
+
+
+# Full Run
+# current_run = "run1"
+# current_bp = astroModels.bp_run1
+# current_var_params = ["p_temp", "p_mag"]
+# current_geo_grid = ["ModelA", "ModelB"]
 
 
 current_run = "testRun1"
 current_bp = astroModels.bp_testRun1
 current_var_params = ["p_temp","p_mag"]
 current_geo_grid = ["ModelA", "ModelB"]
-# sub_paths, all_models, model_name_string = fileloading.runsInit("run1",astroModels.bp_run1, ["p_temp","p_mag"])\
+current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
 sub_paths, all_intent_models, model_name_string = fileloading.runsInit(current_run,current_bp,current_var_params)
+
 
 # fileloading.loadGeoModel(current_geo_grid[0],current_run)
 # createGeoGrid(sub_paths, current_geo_grid, current_run)
-creatIntensityGrid(sub_paths,current_geo_grid,current_run,all_intent_models)
+creatIntensityGrid(sub_paths,current_geo_grid,current_run,all_intent_models,model_name_string,current_geo_grid_values)
 
