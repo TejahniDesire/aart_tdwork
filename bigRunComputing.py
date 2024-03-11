@@ -7,7 +7,53 @@ import astroModels
 import fileloading
 
 
-def createGeoGrid(input_geo_grid, run, sub_path):
+def createIntensityArgs(brightparams):
+    args = ' '
+    cmd1_args = {
+        "nu0": '--nu ',
+        "mass": '--mass ',
+        "scale_height": '--scaleh ',
+        "theta_b": '--thetab ',
+        "beta": '--beta ',
+        "r_ie": '--rie ',
+        "rb_0": '--rb0 ',
+        "n_th0": '--nth0 ',
+        "t_e0": '--te0 ',
+        "b_0": '--b0 ',
+        "p_dens": '--pdens ',
+        "p_temp": '--ptemp ',
+        "p_mag": '--pmag ',
+        "nscale": '--nscale ',
+    }
+    cmd2_args = {
+        "emodelkey": '--emodelkey ',
+        "bkey": '--bkey ',
+        "nnoisykey": '--nnoisykey ',
+        "tnoisykey": '--tnoisykey ',
+        "bnoisykey": '--bnoisykey ',
+    }
+
+    funckeys = {
+        "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
+        "bkey": 2,  # bkey
+        "nnoisykey": 0,  # nnoisykey Inoisy density. 0 = no noise, 1 = noise
+        "tnoisykey": 0,  # tnoisykey Inoisy temperature
+        "bnoisykey": 0  # bnoisykey Inoisy magnetic field
+    }
+
+    # brightparams = fpp.bp_steeperT
+    # funckeys = fpp.fk_fiducial
+
+    for arg in cmd1_args:
+        args = args + cmd1_args[arg] + str(brightparams[arg]) + ' '
+
+    for arg in cmd2_args:
+        args = args + cmd2_args[arg] + str(funckeys[arg]) + ' '
+
+    return args
+
+
+def createGeoGrid(sub_path,input_geo_grid,run):
     for i in range(len(input_geo_grid)):
         fileloading.loadGeoModel(input_geo_grid[i], run)
 
@@ -80,7 +126,7 @@ def createGeoGrid(input_geo_grid, run, sub_path):
         subprocess.run(["mv " + fnrays1 + ' ' + new_rtray], shell=True)
 
 
-def creatIntensityGrid(sub_path,input_geo_grid, intensity_models, run):
+def creatIntensityGrid(sub_path,input_geo_grid,run,intensity_models):
     funckeys = {
         "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
         "bkey": 2,  # bkey
@@ -163,52 +209,13 @@ def creatIntensityGrid(sub_path,input_geo_grid, intensity_models, run):
             subprocess.run(["mv " + fnrays + ' ' + new_intensity_path], shell=True)
 
 
-def createIntensityArgs(brightparams):
-    args = ' '
-    cmd1_args = {
-        "nu0": '--nu ',
-        "mass": '--mass ',
-        "scale_height": '--scaleh ',
-        "theta_b": '--thetab ',
-        "beta": '--beta ',
-        "r_ie": '--rie ',
-        "rb_0": '--rb0 ',
-        "n_th0": '--nth0 ',
-        "t_e0": '--te0 ',
-        "b_0": '--b0 ',
-        "p_dens": '--pdens ',
-        "p_temp": '--ptemp ',
-        "p_mag": '--pmag ',
-        "nscale": '--nscale ',
-    }
-    cmd2_args = {
-        "emodelkey": '--emodelkey ',
-        "bkey": '--bkey ',
-        "nnoisykey": '--nnoisykey ',
-        "tnoisykey": '--tnoisykey ',
-        "bnoisykey": '--bnoisykey ',
-    }
+current_run = "testRun1"
+current_bp = astroModels.bp_testRun1
+current_var_params = ["p_temp","p_mag"]
+current_geo_grid = ["ModelA", "ModelB"]
+# sub_paths, all_models, model_name_string = fileloading.runsInit("run1",astroModels.bp_run1, ["p_temp","p_mag"])\
+sub_paths, all_intent_models, model_name_string = fileloading.runsInit(current_run,current_bp,current_var_params)
 
-    funckeys = {
-        "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
-        "bkey": 2,  # bkey
-        "nnoisykey": 0,  # nnoisykey Inoisy density. 0 = no noise, 1 = noise
-        "tnoisykey": 0,  # tnoisykey Inoisy temperature
-        "bnoisykey": 0  # bnoisykey Inoisy magnetic field
-    }
-
-    # brightparams = fpp.bp_steeperT
-    # funckeys = fpp.fk_fiducial
-
-    for arg in cmd1_args:
-        args = args + cmd1_args[arg] + str(brightparams[arg]) + ' '
-
-    for arg in cmd2_args:
-        args = args + cmd2_args[arg] + str(funckeys[arg]) + ' '
-
-    return args
-
-
-geo_grid = ["ModelA", "ModelB"]
-sub_paths, all_models, model_name_string = fileloading.runsInit("run1",astroModels.bp_run1, ["p_temp","p_mag"])
+createGeoGrid(sub_paths, current_geo_grid, current_run)
+creatIntensityGrid(sub_paths,current_geo_grid,current_run,all_intent_models)
 
