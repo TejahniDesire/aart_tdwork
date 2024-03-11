@@ -76,19 +76,19 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
     mean_radii_Thin = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
     mean_radii_Thick = np.ndarray([num_iterations, 4])  # [I0, I1, I2, FullImage]
 
-    # radii_I0_Thin = np.zeros(size)
-    # radii_I1_Thin = np.zeros(size)
-    # radii_I2_Thin = np.zeros(size)
-    #
-    # radii_FullAbsorption_Thick = np.zeros(size)
-    # radii_I0_Thick = np.zeros(size)
-    # radii_I1_Thick = np.zeros(size)
-    # radii_I2_Thick = np.zeros(size)
+    radii_I0_Thin = np.zeros(size)
+    radii_I1_Thin = np.zeros(size)
+    radii_I2_Thin = np.zeros(size)
 
-    # Intensity images
+    radii_FullAbsorption_Thick = np.zeros(size)
+    radii_I0_Thick = np.zeros(size)
+    radii_I1_Thick = np.zeros(size)
+    radii_I2_Thick = np.zeros(size)
+
+    # # Intensity images
     # I_thins = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
     # I_thicks = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
-    #
+    # #
     funckeys = {
         "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
         "bkey": 2,  # bkey

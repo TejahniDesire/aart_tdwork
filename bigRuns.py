@@ -24,7 +24,6 @@ import astroModels
 import fileloading
 
 
-
 current_run = "testRun1"
 current_bp = astroModels.bp_testRun1
 current_var_params = ["p_temp","p_mag"]
