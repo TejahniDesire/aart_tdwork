@@ -11,6 +11,25 @@ from matplotlib import ticker
 import importlib
 from functools import partial
 
+
+
+bp_run1 = {
+    "p_mag": [-2,-1.5,-1,-0.5],
+    "p_temp": [-1.2,-1,-.8,-.6],
+    "p_dens": [-.7],
+    "n_th0": [1.9e4],
+    "t_e0": [2e11],
+    "b_0": [8.131273135591028],
+    "theta_b": [50.0 * (np.pi / 180)],  # NONE VARRYING________________________________________
+    "mass": [(MMkg * u.kg).to(u.g).value],
+    "nu0": [230e9],
+    "scale_height": [.5],
+    "rb_0": [2],
+    "beta": [1.0],  # Legacy _____________________________________
+    "r_ie": [10.0],
+    "nscale": [.4]
+}
+
 bp_fiducial230 = {
     "nu0": 230e9,  # 0 nu0
     "mass": (MMkg * u.kg).to(u.g).value,  # 1 mass
