@@ -70,7 +70,6 @@ def loadGeoModel(current_model:str, run:str):
     paramFile = EZPaths.aartPath + "/params.py"
     model_is_loaded = os.path.exists(paramFile)
     if model_is_loaded:
-        print("MODEL ALREADY LOADED, REMOVING PREVIOUS MODEL")
         subprocess.run(["rm " + paramFile], shell=True)
 
     loading_model = EZPaths.modelRunsDir + run + "/geoModels/" + current_model + ".py"

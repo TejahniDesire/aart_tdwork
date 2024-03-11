@@ -1,3 +1,4 @@
+import EZPaths
 from aart_func import *
 
 model_name = "ModelB"
@@ -123,8 +124,7 @@ fov_Real=np.arctan(sizeim_Real/(dBH))/muas_to_rad #muas
 #print("FOV= ",np.round(2*fov,2),"muas")
 
 #Path where the results will be stored
-# path = './Results/'
-path = '/home/tej/Desktop/Code_Stuff/Repositories/aart_results/path_results/'
+path = EZPaths.aartOutput
 
 # Create a directory for the results
 isExist = os.path.exists(path)
