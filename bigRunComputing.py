@@ -228,7 +228,9 @@ def creatIntensityGrid(sub_path,input_geo_grid,run,intensity_models,full_string,
     for i in range(len(geo_grid_values)):
         geo_models_string += input_geo_grid[i] + "| "
         for j in range(len(geo_grid_values[i][0])):
-            geo_models_string += geo_grid_values[i][0][j] + ": " + geo_grid_values[i][1][j]
+            geo_models_string += '\n    ' + geo_grid_values[i][0][j] + ": " + geo_grid_values[i][1][j]
+        geo_models_string += '\n'
+
 
     doc_string_file = open(doc_string_file,'w')
     doc_string_file.write(full_string + geo_models_string)
