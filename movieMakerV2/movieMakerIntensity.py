@@ -98,9 +98,10 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
     }
 
     for i in range(num_iterations):
+        print(line)
+        print(line)
         print('Creating intensity.h5 for Model ' + model + ' number: ' + str(i))
-        print(line)
-        print(line)
+
 
         current_int_file = sub_path["intensityPath"]
 
@@ -194,7 +195,7 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
 
         h5f.close()
 
-    final_data_path = sub_path["intensityPath"] + "numpy/"
+    final_data_path = current_model_file + "numpy/"
 
     if not os.path.isdir(final_data_path):
         subprocess.run(["mkdir " + final_data_path], shell=True)
