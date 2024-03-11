@@ -206,6 +206,8 @@ def creatIntensityGrid(sub_path,input_geo_grid,run,intensity_models):
 
             args = createIntensityArgs(current_intensity_model)
 
+            args + "--lband " + lband + " --rtray" + rtray
+
             subprocess.run(['python3 ' + EZPaths.aartPath + '/radialintensity.py' + args], shell=True)
 
             new_intensity_path = sub_path["intensityPath"] + full_current_model_name + "RayTracing" + ".h5"

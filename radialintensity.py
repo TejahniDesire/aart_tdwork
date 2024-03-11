@@ -23,6 +23,9 @@ parser.add_argument('--bkey', default=0, type=int)
 parser.add_argument('--nnoisykey', default=0, type=int)
 parser.add_argument('--tnoisykey', default=0, type=int)
 parser.add_argument('--bnoisykey', default=0, type=int)
+parser.add_argument('--lband', default="0", type=str)
+parser.add_argument('--rtray', default="0", type=str)
+
 
 
 args = parser.parse_args()
@@ -43,6 +46,7 @@ brightparams = {
 	"nscale": args.nscale, 				# 13
 }
 
+
 funckeys = {
 	"emodelkey": args.emodelkey, 		# 0
 	"bkey": args.bkey, 					# 1
@@ -53,7 +57,12 @@ funckeys = {
 
 # Getting angles
 # fnrays="./Results/Rays_a_%s_i_%s.h5"%(spin_case,i_case)
-fnrays = path + "Rays_a_%s_i_%s.h5"%(spin_case,i_case)
+rtray = args.rtray
+lband = args.lband
+if rtray == "0":
+	fnrays = path + "Rays_a_%s_i_%s.h5"%(spin_case,i_case)
+else:
+	fnrays = rtray
 
 print("Reading file: ",fnrays)
 
@@ -69,7 +78,11 @@ h5f.close()
 
 print("Intensity")
 
-fnbands=path+"LensingBands_a_%s_i_%s.h5"%(spin_case,i_case)
+
+if lband == "0":
+	fnbands = path + "LensingBands_a_%s_i_%s.h5" % (spin_case, i_case)
+else:
+	fnbands = lband
 
 print("Reading file: ",fnbands)
 
