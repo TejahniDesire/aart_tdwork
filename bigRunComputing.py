@@ -225,6 +225,6 @@ current_geo_grid = ["ModelA", "ModelB"]
 sub_paths, all_intent_models, model_name_string = fileloading.runsInit(current_run,current_bp,current_var_params)
 
 # fileloading.loadGeoModel(current_geo_grid[0],current_run)
-# createGeoGrid(sub_paths, current_geo_grid, current_run)
+createGeoGrid(sub_paths, current_geo_grid, current_run)
 creatIntensityGrid(sub_paths,current_geo_grid,current_run,all_intent_models)
 

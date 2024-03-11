@@ -27,7 +27,6 @@ parser.add_argument('--lband', default="0", type=str)
 parser.add_argument('--rtray', default="0", type=str)
 
 
-
 args = parser.parse_args()
 brightparams = {
 	"nu0": args.nu*ilp.Hz,				# 0
@@ -60,9 +59,10 @@ funckeys = {
 rtray = args.rtray
 lband = args.lband
 if rtray == "0":
-	print("reading default rtray")
+	print("using default rtray")
 	fnrays = path + "Rays_a_%s_i_%s.h5"%(spin_case,i_case)
 else:
+	print("using altered rtray")
 	fnrays = rtray
 
 print("Reading file: ",fnrays)
@@ -82,8 +82,9 @@ print("Intensity")
 
 if lband == "0":
 	fnbands = path + "LensingBands_a_%s_i_%s.h5" % (spin_case, i_case)
-	print("reading default lband")
+	print("using default lband")
 else:
+	print("using altered lband")
 	fnbands = lband
 
 print("Reading file: ",fnbands)
