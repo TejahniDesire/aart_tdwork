@@ -147,7 +147,7 @@ def createGeoGrid(sub_path,input_geo_grid,run):
 line = "\n________________________\n"
 
 
-def creatIntensityGrid(sub_path,input_geo_grid,run,intensity_models,full_string,geo_grid_values):
+def creatIntensityGrid(sub_path,input_geo_grid,run,intensity_models,full_string,geo_grid_values,action):
     funckeys = {
         "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
         "bkey": 2,  # bkey
@@ -171,7 +171,7 @@ def creatIntensityGrid(sub_path,input_geo_grid,run,intensity_models,full_string,
             current_intensity_model = intensity_models[i][1]
             full_current_model_name = current_geo_model + current_intensity_model_name.replace("Model","")
 
-            movieMakerIntensity.intensity_movie(kw_action, sub_path,
+            movieMakerIntensity.intensity_movie(action, sub_path,
                                                 full_current_model_name, 2, current_intensity_model)
 
             all_intent_names += [full_current_model_name]
@@ -428,6 +428,7 @@ def graphCreation(sub_path,run,action,intent_grid_type=2):
         ax1.legend(loc='lower left')
 
         plt.savefig(fluxVNu_path + "flux.jpg")
+        plt.close()
         #
         # # RADII PLOTS___________________________________
         # ax[1] = plt.subplot(2, 1, 2, sharex=ax[0])
