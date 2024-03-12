@@ -232,7 +232,7 @@ def graphCreation(sub_path,run,action,intent_grid_type=2):
     """
 
     all_intent_names = np.load(EZPaths.modelRunsDir + run + "/" + "AllModelsList.npy")
-    all_brightparams = np.load(EZPaths.modelRunsDir + run + "/" + "AllBrightParamsList.npy")
+    all_brightparams = np.load(EZPaths.modelRunsDir + run + "/" + "AllBrightParamsList.npy", allow_pickle=True)
     # current_intensity_model_name = intensity_models[i][0]
     # current_intensity_model = intensity_models[i][1]
     # full_current_model_name = current_geo_model + current_intensity_model_name.replace("Model", "")
