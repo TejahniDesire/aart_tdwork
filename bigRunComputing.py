@@ -341,8 +341,8 @@ def graphCreation(sub_path,run,action,intent_grid_type=2):
 
         dim = [10, 8]
         xaxis = np.array(x_variable) / scale_label[action['var']]
-        one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
-        M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
+        # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
+        # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
 
         fluxVNu_path = sub_path["fluxPath"] + model + "/"
         radVNu_path = sub_path["radPath"] + model + "/"
