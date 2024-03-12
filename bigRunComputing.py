@@ -258,9 +258,6 @@ def graphCreation(sub_path,run,action,intent_grid_type=2):
         print("Running " + model)
         brightparams = all_brightparams
 
-        current_model_file = sub_path["intensityPath"] + model + "/"
-        current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
-
         current_geo_model = model[0:len(model) - intent_grid_type]
         fileloading.loadGeoModel(current_geo_model, run)
         lband = sub_path["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
