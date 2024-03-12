@@ -47,7 +47,7 @@ action = {
     "var": "nu0",
     "start": 10e9,
     "stop": 700e9,
-    "step": 15e9
+    "step": 40e9
 }
 
 
