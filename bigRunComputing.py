@@ -348,6 +348,11 @@ def graphCreation(sub_path,run,action,intent_grid_type=2):
         radVNu_path = sub_path["radPath"] + model + "/"
         image_path = sub_path["imagePath"] + model + "/"
 
+        if not os.path.isdir(fluxVNu_path):
+            subprocess.run(["mkdir " + fluxVNu_path], shell=True)
+
+
+
         # '''
         # "fluxPath"
         # "radPath"
