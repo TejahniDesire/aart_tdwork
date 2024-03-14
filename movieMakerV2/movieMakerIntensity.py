@@ -60,6 +60,9 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
 
     if not os.path.isdir(current_model_file):
         subprocess.run(["mkdir " + current_model_file], shell=True)
+    else:
+        subprocess.run(["rm -r " + current_model_file], shell=True)
+        subprocess.run(["mkdir " + current_model_file], shell=True)
 
     print("Subfolder for {} intensities created ({})".format(model,current_model_file))
 
