@@ -458,7 +458,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
         plt.savefig(fluxVNu_path + "flux.jpg", bbox_inches='tight')
         plt.close()
-        print("Image '{}' Created",fluxVNu_path + "flux.jpg")
+        print("Image '{}' Created".format(fluxVNu_path + "flux.jpg"))
 
         # ______________________________________________
         # ______________________________________________
@@ -545,6 +545,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         ax1.tick_params('x', length=20, width=1, which='major', labelrotation=80)
 
         plt.savefig(radVNu_path + "Radii.jpeg", bbox_inches='tight')
+        print("Image '{}' Created".format(radVNu_path + "Radii.jpeg"))
         plt.close()
 
         # --------------------------------------------------
@@ -553,16 +554,19 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         '''Optical Depth----------------------------------'''
         fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        ax1.set_xlabel(astroModels.var_label[action["var"]].replace('=', '')
-                      + ' (' + astroModels.units_label[action["var"]] + ')')
-        ax1.set_ylabel("Optical Depth")
 
         ax.plot(xaxis, mean_optical_depth_I0, '-', label='n=0', color='tab:red', linewidth=3)
         ax.plot(xaxis, mean_optical_depth_I1, ':', label='n=1', color='tab:orange', linewidth=3)
         ax.plot(xaxis, mean_optical_depth_I2, '-.', label='n=2', color='tab:blue', linewidth=3)
+        ax.set_xscale('log')
+        ax.set_xlabel(astroModels.var_label[action["var"]].replace('=', '')
+                       + ' (' + astroModels.units_label[action["var"]] + ')')
+        ax.set_ylabel("Optical Depth")
+
+
         ax.legend()
         plt.savefig(Optical_depth_path + "Optical Depth.jpeg", bbox_inches='tight')
-        print("Image '{}' Created", Optical_depth_path + "Optical Depth.jpeg")
+        print("Image '{}' Created".format(Optical_depth_path + "Optical Depth.jpeg"))
         plt.close()
 
         '''Full Images----------------------------------'''
@@ -583,7 +587,6 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
             thin_beta2 = radii_I2_Thin[i,:] * np.sin(theta)
             thin_alpha_full = radii_Full_Thin[i,:] * np.cos(theta)
             thin_beta_full = radii_Full_Thin[i,:] * np.sin(theta)
-            print("TEST!!!! radii_I0_Thin[i,:],  ", radii_I0_Thin[i,:])
 
             # full solution radii
             thick_alpha0 = radii_I0_Thick[i,:] * np.cos(theta)
