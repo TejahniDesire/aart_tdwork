@@ -411,7 +411,6 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
 
         ax.tick_params('x', which="both", labelbottom=False)
-        ax.tick_params('y', which="minor", labelleft=False)
         n = 4  # Keeps every 4th label
         [l.set_visible(False) for (i, l) in enumerate(ax.xaxis.get_minorticklabels()) if i % n != 0]
         ax.tick_params('both', length=10, width=1, which='major')
@@ -446,8 +445,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         # ax1.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.4f'))
         ax1.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0e"))
 
-        ax1.tick_params('x', which="both", labelbottom=False)
-        ax1.tick_params('y', which="minor", labelleft=False)
+
 
         n = 4  # Keeps every 4th label
         [l.set_visible(False) for (i, l) in enumerate(ax1.xaxis.get_minorticklabels()) if i % n != 0]
@@ -494,6 +492,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         new_ticks = [xaxis[0], 230, xaxis[xaxis.size - 1]]
         ax.set_xticks(new_ticks)
         ax.tick_params('x', length=20, width=1, which='major', labelrotation=90)
+        ax.title.set_text('Optically Thin Assumption')
         # Markers
 
         # Optically Thick
@@ -543,7 +542,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         ax1.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
 
         ax1.tick_params('x', length=20, width=1, which='major', labelrotation=80)
-
+        ax1.title.set_text('Full Solution')
         plt.savefig(radVNu_path + "Radii.jpeg", bbox_inches='tight')
         print("Image '{}' Created".format(radVNu_path + "Radii.jpeg"))
         plt.close()
@@ -675,10 +674,10 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
             '''Radii Calc______________________'''
             # Thin
-            lineCum_thickness = 8
-            line0_thickness = 6
-            line1_thickness = 4
-            line2_thickness = 2
+            lineCum_thickness = 4
+            line0_thickness = 3
+            line1_thickness = 2
+            line2_thickness = 1
 
             ax0.plot(thin_alpha_full, thin_beta_full, color='tab:purple', linestyle='--', linewidth=lineCum_thickness)
             ax0.plot(thin_alpha0, thin_beta0, color='tab:red', linestyle='-', linewidth=line0_thickness)
