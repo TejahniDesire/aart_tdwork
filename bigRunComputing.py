@@ -263,13 +263,13 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         data_inner = kgeo.equatorial_lensing.rho_of_req(a, inc, rh, mbar=0, varphis=varphis)
         (_, rhos_inner, alphas_inner, betas_inner) = data_inner
 
-        (area_inner, mux_inner, muy_inner, r_inner, e_inner, chi_inner) = image_tools.curve_params(varphis, rhos_inner)
+        r_inner = image_tools.curve_params(varphis, rhos_inner)
 
         # generate outer shadow (n=inf) curve with kgeo
         data_outer = kgeo.equatorial_lensing.rho_of_req(a, inc, rh, mbar=5, varphis=varphis)
         (_, rhos_outer, alphas_outer, betas_outer) = data_outer
 
-        (area_outer, mux_outer, muy_outer, r_outer, e_outer, chi_outer) = image_tools.curve_params(varphis, rhos_outer)
+        r_outer = image_tools.curve_params(varphis, rhos_outer)
         # ___________________________________________________________________
 
         '''Reading of the lensing bands----------------------------------'''
