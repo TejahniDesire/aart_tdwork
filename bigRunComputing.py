@@ -3,6 +3,7 @@ import subprocess
 import kgeo
 from matplotlib import ticker
 
+
 import EZPaths
 import os
 
@@ -354,7 +355,6 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         mean_optical_depth_I2 = np.load(data_path + "mean_optical_depth_I2.npy")
 
         num_of_intensity_points = janksys_thin[:,0].shape[0]
-        print("Test: ", janksys_thin[:,0])
         print("Number of Intensity Points: ", num_of_intensity_points)
 
         dim = [10, 8]
@@ -458,6 +458,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
         plt.savefig(fluxVNu_path + "flux.jpg", bbox_inches='tight')
         plt.close()
+        print("Image '{}' Created",fluxVNu_path + "flux.jpg")
 
         # ______________________________________________
         # ______________________________________________
@@ -581,7 +582,6 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
             thin_alpha_full = radii_Full_Thin[i,:] * np.cos(theta)
             thin_beta_full = radii_Full_Thin[i,:] * np.sin(theta)
             print("TEST!!!! radii_I0_Thin[i,:],  ", radii_I0_Thin[i,:])
-            print("TEST!!!! thin_alpha0 Shape,  ", thin_alpha0.shape)
 
             # full solution radii
             thick_alpha0 = radii_I0_Thick[i,:] * np.cos(theta)
@@ -644,16 +644,26 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
             ax1.title.set_text('Full Solution')
 
-            colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format='%.1e', ticks=[
+            colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
                 vmax0 * .8,
                 vmax0 * .6,
                 vmax0 * .4,
                 vmax0 * .2,
                 vmax0 * .05
             ],
-                                     label="Brightnes Temperature (K)",
+                                     ax=ax0
+                                     )
+            colorbar1 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
+                vmax0 * .8,
+                vmax0 * .6,
+                vmax0 * .4,
+                vmax0 * .2,
+                vmax0 * .05
+            ],
+                                     label="Brightnes Temperature (1e9 K)",
                                      ax=ax1
                                      )
+
 
             '''Radii Calc______________________'''
             # Thin
@@ -677,6 +687,10 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
             k += action['step']
 
+
+def fmt(x, pos):
+    x = x / 1e9
+    return '{:.2f}'.format(x)
 
 # Full Run
 # current_run = "run1"

@@ -226,6 +226,23 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
     if not os.path.isdir(final_data_path):
         subprocess.run(["mkdir " + final_data_path], shell=True)
 
+    # Remove Row of Zeros
+    radii_Full_Thin = np.delete(radii_Full_Thin, 0, 0)
+    radii_I0_Thin = np.delete(radii_I0_Thin, 0, 0)
+    radii_I1_Thin = np.delete(radii_I1_Thin, 0, 0)
+    radii_I2_Thin = np.delete(radii_I2_Thin, 0, 0)
+
+    radii_FullAbsorption_Thick = np.delete(radii_FullAbsorption_Thick, 0, 0)
+    radii_I0_Thick = np.delete(radii_I0_Thick, 0, 0)
+    radii_I1_Thick = np.delete(radii_I1_Thick, 0, 0)
+    radii_I2_Thick = np.delete(radii_I2_Thick, 0, 0)
+
+    # Optical Depth_________________________________
+    mean_optical_depth_I0 = np.delete(mean_optical_depth_I0, 0, 0)
+    mean_optical_depth_I1 = np.delete(mean_optical_depth_I1, 0, 0)
+    mean_optical_depth_I2 = np.delete(mean_optical_depth_I2, 0, 0)
+
+
     # Saving Data--------------------------------------------------------------------------------------------------------
     np.save(final_data_path + "x_variable", x_variable)
     np.save(final_data_path + "janksys_thick", janksys_thick)
