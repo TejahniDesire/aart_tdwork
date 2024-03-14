@@ -34,7 +34,7 @@ action = {
     "var": "nu0",
     "start": 3.00e+10,
     "stop": 6.00e+10,
-    "step": 2.00e+10
+    "step": 1.00e+10
 }
 
 # Full Run
