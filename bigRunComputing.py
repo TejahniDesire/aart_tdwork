@@ -234,7 +234,9 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
          "stop":
          "step":
     """
-
+    print(line)
+    print(line)
+    print("Initializing Graph Creation")
     all_intent_names = np.load(EZPaths.modelRunsDir + run + "/" + "AllModelsList.npy")
     all_brightparams = np.load(EZPaths.modelRunsDir + run + "/" + "AllBrightParamsList.npy", allow_pickle=True)
     # current_intensity_model_name = intensity_models[i][0]
@@ -242,7 +244,6 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
     # full_current_model_name = current_geo_model + current_intensity_model_name.replace("Model", "")
 
     for model in all_intent_names:
-        print(line)
         print(line)
         print("Running " + model)
 
@@ -352,6 +353,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         mean_optical_depth_I1 = np.load(data_path + "mean_optical_depth_I1.npy")
         mean_optical_depth_I2 = np.load(data_path + "mean_optical_depth_I2.npy")
 
+        print(janksys_thin[:,0].shape)
         num_of_intensity_points = janksys_thin[:,0].shape[1]
         print("TEST!!!!! num_of_intensity_points, ",num_of_intensity_points)
 

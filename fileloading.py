@@ -68,7 +68,7 @@ def intensityNameNoUnits(brightparams,funckeys):
 
 
 def loadGeoModel(current_model:str, run:str):
-    print("iteration")
+    print("Loading " + current_model)
     paramFile = EZPaths.aartPath + "/params.py"
     model_is_loaded = os.path.exists(paramFile)
     if model_is_loaded:
