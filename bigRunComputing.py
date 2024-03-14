@@ -375,6 +375,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
             else:
                 subprocess.run(["rm -r " + file_creation[i]], shell=True)
+                subprocess.run(["mkdir " + file_creation[i]], shell=True)
 
             print("Subdirectory '{}' created".format(file_creation[i]))
         # '''
