@@ -367,9 +367,16 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         image_path = sub_path["imagePath"] + model + "/"
         Optical_depth_path = sub_path["opticalDepth"] + model + "/"
 
-        if not os.path.isdir(fluxVNu_path):
-            subprocess.run(["mkdir " + fluxVNu_path], shell=True)
+        file_creation = [fluxVNu_path, radVNu_path,image_path,Optical_depth_path]
 
+        for i in range(len(file_creation)):
+            if not os.path.isdir(file_creation[i]):
+                subprocess.run(["mkdir " + file_creation[i]], shell=True)
+
+            else:
+                subprocess.run(["rm -r " + file_creation[i]], shell=True)
+
+            print("Subdirectory '{}' created".format(file_creation[i]))
         # '''
         # "fluxPath"
         # "radPath"
