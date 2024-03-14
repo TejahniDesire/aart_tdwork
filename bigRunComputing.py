@@ -353,9 +353,9 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         mean_optical_depth_I1 = np.load(data_path + "mean_optical_depth_I1.npy")
         mean_optical_depth_I2 = np.load(data_path + "mean_optical_depth_I2.npy")
 
-        print(janksys_thin[:,0].shape)
-        num_of_intensity_points = janksys_thin[:,0].shape[1]
-        print("TEST!!!!! num_of_intensity_points, ",num_of_intensity_points)
+
+        num_of_intensity_points = janksys_thin[:,0].shape[0] - 1
+        print("Number of Intensity Points: ",num_of_intensity_points)
 
         dim = [10, 8]
         xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
