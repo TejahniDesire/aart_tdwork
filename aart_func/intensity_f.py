@@ -431,6 +431,7 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     h5f.create_dataset('bghts0', data=I0_temp_thin)
     h5f.create_dataset('bghts1', data=I1_temp_thin)
     h5f.create_dataset('bghts2', data=I2_temp_thin)
+    # Following three are the contributions from pass # bghts#, assuming no contribution from the previous pass
     h5f.create_dataset('bghts2_absorbtion', data=I2_temp_thick)
     h5f.create_dataset('bghts1_absorbtion', data=I1_temp_thick)
     h5f.create_dataset('bghts0_absorbtion', data=I0_temp_thick)
@@ -438,18 +439,18 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     h5f.create_dataset('tau2', data=tau2)
     h5f.create_dataset('tau1', data=tau1)
     h5f.create_dataset('tau0', data=tau0)
-    h5f.create_dataset('full_profiles2', data=full_profiles2)
-    h5f.create_dataset('full_profiles1', data=full_profiles1)
-    h5f.create_dataset('full_profiles0', data=full_profiles0)
-    h5f.create_dataset('full_profiles_unit', data=full_profiles_unit)
-
-    h5f.create_dataset('cosAngReturn2', data=cosAngReturn2Full)
-    h5f.create_dataset('cosAngReturn1', data=cosAngReturn1Full)
-    h5f.create_dataset('cosAngReturn0', data=cosAngReturn0Full)
-
-    h5f.create_dataset('testa0', data=testa)
-    h5f.create_dataset('testb0', data=testb)
-    h5f.create_dataset('eta0', data=eta)
+    # h5f.create_dataset('full_profiles2', data=full_profiles2)
+    # h5f.create_dataset('full_profiles1', data=full_profiles1)
+    # h5f.create_dataset('full_profiles0', data=full_profiles0)
+    # h5f.create_dataset('full_profiles_unit', data=full_profiles_unit)
+    #
+    # h5f.create_dataset('cosAngReturn2', data=cosAngReturn2Full)
+    # h5f.create_dataset('cosAngReturn1', data=cosAngReturn1Full)
+    # h5f.create_dataset('cosAngReturn0', data=cosAngReturn0Full)
+    #
+    # h5f.create_dataset('testa0', data=testa)
+    # h5f.create_dataset('testb0', data=testb)
+    # h5f.create_dataset('eta0', data=eta)
 
     h5f.close()
 

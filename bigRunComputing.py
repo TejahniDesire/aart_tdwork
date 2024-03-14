@@ -1,10 +1,14 @@
 import subprocess
 
+import kgeo
 from matplotlib import ticker
 
 import EZPaths
 import os
+
+import image_tools
 from aart_func import *
+from image_tools import curve_params
 from params import *
 import importlib
 import params
@@ -67,7 +71,7 @@ def createIntensityArgs(brightparams):
     return args
 
 
-def createGeoGrid(sub_path,input_geo_grid,run):
+def createGeoGrid(sub_path, input_geo_grid, run):
     for i in range(len(input_geo_grid)):
         fileloading.loadGeoModel(input_geo_grid[i], run)
         importlib.reload(params)
@@ -147,7 +151,7 @@ def createGeoGrid(sub_path,input_geo_grid,run):
 line = "\n________________________\n"
 
 
-def creatIntensityGrid(sub_path,input_geo_grid,run,intensity_models,full_string,geo_grid_values,action):
+def creatIntensityGrid(sub_path, input_geo_grid, run, intensity_models, full_string, geo_grid_values, action):
     funckeys = {
         "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
         "bkey": 2,  # bkey
@@ -161,7 +165,7 @@ def creatIntensityGrid(sub_path,input_geo_grid,run,intensity_models,full_string,
     for j in range(len(input_geo_grid)):
         for i in range(len(intensity_models)):
             current_geo_model = input_geo_grid[j]
-            fileloading.loadGeoModel(current_geo_model,run)
+            fileloading.loadGeoModel(current_geo_model, run)
             lband = sub_path["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
             rtray = sub_path["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
 
@@ -169,7 +173,7 @@ def creatIntensityGrid(sub_path,input_geo_grid,run,intensity_models,full_string,
 
             current_intensity_model_name = intensity_models[i][0]
             current_intensity_model = intensity_models[i][1]
-            full_current_model_name = current_geo_model + current_intensity_model_name.replace("Model","")
+            full_current_model_name = current_geo_model + current_intensity_model_name.replace("Model", "")
 
             movieMakerIntensity.intensity_movie(action, sub_path,
                                                 full_current_model_name, 2, current_intensity_model)
@@ -201,21 +205,21 @@ def creatIntensityGrid(sub_path,input_geo_grid,run,intensity_models,full_string,
             geo_models_string += '\n    ' + geo_grid_values[i][0][j] + ": " + geo_grid_values[i][1][j]
         geo_models_string += '\n'
 
-    doc_string_file = open(doc_string_file,'w')
+    doc_string_file = open(doc_string_file, 'w')
     doc_string_file.write(full_string + geo_models_string)
     doc_string_file.close()
 
-    all_intent_names=np.array(all_intent_names)
+    all_intent_names = np.array(all_intent_names)
     all_bright_params = np.array(all_bright_params)
 
     bright_numpy_name = EZPaths.modelRunsDir + run + "/" + "AllBrightParamsList"
     numpy_name = EZPaths.modelRunsDir + run + "/" + "AllModelsList"
 
     np.save(numpy_name, all_intent_names)
-    np.save(bright_numpy_name,all_bright_params)
+    np.save(bright_numpy_name, all_bright_params)
 
 
-def graphCreation(sub_path,run,action,intent_grid_type=2):
+def graphCreation(sub_path, run, action, intent_grid_type=2):
     """
         sub_paths = {
         "GeoDoth5Path"
@@ -237,31 +241,36 @@ def graphCreation(sub_path,run,action,intent_grid_type=2):
     # current_intensity_model = intensity_models[i][1]
     # full_current_model_name = current_geo_model + current_intensity_model_name.replace("Model", "")
 
-    scale_label = {
-        'nu0': 1e9,  # GHz
-        'mass': 1e9 * 1.989e33,  # Billion Solar Masses
-        'scale_height': 1,  # Rg
-        'theta_b': 1,  # Rads
-        'beta': 1,
-        'r_ie': 1,
-        'rb_0': 1,  # Rg
-        'n_th0': 1 / 1e6,  # 1/cm^3
-        't_e0': 1e9,  # GK
-        'p_dens': 1,
-        'p_temp': 1,
-        'nscale': 1
-    }
-
     for model in all_intent_names:
         print(line)
         print(line)
         print("Running " + model)
-        brightparams = all_brightparams
 
         current_geo_model = model[0:len(model) - intent_grid_type]
         fileloading.loadGeoModel(current_geo_model, run)
         lband = sub_path["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
         rtray = sub_path["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
+
+        # Construct Shadows___________________________________________________________________
+
+        a = params.spin_case
+        inc = params.i_case * np.pi / 180  # inclination angle
+        rh = 1 + np.sqrt(1 - a ** 2)  # event horizon
+        # angles to sample
+        varphis = np.linspace(-180, 179, 360) * np.pi / 180
+
+        # generate inner shadow (n=0) curve with kgeo
+        data_inner = kgeo.equatorial_lensing.rho_of_req(a, inc, rh, mbar=0, varphis=varphis)
+        (_, rhos_inner, alphas_inner, betas_inner) = data_inner
+
+        (area_inner, mux_inner, muy_inner, r_inner, e_inner, chi_inner) = image_tools.curve_params(varphis, rhos_inner)
+
+        # generate outer shadow (n=inf) curve with kgeo
+        data_outer = kgeo.equatorial_lensing.rho_of_req(a, inc, rh, mbar=5, varphis=varphis)
+        (_, rhos_outer, alphas_outer, betas_outer) = data_outer
+
+        (area_outer, mux_outer, muy_outer, r_outer, e_outer, chi_outer) = image_tools.curve_params(varphis, rhos_outer)
+        # ___________________________________________________________________
 
         '''Reading of the lensing bands----------------------------------'''
         fnbands = lband
@@ -333,42 +342,51 @@ def graphCreation(sub_path,run,action,intent_grid_type=2):
         radii_I0_Thin = np.load(data_path + "radii_I0_Thin.npy")
         radii_I1_Thin = np.load(data_path + "radii_I1_Thin.npy")
         radii_I2_Thin = np.load(data_path + "radii_I2_Thin.npy")
+        radii_Full_Thin = np.load(data_path + "radii_Full_Thin.npy")
         radii_FullAbsorption_Thick = np.load(data_path + "radii_FullAbsorption_Thick.npy")
         radii_I0_Thick = np.load(data_path + "radii_I0_Thick.npy")
         radii_I1_Thick = np.load(data_path + "radii_I1_Thick.npy")
         radii_I2_Thick = np.load(data_path + "radii_I2_Thick.npy")
         theta = np.load(data_path + "theta.npy")
+        mean_optical_depth_I0 = np.load(data_path + "mean_optical_depth_I0.npy")
+        mean_optical_depth_I1 = np.load(data_path + "mean_optical_depth_I1.npy")
+        mean_optical_depth_I2 = np.load(data_path + "mean_optical_depth_I2.npy")
+
+        num_of_intensity_points = janksys_thin[:,0].shape[1]
+        print("TEST!!!!! num_of_intensity_points, ",num_of_intensity_points)
 
         dim = [10, 8]
-        xaxis = np.array(x_variable) / scale_label[action['var']]
+        xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
         # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
         # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
 
         fluxVNu_path = sub_path["fluxPath"] + model + "/"
         radVNu_path = sub_path["radPath"] + model + "/"
         image_path = sub_path["imagePath"] + model + "/"
+        Optical_depth_path = sub_path["opticalDepth"] + model + "/"
 
         if not os.path.isdir(fluxVNu_path):
             subprocess.run(["mkdir " + fluxVNu_path], shell=True)
-
-
 
         # '''
         # "fluxPath"
         # "radPath"
         # "imagePath"
         # '''
+        # _______________________________________________
+        # _______________________________________________
+        # ________________________________
+        '''JANKSKY PLOTS----------------------------------'''
 
-        # JANKSKY PLOTS________________________________
-
-        fig, (ax,ax1) = plt.subplots(2, 1, figsize=dim, dpi=400)
+        fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True)
         ax.plot(xaxis, janksys_thin[:, 0], '-', label='n=0', color='tab:red', linewidth=3)
         ax.plot(xaxis, janksys_thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
         ax.plot(xaxis, janksys_thin[:, 2], '--', label='n=2', color='tab:blue', linewidth=3)
         ax.plot(xaxis, janksys_thin[:, 3], '-.', label='Total', color='tab:purple', linewidth=3)
 
+        # TODO SHOULD I MARK THE PEAK?
         flux_peak = action["start"] + action["step"] * np.argmax(janksys_thin[:, 3])
-        flux_peak = flux_peak / scale_label[action['var']]
+        flux_peak = flux_peak / astroModels.scale_label[action['var']]
 
         ax.axhline(.5, color='k', label=R'.5 $J_y$', linestyle=":")
         ax.axvline(230, color='k', linestyle=":")
@@ -392,15 +410,14 @@ def graphCreation(sub_path,run,action,intent_grid_type=2):
 
         conv_1 = action["start"] + action["step"] * ilp.ring_convergance(mean_radii_Thick[:, 2], mean_radii_Thick[:, 3],
                                                                          5)
-        conv_1 = conv_1 / scale_label[action['var']]
+        conv_1 = conv_1 / astroModels.scale_label[action['var']]
 
-        ax1.plot(xaxis, janksys_thick[:, 0], '-', label='One pass', color='tab:red', linewidth=3)
-        ax1.plot(xaxis, janksys_thick[:, 1], ':', label='Two passes', color='tab:orange', linewidth=3)
-        ax1.plot(xaxis, janksys_thick[:, 2], '--', label='Three passes', color='tab:blue', linewidth=3)
+        # Optically Thick
+
+        ax1.plot(xaxis, janksys_thick[:, 0], '-', label=R'$n=0$', color='tab:red', linewidth=3)
+        ax1.plot(xaxis, janksys_thick[:, 1], ':', label=R'$n=1$', color='tab:orange', linewidth=3)
+        ax1.plot(xaxis, janksys_thick[:, 2], '--', label=R'$n=2$', color='tab:blue', linewidth=3)
         ax1.plot(xaxis, janksys_thick[:, 3], '-.', label='Cumulative', color='tab:purple', linewidth=3)
-
-        flux_peak = action["start"] + action["step"] * np.argmax(janksys_thick[:, 3])
-        flux_peak = flux_peak / scale_label[action['var']]
 
         ax1.axhline(.5, color='k', label=R'.5 $J_y$', linestyle=":")
         ax1.axvline(230, color='k', linestyle=":")
@@ -409,6 +426,8 @@ def graphCreation(sub_path,run,action,intent_grid_type=2):
 
         # Labels
         ax1.set_ylabel("Total Flux ({})".format(R'$J_y$'))
+        ax.set_xlabel(
+            astroModels.var_label[action["var"]].replace('=', '') + ' (' + astroModels.units_label[action["var"]] + ')')
         ax1.set_xscale('log')
         ax1.set_yscale('log')
 
@@ -427,170 +446,226 @@ def graphCreation(sub_path,run,action,intent_grid_type=2):
 
         ax1.legend(loc='lower left')
 
-        plt.savefig(fluxVNu_path + "flux.jpg")
+        plt.savefig(fluxVNu_path + "flux.jpg", bbox_inches='tight')
         plt.close()
-        #
-        # # RADII PLOTS___________________________________
-        # ax[1] = plt.subplot(2, 1, 2, sharex=ax[0])
-        # # ax[1].axhline(r_inner, color='k', linewidth=3, linestyle=":")  # , label='Blackhole Inner Shadow'
-        # ax[1].axhline(r_outer, color='dimgrey', linewidth=5)  # , label='Blackhole Outer Shadow'
-        # ax[1].plot(xaxis, mean_radii_Thin[:, 0], '-', label='n=0', color='tab:red', linewidth=3)
-        # ax[1].plot(xaxis, mean_radii_Thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
-        # ax[1].plot(xaxis, mean_radii_Thin[:, 2], '-.', label='n=2', color='tab:blue', linewidth=3)
-        #
-        # ax[1].axvline(flux_peak, color='k', linestyle="-.")
-        # ax[1].axvline(230, color='k', linestyle=":")
-        # # Labels
-        #
-        # ax[1].set_xscale('log')
-        # ax[1].set_yscale('log')
-        #
-        # ax[1].set_xlabel(var_label[action["var"]].replace('=', '') + ' (' + units_label[action["var"]] + ')')
-        # ax[1].set_ylabel("Ring Radii ({})".format(R'$R_g$'))
-        #
-        # ax[1].xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.0f'))
-        # ax[1].xaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
-        # ax[1].yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
-        # ax[1].yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
-        #
-        # n = 4  # Keeps every 4th label
-        # [l.set_visible(False) for (i, l) in enumerate(ax[1].xaxis.get_minorticklabels()) if i % n != 0]
-        #
-        # ax[1].legend(frameon=False)
-        # ax[1].set_xlim(xaxis[0], xaxis[xaxis.size - 1])
-        #
-        # new_ticks = [xaxis[0], 230, xaxis[xaxis.size - 1]]
-        # ax[1].set_xticks(new_ticks)
-        # ax[1].tick_params('x', length=20, width=1, which='major', labelrotation=90)
-        # plt.savefig(final_graph_path + "Thin_" + iteration + ".png")
-        # # Markers
-        # plt.close()
-        #
-        # # Thick Full Image--------------------------------------------------------------------------------------------------
-        #
-        # conv_1 = action["start"] + action["step"] * ilp.ring_convergance(mean_radii_Thick[:, 2], mean_radii_Thick[:, 3],
-        #                                                                  5)
-        # conv_1 = conv_1 / scale_label[action['var']]
-        #
-        # fig = plt.subplots(2, 1, figsize=dim, dpi=400)
-        # ax1 = [None, None]
-        # ax1[0] = plt.subplot(2, 1, 1)
-        # ax1[0].plot(xaxis, janksys_thick[:, 0], '-', label='One pass', color='tab:red', linewidth=3)
-        # ax1[0].plot(xaxis, janksys_thick[:, 1], ':', label='Two passes', color='tab:orange', linewidth=3)
-        # ax1[0].plot(xaxis, janksys_thick[:, 2], '--', label='Three passes', color='tab:blue', linewidth=3)
-        # ax1[0].plot(xaxis, janksys_thick[:, 3], '-.', label='Cumulative', color='tab:purple', linewidth=3)
-        #
-        # flux_peak = action["start"] + action["step"] * np.argmax(janksys_thick[:, 3])
-        # flux_peak = flux_peak / scale_label[action['var']]
-        #
-        # ax1[0].axhline(.5, color='k', label=R'.5 $J_y$', linestyle=":")
-        # ax1[0].axvline(230, color='k', linestyle=":")
-        # ax1[0].axvline(conv_1, color='k', linestyle="--", linewidth=3)
-        # ax1[0].axvline(flux_peak, color='dimgrey', linestyle="-", linewidth=2)
-        #
-        # # Labels
-        # ax1[0].set_ylabel("Total Flux ({})".format(R'$J_y$'))
-        # ax1[0].set_xscale('log')
-        # ax1[0].set_yscale('log')
-        #
-        # ax1[0].xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
-        # ax1[0].xaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
-        # # ax1[0].yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.4f'))
-        # ax1[0].yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0e"))
-        #
-        # ax1[0].tick_params('x', which="both", labelbottom=False)
-        # ax1[0].tick_params('y', which="minor", labelleft=False)
-        #
-        # n = 4  # Keeps every 4th label
-        # [l.set_visible(False) for (i, l) in enumerate(ax1[0].xaxis.get_minorticklabels()) if i % n != 0]
-        # ax1[0].tick_params('both', length=10, width=1, which='major')
-        # ax1[0].set_xlim(xaxis[0], xaxis[xaxis.size - 1])
-        #
-        # ax1[0].legend(loc='lower left')
-        #
-        # # RADII PLOTS___________________________________
-        # ax1[1] = plt.subplot(2, 1, 2, sharex=ax1[0])
-        #
-        # # ax1[1].axhline(r_inner, color='k', linewidth=2, linestyle=":")  # , label='Blackhole Inner Shadow'
-        # ax1[1].axhline(r_outer, color='dimgrey', linewidth=5)  # , label='Blackhole Outer Shadow'
-        # # ax1[1].scatter(xaxis[0],r_outer, marker="o", linewidth=10)
-        # # ax1[1].scatter(xaxis[0],r_inner, marker="o", linewidth=10)
-        #
-        # ax1[1].plot(xaxis, mean_radii_Thick[:, 0], '-', label='One pass', color='tab:red', linewidth=3)
-        # ax1[1].plot(xaxis, mean_radii_Thick[:, 1], ':', label='Two passes', color='tab:orange', linewidth=3)
-        # ax1[1].plot(xaxis, mean_radii_Thick[:, 2], '--', label='Three passes', color='tab:blue', linewidth=3)
-        # ax1[1].plot(xaxis, mean_radii_Thick[:, 3], '-.', label='Cumulative', color='tab:purple', linewidth=3)
-        #
-        # ax1[1].axvline(230, color='k', linestyle=":")
-        # ax1[1].axvline(conv_1, color='k', linestyle="--", linewidth=3)
-        # ax1[1].axvline(flux_peak, color='dimgrey', linestyle="-", linewidth=2)
-        #
-        # # ax1[1].axvline(conv_1, color='b',label=R'1% diff', linestyle="--")
-        # # ax1[1].axvline(conv_5, color='g',label=R'5% diff', linestyle=":")
-        # # ax1[1].axvline(conv_10, color='r',label=R'10% diff', linestyle="-.")
-        #
-        # # Labels
-        # ax1[1].set_xlabel(var_label[action["var"]].replace('=', '') + ' (' + units_label[action["var"]] + ')')
-        # ax1[1].set_ylabel("Ring Radii ({})".format(R'$R_g$'))
-        # ax1[1].set_xscale('log')
-        # ax1[1].set_yscale('log')
-        #
-        # ax1[1].xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.0f'))
-        # ax1[1].xaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
-        # ax1[1].yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.0f'))
-        # ax1[1].yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
-        #
-        # new_ticks = [xaxis[0], 230, conv_1, flux_peak, xaxis[xaxis.size - 1]]
-        # ax1[1].set_xticks(new_ticks)
-        #
-        # # new_ticks = np.append(ax1[1].get_yticks(), r_outer)
-        # # new_ticks = np.append(new_ticks, r_inner)
-        # # print(new_ticks)
-        # # ax1[1].set_yticks(new_ticks)
-        # n = 4  # Keeps every 4th label
-        # [l.set_visible(False) for (i, l) in enumerate(ax1[1].xaxis.get_minorticklabels()) if i % n != 0]
-        # ax1[1].legend(frameon=False)
-        # ax1[1].set_xlim(xaxis[0], xaxis[xaxis.size - 1])
-        #
-        # ax1[1].tick_params('x', length=20, width=1, which='major', labelrotation=80)
-        #
-        # plt.savefig(final_graph_path + "Thick_" + iteration + ".png")
-        # plt.close()
 
-#
-# dim = [14,10]
+        # ______________________________________________
+        # ______________________________________________
+        # ___________________________________
+        '''RADII PLOTS----------------------------------'''
+        fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True)
+        # ax.axhline(r_inner, color='k', linewidth=3, linestyle=":")  # , label='Blackhole Inner Shadow'
+        ax.axhline(r_outer, color='dimgrey', linewidth=5)  # , label='Blackhole Outer Shadow'
+        ax.plot(xaxis, mean_radii_Thin[:, 0], '-', label='n=0', color='tab:red', linewidth=3)
+        ax.plot(xaxis, mean_radii_Thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
+        ax.plot(xaxis, mean_radii_Thin[:, 2], '-.', label='n=2', color='tab:blue', linewidth=3)
 
+        ax.axvline(flux_peak, color='k', linestyle="-.")
+        ax.axvline(230, color='k', linestyle=":")
+        # Labels
 
-# def createRadVFlux(rad_v_flux_file,thin_assumption,full_solution):
-#     fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
-#     ax = plt.subplot(2, 1, 1)
-#     ax.plot(xaxis, janksys_thin[:, 0], '-', label='n=0', color='tab:red', linewidth=3)
-#     ax.plot(xaxis, janksys_thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
-#     ax.plot(xaxis, janksys_thin[:, 2], '--', label='n=2', color='tab:blue', linewidth=3)
-#     ax.plot(xaxis, janksys_thin[:, 3], '-.', label='Total', color='tab:purple', linewidth=3)
-#
-#     flux_peak = action["start"] + action["step"] * np.argmax(janksys_thin[:, 3])
-#     flux_peak = flux_peak / scale_label[action['var']]
-#
-#     ax[0].axhline(.5, color='k', label=R'.5 $J_y$', linestyle=":")
-#     ax[0].axvline(230, color='k', linestyle=":")
-#
-#     # Labels
-#     ax[0].set_ylabel("Total Flux ({})".format(R'$J_y$'))
-#     ax[0].set_xscale('log')
-#     ax[0].set_yscale('log')
-#     ax[0].xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
-#     ax[0].xaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
-#     ax[0].yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
-#     ax[0].yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
-#
-#     ax[0].tick_params('x', which="both", labelbottom=False)
-#     ax[0].tick_params('y', which="minor", labelleft=False)
-#     n = 4  # Keeps every 4th label
-#     [l.set_visible(False) for (i, l) in enumerate(ax[0].xaxis.get_minorticklabels()) if i % n != 0]
-#     ax[0].tick_params('both', length=10, width=1, which='major')
-#     ax[0].set_xlim(xaxis[0], xaxis[xaxis.size - 1])
-#     ax[0].legend(loc='lower left')
+        ax.set_xscale('log')
+        ax.set_yscale('log')
+
+        ax.set_ylabel("Ring Radii ({})".format(R'$R_g$'))
+
+        ax.xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.0f'))
+        ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
+        ax.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
+        ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
+
+        n = 4  # Keeps every 4th label
+        [l.set_visible(False) for (i, l) in enumerate(ax.xaxis.get_minorticklabels()) if i % n != 0]
+
+        ax.legend(frameon=False)
+        ax.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
+
+        new_ticks = [xaxis[0], 230, xaxis[xaxis.size - 1]]
+        ax.set_xticks(new_ticks)
+        ax.tick_params('x', length=20, width=1, which='major', labelrotation=90)
+        # Markers
+
+        # Optically Thick
+
+        ax1 = plt.subplot(2, 1, 2, sharex=ax1[0])
+
+        # ax1.axhline(r_inner, color='k', linewidth=2, linestyle=":")  # , label='Blackhole Inner Shadow'
+        ax1.axhline(r_outer, color='dimgrey', linewidth=5)  # , label='Blackhole Outer Shadow'
+        # ax1.scatter(xaxis[0],r_outer, marker="o", linewidth=10)
+        # ax1.scatter(xaxis[0],r_inner, marker="o", linewidth=10)
+
+        ax1.plot(xaxis, mean_radii_Thick[:, 0], '-', label=R'n=0', color='tab:red', linewidth=3)
+        ax1.plot(xaxis, mean_radii_Thick[:, 1], ':', label=R'n=1', color='tab:orange', linewidth=3)
+        ax1.plot(xaxis, mean_radii_Thick[:, 2], '--', label=R'n=2', color='tab:blue', linewidth=3)
+        ax1.plot(xaxis, mean_radii_Thick[:, 3], '-.', label='Cumulative', color='tab:purple', linewidth=3)
+
+        ax1.axvline(230, color='k', linestyle=":")
+        ax1.axvline(conv_1, color='k', linestyle="--", linewidth=3)
+        ax1.axvline(flux_peak, color='dimgrey', linestyle="-", linewidth=2)
+
+        # ax1.axvline(conv_1, color='b',label=R'1% diff', linestyle="--")
+        # ax1.axvline(conv_5, color='g',label=R'5% diff', linestyle=":")
+        # ax1.axvline(conv_10, color='r',label=R'10% diff', linestyle="-.")
+
+        # Labels
+        ax1.set_xlabel(astroModels.var_label[action["var"]].replace('=', '')
+                      + ' (' + astroModels.units_label[action["var"]] + ')')
+        ax1.set_ylabel("Ring Radii ({})".format(R'$R_g$'))
+        ax1.set_xscale('log')
+        ax1.set_yscale('log')
+
+        ax1.xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.0f'))
+        ax1.xaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
+        ax1.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.0f'))
+        ax1.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
+
+        new_ticks = [xaxis[0], 230, conv_1, flux_peak, xaxis[xaxis.size - 1]]
+        ax1.set_xticks(new_ticks)
+
+        # new_ticks = np.append(ax1.get_yticks(), r_outer)
+        # new_ticks = np.append(new_ticks, r_inner)
+        # print(new_ticks)
+        # ax1.set_yticks(new_ticks)
+        n = 4  # Keeps every 4th label
+        [l.set_visible(False) for (i, l) in enumerate(ax1.xaxis.get_minorticklabels()) if i % n != 0]
+        ax1.legend(frameon=False)
+        ax1.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
+
+        ax1.tick_params('x', length=20, width=1, which='major', labelrotation=80)
+
+        plt.savefig(radVNu_path + "Radii.jpeg", bbox_inches='tight')
+        plt.close()
+
+        # --------------------------------------------------
+        # --------------------------------------------------
+        # --------------------------------------------------
+        '''Optical Depth----------------------------------'''
+        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+
+        ax1.set_xlabel(astroModels.var_label[action["var"]].replace('=', '')
+                      + ' (' + astroModels.units_label[action["var"]] + ')')
+        ax1.set_ylabel("Optical Depth ({})".format(R'$UNITS$'))
+
+        ax.plot(xaxis, mean_optical_depth_I0, '-', label='n=0', color='tab:red', linewidth=3)
+        ax.plot(xaxis, mean_optical_depth_I1, ':', label='n=1', color='tab:orange', linewidth=3)
+        ax.plot(xaxis, mean_optical_depth_I2, '-.', label='n=2', color='tab:blue', linewidth=3)
+        plt.savefig(Optical_depth_path + "Optical Depth.jpeg", bbox_inches='tight')
+        plt.close()
+
+        '''Full Images----------------------------------'''
+        k = action["start"]
+
+        print("Constructing Full images for " + model)
+        for i in range(num_of_intensity_points):
+            brightparams = all_brightparams[i]
+            print("Full image production for intensity frame: ", i)
+            print(R"Observation frequency $\nu=$",k)
+            # optically thin radii
+
+            thin_alpha0 = radii_I0_Thin[i,:] * np.cos(theta)
+            thin_beta0 = radii_I0_Thin[i,:] * np.sin(theta)
+            thin_alpha1 = radii_I1_Thin[i,:] * np.cos(theta)
+            thin_beta1 = radii_I1_Thin[i,:] * np.sin(theta)
+            thin_alpha2 = radii_I2_Thin[i,:] * np.cos(theta)
+            thin_beta2 = radii_I2_Thin[i,:] * np.sin(theta)
+            thin_alpha_full = radii_Full_Thin[i,:] * np.cos(theta)
+            thin_beta_full = radii_Full_Thin[i,:] * np.sin(theta)
+            print("TEST!!!! radii_I0_Thin[i,:],  ", radii_I0_Thin[i,:])
+            print("TEST!!!! thin_alpha0 Shape,  ", thin_alpha0.shape)
+
+            # full solution radii
+            thick_alpha0 = radii_I0_Thick[i,:] * np.cos(theta)
+            thick_beta0 = radii_I0_Thick[i,:] * np.sin(theta)
+            thick_alpha1 = radii_I1_Thick[i,:] * np.cos(theta)
+            thick_beta1 = radii_I1_Thick[i,:] * np.sin(theta)
+            thick_alpha2 = radii_I2_Thick[i,:] * np.cos(theta)
+            thick_beta2 = radii_I2_Thick[i,:] * np.sin(theta)
+            thick_alpha_full = radii_FullAbsorption_Thick[i,:] * np.cos(theta)
+            thick_beta_full = radii_FullAbsorption_Thick[i,:] * np.sin(theta)
+
+            current_intensity_file = (sub_path["intensityPath"] + model + "/" + action["var"]
+                                      + "_" + "{:.5e}".format(brightparams[action["var"]]))
+
+            lim0 = 25
+
+            print("Reading file: ", current_intensity_file)
+
+            h5f = h5py.File(current_intensity_file, 'r')
+
+            I0 = h5f['bghts0'][:]  # This implies I0 is 1 pass
+            I1 = h5f['bghts1'][:]
+            I2 = h5f['bghts2'][:]
+
+            # I2_Absorb = h5f['bghts2_absorbtion'][:]
+            # I1_Absorb = h5f['bghts1_absorbtion'][:]
+            # I0_Absorb = h5f['bghts0_absorbtion'][:]
+            Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+
+            h5f.close()
+
+            vmax0 = np.nanmax(I0 + I1 + I2) * 1.2
+            fig, (ax0, ax1) = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
+
+            # Optically Thin
+
+            im0 = ax0.imshow(I0 + I1 + I2, vmax=vmax0, origin="lower", cmap="afmhot", extent=[-lim0, lim0, -lim0, lim0])
+
+            ax0.set_xlim(-10, 10)  # units of M
+            ax0.set_ylim(-10, 10)
+
+            ax0.text(-9, 8.5, astroModels.var_label[action["var"]]
+                     + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
+                     + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="w")
+
+            ax0.set_xlabel(r"$\alpha$" + " " + r"($\mu as$)")
+            ax0.set_ylabel(r"$\beta$" + " " + r"($\mu as$)")
+            ax0.title.set_text('Optically Thin Assumption')
+
+            # Optically thick
+
+            im1 = ax1.imshow(Absorbtion_Image, origin="lower", cmap="afmhot", extent=[-lim0, lim0, -lim0, lim0])
+
+            #
+            ax1.set_xlim(-10, 10)  # units of M
+            ax1.set_ylim(-10, 10)
+
+            ax1.set_xlabel(r"$\alpha$" + " " + r"($\mu as$)")
+            ax1.set_ylabel(r"$\beta$" + " " + r"($\mu as$)")
+
+            ax1.title.set_text('Full Solution')
+
+            colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format='%.1e', ticks=[
+                vmax0 * .8,
+                vmax0 * .6,
+                vmax0 * .4,
+                vmax0 * .2,
+                vmax0 * .05
+            ],
+                                     label="Brightnes Temperature (K)",
+                                     ax=ax1
+                                     )
+
+            '''Radii Calc______________________'''
+            # Thin
+            ax0.plot(thin_alpha0, thin_beta0, color='tab:blue', linestyle='-')
+            ax0.plot(thin_alpha1, thin_beta1, color='tab:orange', linestyle=':')
+            ax0.plot(thin_alpha2, thin_beta2, color='tab:green', linestyle='--')
+            ax0.plot(thin_alpha_full, thin_beta_full, color='tab:red', linestyle='--')
+
+            # Thick
+            ax1.plot(thick_alpha0, thick_beta0, color='tab:blue', linestyle='-')
+            ax1.plot(thick_alpha1, thick_beta1, color='tab:orange', linestyle=':')
+            ax1.plot(thick_alpha2, thick_beta2, color='tab:green', linestyle='--')
+            ax1.plot(thick_alpha_full, thick_beta_full, color='tab:red', linestyle='--')
+            plt.subplots_adjust(wspace=.3)
+
+            pltname = image_path + 'FullImage_' + str(i) + ".jpeg"
+            plt.savefig(pltname, bbox_inches='tight')
+            print("Jpeg Created:  " + pltname)
+
+            plt.close()
+
+            k += action['step']
 
 
 # Full Run
@@ -598,7 +673,3 @@ def graphCreation(sub_path,run,action,intent_grid_type=2):
 # current_bp = astroModels.bp_run1
 # current_var_params = ["p_temp", "p_mag"]
 # current_geo_grid = ["ModelA", "ModelB"]
-
-
-
-

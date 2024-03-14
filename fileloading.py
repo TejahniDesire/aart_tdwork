@@ -104,7 +104,7 @@ def runsInit(run:str, grid_params, var_params):
         "fluxPath": main_path + "fluxVNu/",
         "radPath":main_path + "radVNu/",
         "imagePath":main_path + "image/",
-
+        "opticalDepth": main_path + "opticalDepth/"
     }
     for key in list(sub_paths):
         isDir = os.path.exists(sub_paths[key])

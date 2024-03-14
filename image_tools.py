@@ -7,7 +7,7 @@ from astropy import units as u
 from lmfit import Parameters,minimize, fit_report
 
 
-def radii_of_theta(I0, size):
+def radii_of_thetaV2(I0, size):
 
     x = np.arange(I0.shape[0])
     y = x

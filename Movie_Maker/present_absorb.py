@@ -324,9 +324,9 @@ for i in range(num_iterations):
 
     # Thin Radii Calcs--------------------------------------------------------------------------------------------------
 
-    radii_I0_Thin_i, theta = tls.radii_of_theta(I0, size)
-    radii_I1_Thin_i, theta = tls.radii_of_theta(I1, size)
-    radii_I2_Thin_i, theta = tls.radii_of_theta(I2, size)
+    radii_I0_Thin_i, theta = tls.radii_of_thetaV2(I0, size)
+    radii_I1_Thin_i, theta = tls.radii_of_thetaV2(I1, size)
+    radii_I2_Thin_i, theta = tls.radii_of_thetaV2(I2, size)
 
     r0_thin = tls.curve_params(theta, radii_I0_Thin_i)
     r1_thin = tls.curve_params(theta, radii_I1_Thin_i)
@@ -341,10 +341,10 @@ for i in range(num_iterations):
     radii_I2_Thin = np.vstack((radii_I2_Thin, radii_I2_Thin_i))
 
     # Thick Radii Calcs-------------------------------------------------------------------------------------------------
-    radii_I0_Thick_i, theta = tls.radii_of_theta(I0_Absorb, size)
-    radii_I1_Thick_i, theta = tls.radii_of_theta(I1_Absorb, size)
-    radii_I2_Thick_i, theta = tls.radii_of_theta(I2_Absorb, size)
-    radii_FullAbsorption_Thick_i, theta = tls.radii_of_theta(Absorbtion_Image, size)
+    radii_I0_Thick_i, theta = tls.radii_of_thetaV2(I0_Absorb, size)
+    radii_I1_Thick_i, theta = tls.radii_of_thetaV2(I1_Absorb, size)
+    radii_I2_Thick_i, theta = tls.radii_of_thetaV2(I2_Absorb, size)
+    radii_FullAbsorption_Thick_i, theta = tls.radii_of_thetaV2(Absorbtion_Image, size)
 
 
 
