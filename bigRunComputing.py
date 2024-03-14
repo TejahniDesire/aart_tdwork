@@ -353,7 +353,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         mean_optical_depth_I1 = np.load(data_path + "mean_optical_depth_I1.npy")
         mean_optical_depth_I2 = np.load(data_path + "mean_optical_depth_I2.npy")
 
-        num_of_intensity_points = janksys_thin[:,0].shape[0] - 1
+        num_of_intensity_points = janksys_thin[:,0].shape[0]
         print("Test: ", janksys_thin[:,0])
         print("Number of Intensity Points: ", num_of_intensity_points)
 
@@ -489,7 +489,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
         # Optically Thick
 
-        ax1 = plt.subplot(2, 1, 2, sharex=ax1[0])
+        ax1 = plt.subplot(2, 1, 2)
 
         # ax1.axhline(r_inner, color='k', linewidth=2, linestyle=":")  # , label='Blackhole Inner Shadow'
         ax1.axhline(r_outer, color='dimgrey', linewidth=5)  # , label='Blackhole Outer Shadow'
@@ -558,9 +558,9 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         k = action["start"]
 
         print("Constructing Full images for " + model)
-        for i in range(1,num_of_intensity_points+1,1):
+        for i in range(num_of_intensity_points):
             brightparams = all_brightparams[i]
-            print("Full image production for intensity frame: ", i-1)
+            print("Full image production for intensity frame: ", i)
             print(R"Observation frequency $\nu=$",k)
             # optically thin radii
 
