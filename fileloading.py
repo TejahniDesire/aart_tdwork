@@ -77,10 +77,10 @@ def loadGeoModel(current_model:str, run:str):
     loading_model = EZPaths.modelRunsDir + run + "/geoModels/" + current_model + ".py"
     loaded_model = EZPaths.aartPath + "/" + "params.py"
     cmd = "cp " + loading_model + " " + loaded_model
-    print("file {} Loaded as {}".format(loading_model,loaded_model))
-    importlib.reload(params)
-
     subprocess.run([cmd], shell=True)
+    print("file {} Loaded as {}".format(loading_model,loaded_model))
+
+    importlib.reload(params)
 
 
 def runsInit(run:str, grid_params, var_params):
