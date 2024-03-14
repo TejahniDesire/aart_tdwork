@@ -3,8 +3,8 @@ import EZPaths
 
 model_name = "ModelA"
 
-print("\nThanks for using AART")
-print("Copyright (C) 2022, A. Cardenas-Avendano, H. Zhu & A. Lupsasca\n")
+# print("\nThanks for using AART")
+# print("Copyright (C) 2022, A. Cardenas-Avendano, H. Zhu & A. Lupsasca\n")
 
 # TEA fa  faf 
 

@@ -555,12 +555,14 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
         ax1.set_xlabel(astroModels.var_label[action["var"]].replace('=', '')
                       + ' (' + astroModels.units_label[action["var"]] + ')')
-        ax1.set_ylabel("Optical Depth ({})".format(R'$UNITS$'))
+        ax1.set_ylabel("Optical Depth")
 
         ax.plot(xaxis, mean_optical_depth_I0, '-', label='n=0', color='tab:red', linewidth=3)
         ax.plot(xaxis, mean_optical_depth_I1, ':', label='n=1', color='tab:orange', linewidth=3)
         ax.plot(xaxis, mean_optical_depth_I2, '-.', label='n=2', color='tab:blue', linewidth=3)
+        ax.legend()
         plt.savefig(Optical_depth_path + "Optical Depth.jpeg", bbox_inches='tight')
+        print("Image '{}' Created", Optical_depth_path + "Optical Depth.jpeg")
         plt.close()
 
         '''Full Images----------------------------------'''
@@ -640,7 +642,6 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
             ax1.set_ylim(-10, 10)
 
             ax1.set_xlabel(r"$\alpha$" + " " + r"($\mu as$)")
-            ax1.set_ylabel(r"$\beta$" + " " + r"($\mu as$)")
 
             ax1.title.set_text('Full Solution')
 
@@ -667,22 +668,29 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
             '''Radii Calc______________________'''
             # Thin
-            ax0.plot(thin_alpha0, thin_beta0, color='tab:blue', linestyle='-')
-            ax0.plot(thin_alpha1, thin_beta1, color='tab:orange', linestyle=':')
-            ax0.plot(thin_alpha2, thin_beta2, color='tab:green', linestyle='--')
-            ax0.plot(thin_alpha_full, thin_beta_full, color='tab:red', linestyle='--')
+            lineCum_thickness = 8
+            line0_thickness = 6
+            line1_thickness = 4
+            line2_thickness = 2
+
+            ax0.plot(thin_alpha_full, thin_beta_full, color='tab:purple', linestyle='--', linewidth=lineCum_thickness)
+            ax0.plot(thin_alpha0, thin_beta0, color='tab:red', linestyle='-', linewidth=line0_thickness)
+            ax0.plot(thin_alpha1, thin_beta1, color='tab:orange', linestyle=':', linewidth=line1_thickness)
+            ax0.plot(thin_alpha2, thin_beta2, color='tab:blue', linestyle='--', linewidth=line2_thickness)
 
             # Thick
-            ax1.plot(thick_alpha0, thick_beta0, color='tab:blue', linestyle='-')
-            ax1.plot(thick_alpha1, thick_beta1, color='tab:orange', linestyle=':')
-            ax1.plot(thick_alpha2, thick_beta2, color='tab:green', linestyle='--')
-            ax1.plot(thick_alpha_full, thick_beta_full, color='tab:red', linestyle='--')
+            ax1.plot(thick_alpha_full, thick_beta_full, color='tab:purple', linestyle='--', linewidth=lineCum_thickness, label='Cumulative')
+            ax1.plot(thick_alpha0, thick_beta0, color='tab:red', linestyle='-', linewidth=line0_thickness, label=R'n=0')
+            ax1.plot(thick_alpha1, thick_beta1, color='tab:orange', linestyle=':', linewidth=line1_thickness, label=R'n=1')
+            ax1.plot(thick_alpha2, thick_beta2, color='tab:blue', linestyle='--', linewidth=line2_thickness, label=R'n=2')
+            ax1.legend()
+
             plt.subplots_adjust(wspace=.3)
 
-            pltname = image_path + 'FullImage_' + str(i) + ".jpeg"
+            pltname = (image_path + 'FullImage_' + str(i) + "_Nu_"
+                       + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
             plt.savefig(pltname, bbox_inches='tight')
             print("Jpeg Created:  " + pltname)
-
             plt.close()
 
             k += action['step']
