@@ -131,6 +131,76 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
     ax1.title.set_text('Full Solution')
 
 
+def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
+                   poi, conv_1_style, r_outer_style,flux_peak_style, action):
+    ax.plot(xaxis, janksys_thin[:, 0], '-', label='n=0', color='tab:red', linewidth=3)
+    ax.plot(xaxis, janksys_thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
+    ax.plot(xaxis, janksys_thin[:, 2], '--', label='n=2', color='tab:blue', linewidth=3)
+    ax.plot(xaxis, janksys_thin[:, 3], '-.', label='Total', color='tab:purple', linewidth=3)
+
+    # TODO SHOULD I MARK THE PEAK?
+
+    ax.axhline(.5, color='k', label=R'.5 $J_y$', linestyle=":")
+    ax.axvline(230, color='k', linestyle=":")
+
+    # Labels
+    ax.set_ylabel("Total Flux ({})".format(R'$J_y$'))
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
+    ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
+    # ax.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
+    # ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
+    # ax1.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.4f'))
+    ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0e"))
+
+    ax.tick_params('x', which="both", labelbottom=False)
+    ax.title.set_text('Optically Thin Assumption')
+
+    n = 4  # Keeps every 4th label
+    [l.set_visible(False) for (i, l) in enumerate(ax.xaxis.get_minorticklabels()) if i % n != 0]
+    ax.tick_params('both', length=10, width=1, which='major')
+    ax.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
+    ax.legend(loc='lower left')
+
+    # Optically Thick
+
+    ax1.axhline(.5, color='k', label=R'.5 $J_y$', linestyle=":")
+    ax1.axvline(230, color='k', linestyle=":")
+    ax1.axvline(poi["conv_1"],
+                color=conv_1_style["color"], linestyle=conv_1_style["linestyle"], linewidth=conv_1_style["linewidth"])
+    ax1.axvline(poi["flux_peak"], color=flux_peak_style["color"],
+                linestyle=flux_peak_style["linestyle"], linewidth=flux_peak_style["linewidth"])
+
+    ax1.plot(xaxis, janksys_thick[:, 0], '-', label=R'$n=0$', color='tab:red', linewidth=3)
+    ax1.plot(xaxis, janksys_thick[:, 1], ':', label=R'$n=1$', color='tab:orange', linewidth=3)
+    ax1.plot(xaxis, janksys_thick[:, 2], '--', label=R'$n=2$', color='tab:blue', linewidth=3)
+    ax1.plot(xaxis, janksys_thick[:, 3], '-.', label='Cumulative', color='tab:purple', linewidth=3)
+
+    # Labels
+    ax1.set_ylabel("Total Flux ({})".format(R'$J_y$'))
+    ax1.set_xlabel(
+        astroModels.var_label[action["var"]].replace('=', '') + ' (' + astroModels.units_label[action["var"]] + ')')
+    ax1.set_xscale('log')
+    ax1.set_yscale('log')
+
+    ax1.xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
+    ax1.xaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
+    # ax1.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.4f'))
+    ax1.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0e"))
+    ax1.title.set_text('Full Solution')
+
+    new_ticks = [xaxis[0], 230, poi["conv_1"], poi["flux_peak"], xaxis[xaxis.size - 1]]
+    ax1.set_xticks(new_ticks)
+
+    n = 4  # Keeps every 4th label
+    [l.set_visible(False) for (i, l) in enumerate(ax1.xaxis.get_minorticklabels()) if i % n != 0]
+    ax1.tick_params('both', length=10, width=1, which='major')
+    ax1.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
+
+    ax1.legend(loc='lower left')
+
+
 def opticalDepth(ax,xaxis,mean_optical_depth,
                  poi, conv_1_style,flux_peak_style, action):
 
