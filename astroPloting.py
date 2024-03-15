@@ -224,7 +224,7 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
 
     ax.set_xlabel(astroModels.var_label[action["var"]].replace('=', '')
                   + ' (' + astroModels.units_label[action["var"]] + ')')
-    n = 3
+    n = 2
     [l.set_visible(False) for (i, l) in enumerate(ax.xaxis.get_minorticklabels()) if i % n != 0]
     ax.set_ylabel("Optical Depth")
     ax.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
