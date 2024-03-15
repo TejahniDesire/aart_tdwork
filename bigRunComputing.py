@@ -249,6 +249,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
     hist_flux_peaks_thins = []
     hist_flux_peaks_thicks = []
     hist_convs = []
+    dim = [10, 8]
     for model in all_intent_names:
         print(line)
         print("Running " + model)
@@ -362,7 +363,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         num_of_intensity_points = janksys_thin[:,0].shape[0]
         print("Number of Intensity Points: ", num_of_intensity_points)
 
-        dim = [10, 8]
+
         xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
         # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
         # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
@@ -634,7 +635,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
     print("Image '{}' Created".format(figname))
     plt.close()
 
-    # Conv________________
+    """Conv_____________________________________________________________________"""
     fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
     astroPloting.histogram(ax, hist_convs, "Flux Peak", "Full Solution Frequency")
@@ -644,7 +645,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
     print("Image '{}' Created".format(figname))
     plt.close()
 
-    """Conv_____________________________________________________________________"""
+
 
 
 
