@@ -409,13 +409,13 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         r_outer_style = {
             "color": 'dimgrey',
             "linestyle": "-",
-            "linewidth": 2
+            "linewidth": 1
         }
 
         flux_peak_style = {
             "color": 'k',
             "linestyle": "-.",
-            "linewidth": 5
+            "linewidth": 3
         }
 
         # '''
