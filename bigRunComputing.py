@@ -511,11 +511,6 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         # ______________________________________________
         # ___________________________________
         '''RADII PLOTS----------------------------------'''
-        poi = {
-            "r_outer": r_outer,
-            "flux_peak": flux_peak,
-            "conv_1": conv_1,
-        }
         fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True)
 
         astroPloting.radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
