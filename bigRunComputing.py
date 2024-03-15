@@ -173,15 +173,16 @@ def creatIntensityGrid(sub_path, input_geo_grid, run, intensity_models, full_str
             # Intensity
 
             current_intensity_model_name = intensity_models[i][0]
-            current_intensity_model = intensity_models[i][1]
+            print("Creating Intensity Movie for Model ", current_intensity_model_name)
+            current_brightparams = intensity_models[i][1]
             full_current_model_name = current_geo_model + current_intensity_model_name.replace("Model", "")
 
             movieMakerIntensity.intensity_movie(action, sub_path,
-                                                full_current_model_name, 2, current_intensity_model)
+                                                full_current_model_name, 2, current_brightparams)
 
             all_intent_names += [full_current_model_name]
-            all_bright_params += [current_intensity_model]
-            # args = createIntensityArgs(current_intensity_model)
+            all_bright_params += [current_brightparams]
+            # args = createIntensityArgs(current_brightparams)
             #
             # args += "--lband " + lband + " --rtray " + rtray
             #
@@ -189,7 +190,7 @@ def creatIntensityGrid(sub_path, input_geo_grid, run, intensity_models, full_str
             #
             # new_intensity_path = sub_path["intensityPath"] + full_current_model_name + "Intensity" + ".h5"
             #
-            # fnrays = fileloading.intensityNameNoUnits(current_intensity_model, funckeys)
+            # fnrays = fileloading.intensityNameNoUnits(current_brightparams, funckeys)
             #
             # subprocess.run(["mv " + fnrays + ' ' + new_intensity_path], shell=True)
             #
