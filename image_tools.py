@@ -66,9 +66,14 @@ def radii_of_thetaV2(I0, dx=None):
     peak = np.argmax(interp(coords), 1)
 
     if not np.all((peak == 0) == False):
-        zero_point = np.argmax(peak == 0)
-        peak = np.delete(peak, zero_point)  # Remove any peak listed occuring at index 0
-        theta = np.delete(theta,zero_point)
+        pass
+
+        # TODO What's the best way to remove the point
+        #  without changing the array size. Averaging around could include 0,
+        #  going to left or right can hit another zero
+        # zero_point = np.argmax(peak == 0)
+        # peak = np.delete(peak, zero_point)  # Remove any peak listed occuring at index 0
+        # theta = np.delete(theta,zero_point)
 
     if dx is None:
         dx = (limits * 2) / I0.shape[0]
