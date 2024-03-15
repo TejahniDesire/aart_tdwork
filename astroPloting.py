@@ -27,7 +27,8 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
     '''
     poi = {
         r_outer,
-        flux_peak,
+        flux_peak_thick,
+        flux_peak_thin,
         conv_1,
     }
     conv_1_style = {
@@ -204,7 +205,7 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
     ax.axvline(230, color='k', linestyle=":")
     ax.axvline(poi["conv_1"],
                color=conv_1_style["color"], linestyle=conv_1_style["linestyle"], linewidth=conv_1_style["linewidth"])
-    ax.axvline(poi["flux_peak"], color=flux_peak_style["color"],
+    ax.axvline(poi["flux_peak_thick"], color=flux_peak_style["color"],
                linestyle=flux_peak_style["linestyle"], linewidth=flux_peak_style["linewidth"])
 
     ax.plot(xaxis, mean_optical_depth[0], '-', label='n=0', color='tab:red', linewidth=3)
