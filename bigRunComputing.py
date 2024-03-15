@@ -248,7 +248,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
     j = 0
     hist_flux_peaks_thins = []
     hist_flux_peaks_thicks = []
-    hist_conv_thins = []
+    hist_convs = []
     for model in all_intent_names:
         print(line)
         print("Running " + model)
@@ -398,7 +398,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
         hist_flux_peaks_thins += [flux_peak_thin]
         hist_flux_peaks_thicks += [flux_peak_thick]
-        hist_conv_thins += [conv_1]
+        hist_convs += [conv_1]
 
         poi = {
             "r_outer": r_outer,
@@ -605,12 +605,44 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
             k += action['step']
         j += 1  # marker for which brightparams to use
     # histograms
-
+    print(line)
+    print("Creating Histograms")
     """Flux Peaks_____________________________________________________________________"""
+    peak_hist_thin_path = sub_path["peakHistThin"]
+    peak_hist_thick_path = sub_path["peakHistThick"]
+    conv_hist_path = sub_path["convHist"]
+
     # Thin_________________
 
+    fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+
+    astroPloting.histogram(ax,hist_flux_peaks_thins,"Flux Peak","Frequency")
+
+    figname = peak_hist_thin_path + "FluxPeakThin.jpeg"
+    plt.savefig(figname, bbox_inches='tight')
+    print("Image '{}' Created".format(figname))
+    plt.close()
 
     # Thick_______________
+
+    fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+
+    astroPloting.histogram(ax, hist_flux_peaks_thicks, "Flux Peak", "Full Solution Frequency")
+
+    figname = peak_hist_thick_path + "FluxPeakThick.jpeg"
+    plt.savefig(figname, bbox_inches='tight')
+    print("Image '{}' Created".format(figname))
+    plt.close()
+
+    # Conv________________
+    fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+
+    astroPloting.histogram(ax, hist_convs, "Flux Peak", "Full Solution Frequency")
+
+    figname = conv_hist_path + "convHist.jpeg"
+    plt.savefig(figname, bbox_inches='tight')
+    print("Image '{}' Created".format(figname))
+    plt.close()
 
     """Conv_____________________________________________________________________"""
 

@@ -231,3 +231,8 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
 
     ax.legend()
 
+
+def histogram(ax,data,xlabel,ylabel):
+    ax.hist(data)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
