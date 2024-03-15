@@ -384,7 +384,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         # Points of Interest
 
         conv_1 = action["start"] + action["step"] * ilp.ring_convergance(mean_radii_Thick[:, 2], mean_radii_Thick[:, 3],
-                                                                         5)
+                                                                         3)
         conv_1 = conv_1 / astroModels.scale_label[action['var']]
 
         flux_peak = action["start"] + action["step"] * np.argmax(janksys_thin[:, 3])
@@ -397,8 +397,8 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         }
 
         conv_1_style = {
-            "color": 'k',
-            "linestyle": "--",
+            "color": 'dimgrey',
+            "linestyle": "-",
             "linewidth": 3
         }
 
