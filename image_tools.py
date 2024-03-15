@@ -66,7 +66,10 @@ def radii_of_thetaV2(I0, dx=None):
     peak = np.argmax(interp(coords), 1)
 
     if not np.all((peak == 0) == False):
-        peak = np.delete(peak, np.argmax(peak == 0))  # Remove any peak listed occuring at index 0
+        zero_point = np.argmax(peak == 0)
+        peak = np.delete(peak, zero_point)  # Remove any peak listed occuring at index 0
+        theta = np.delete(theta,zero_point)
+
     if dx is None:
         dx = (limits * 2) / I0.shape[0]
 
