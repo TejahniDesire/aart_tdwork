@@ -109,7 +109,7 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
     ax1.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.0f'))
     ax1.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
 
-    new_ticks = [xaxis[0], 230, poi["conv_1"], poi["flux_peak"], xaxis[xaxis.size - 1]]
+    new_ticks = [xaxis[0], 230, poi["conv_1"], poi["flux_peak_thick"], xaxis[xaxis.size - 1]]
     ax1.set_xticks(new_ticks)
 
     # new_ticks = np.append(ax1.get_yticks(), r_outer)
@@ -186,7 +186,7 @@ def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
     ax1.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0e"))
     ax1.title.set_text('Full Solution')
 
-    new_ticks = [xaxis[0], 230, poi["conv_1"], poi["flux_peak"], xaxis[xaxis.size - 1]]
+    new_ticks = [xaxis[0], 230, poi["conv_1"], poi["flux_peak_thick"], xaxis[xaxis.size - 1]]
     ax1.set_xticks(new_ticks)
 
     n = 4  # Keeps every 4th label
@@ -218,7 +218,7 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
     ax.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.2f'))
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
 
-    new_ticks = [xaxis[0], 230, poi["conv_1"], poi["flux_peak"], xaxis[xaxis.size - 1]]
+    new_ticks = [xaxis[0], 230, poi["conv_1"], poi["flux_peak_thick"], xaxis[xaxis.size - 1]]
     ax.set_xticks(new_ticks)
 
     ax.set_xlabel(astroModels.var_label[action["var"]].replace('=', '')
