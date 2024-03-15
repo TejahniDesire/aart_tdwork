@@ -403,13 +403,13 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         conv_1_style = {
             "color": 'dimgrey',
             "linestyle": "-",
-            "linewidth": 3
+            "linewidth": 1
         }
 
         r_outer_style = {
             "color": 'dimgrey',
             "linestyle": "-",
-            "linewidth": 1
+            "linewidth": 5
         }
 
         flux_peak_style = {
