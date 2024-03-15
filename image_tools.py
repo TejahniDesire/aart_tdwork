@@ -4,15 +4,14 @@ from aart_func import *
 from params import *
 from astropy import constants as const
 from astropy import units as u
-from lmfit import Parameters,minimize, fit_report
+from lmfit import Parameters, minimize, fit_report
 
 
-def radii_of_thetaV2(I0, size):
-
+def radii_of_theta(I0, size):
     x = np.arange(I0.shape[0])
     y = x
-    interp = RegularGridInterpolator((x,y), I0.T)
-    theta = np.matrix(np.linspace(0, 2 * np.pi, size)) # 1 x size
+    interp = RegularGridInterpolator((x, y), I0.T)
+    theta = np.matrix(np.linspace(0, 2 * np.pi, size))  # 1 x size
 
     rmax = I0.shape[0] * .4
     r = np.matrix(np.arange(rmax)).T  # rmax x 1
@@ -65,10 +64,14 @@ def radii_of_thetaV2(I0, dx=None):
 
     coords = np.array([xprime, yprime]).T
     peak = np.argmax(interp(coords), 1)
+
+    if not np.all((peak == 0) == False):
+        peak = np.delete(peak, np.argmax(peak == 0))  # Remove any peak listed occuring at index 0
     if dx is None:
         dx = (limits * 2) / I0.shape[0]
 
     peaks = np.ravel(r[peak])  # value of r at that argument
+
     return (peaks * dx), np.ravel(theta)  # units of Rg
 
 
@@ -103,6 +106,3 @@ def curve_params(varphi, rho):
 
     # return (area, mux, muy, r, e, chi)
     return r
-
-
-

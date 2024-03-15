@@ -407,10 +407,14 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         ax.set_yscale('log')
         ax.xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
         ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
-        ax.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
-        ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
+        # ax.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
+        # ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
+        # ax1.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.4f'))
+        ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0e"))
 
         ax.tick_params('x', which="both", labelbottom=False)
+        ax.title.set_text('Optically Thin Assumption')
+
         n = 4  # Keeps every 4th label
         [l.set_visible(False) for (i, l) in enumerate(ax.xaxis.get_minorticklabels()) if i % n != 0]
         ax.tick_params('both', length=10, width=1, which='major')
@@ -444,6 +448,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         ax1.xaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
         # ax1.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.4f'))
         ax1.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0e"))
+        ax1.title.set_text('Full Solution')
 
 
 
