@@ -158,7 +158,7 @@ def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
     [l.set_visible(False) for (i, l) in enumerate(ax.xaxis.get_minorticklabels()) if i % n != 0]
     ax.tick_params('both', length=10, width=1, which='major')
     ax.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
-    ax.legend(loc='lower left')
+    # ax.legend(loc='lower left')
 
     # Optically Thick
 
@@ -214,8 +214,8 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
 
 
     ax.set_xscale('log')
-    ax.xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
-    ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
+    ax.xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.0f'))
+    ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
     ax.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.2f'))
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
 
@@ -224,9 +224,10 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
 
     ax.set_xlabel(astroModels.var_label[action["var"]].replace('=', '')
                   + ' (' + astroModels.units_label[action["var"]] + ')')
-    n = 4
+    n = 3
     [l.set_visible(False) for (i, l) in enumerate(ax.xaxis.get_minorticklabels()) if i % n != 0]
     ax.set_ylabel("Optical Depth")
+    ax.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
 
     ax.legend()
 
