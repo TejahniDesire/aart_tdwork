@@ -83,6 +83,12 @@ def loadGeoModel(current_model:str, run:str):
     importlib.reload(params)
 
 
+def creatSubDirectory(path_chosen,purpose:str = ''):
+    isDir = os.path.exists(path_chosen)
+    if not isDir:
+        os.makedirs(path_chosen)
+        print("A Subdirectory " + purpose + " '{}' was created".format(path_chosen))
+
 def runsInit(run:str, grid_params, var_params):
     """
     var_params: list of key names to be varable parameters in the current run
@@ -90,13 +96,30 @@ def runsInit(run:str, grid_params, var_params):
     isDir = os.path.exists(EZPaths.modelRunsDir)
     if not isDir:
         os.makedirs(EZPaths.modelRunsDir)
-        print("A directory ({}) was created to store the run results".format(EZPaths.modelRunsDir))
+        print("A directory '{}' was created to store the run results".format(EZPaths.modelRunsDir))
 
     main_path = EZPaths.modelRunsDir + run + "/"
     isDir = os.path.exists(main_path)
     if not isDir:
         os.makedirs(main_path)
-        print("A directory ({}) was created to store the run results".format(main_path))
+        print("A directory '{}' was created to store the run results".format(main_path))
+
+    # image_path = main_path + "Images/"
+    # data_path = main_path + "Data/"
+    # creatSubDirectory(image_path,"for images")
+    # creatSubDirectory(data_path, "for data")
+    #
+    # sub_paths = {
+    #     "GeoDoth5Path": data_path + "geo/",
+    #     "intensityPath": data_path + "intensity/",
+    #     "fluxPath": image_path + "fluxVNu/",
+    #     "radPath":image_path + "radVNu/",
+    #     "imagePath":image_path + "image/",
+    #     "opticalDepth": image_path + "opticalDepth/",
+    #     "peakHistThin": image_path + "peakHistThin/",
+    #     "peakHistThick": image_path + "peakHistThick/",
+    #     "convHist": image_path + "convHist/"
+    # }
 
     sub_paths = {
         "GeoDoth5Path": main_path + "geo/",
@@ -111,6 +134,7 @@ def runsInit(run:str, grid_params, var_params):
 
     }
     for key in list(sub_paths):
+        # creatSubDirectory(sub_paths[key])
         isDir = os.path.exists(sub_paths[key])
         if not isDir:
             os.makedirs(sub_paths[key])

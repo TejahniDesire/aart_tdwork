@@ -363,7 +363,6 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         num_of_intensity_points = janksys_thin[:,0].shape[0]
         print("Number of Intensity Points: ", num_of_intensity_points)
 
-
         xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
         # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
         # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
@@ -469,7 +468,6 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         astroPloting.opticalDepth(ax, xaxis,
                                   [mean_optical_depth_I0,mean_optical_depth_I1,mean_optical_depth_I2],
                                   poi, conv_1_style, flux_peak_style, action)
-
 
         figname = Optical_depth_path + model + "OpticalDepth.jpeg"
         plt.savefig(figname, bbox_inches='tight')
