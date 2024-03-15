@@ -387,12 +387,16 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
                                                                          3)
         conv_1 = conv_1 / astroModels.scale_label[action['var']]
 
-        flux_peak = action["start"] + action["step"] * np.argmax(janksys_thin[:, 3])
-        flux_peak = flux_peak / astroModels.scale_label[action['var']]
+        flux_peak_thin = action["start"] + action["step"] * np.argmax(janksys_thin[:, 3])
+        flux_peak_thin = flux_peak_thin / astroModels.scale_label[action['var']]
+
+        flux_peak_thick = action["start"] + action["step"] * np.argmax(janksys_thin[:, 3])
+        flux_peak_thick = flux_peak_thick / astroModels.scale_label[action['var']]
 
         poi = {
             "r_outer": r_outer,
-            "flux_peak": flux_peak,
+            "flux_peak_thin": flux_peak_thin,
+            "flux_peak_thick":flux_peak_thick,
             "conv_1": conv_1,
         }
 

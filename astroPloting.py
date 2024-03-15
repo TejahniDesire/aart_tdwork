@@ -43,9 +43,9 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
     '''
     # ax.axhline(r_inner, color='k', linewidth=3, linestyle=":")  # , label='Blackhole Inner Shadow'
 
-    ax.axvline(poi["flux_peak"], color=flux_peak_style["color"],
-               linestyle=flux_peak_style["linestyle"], linewidth=flux_peak_style["linewidth"])
     ax.axvline(230, color='k', linestyle=":")
+    ax.axvline(poi["flux_peak_thin"], color=flux_peak_style["color"],
+               linestyle=flux_peak_style["linestyle"], linewidth=flux_peak_style["linewidth"])
     ax.axhline(poi["r_outer"],color=r_outer_style["color"],
                linestyle=r_outer_style["linestyle"], linewidth=r_outer_style["linewidth"])  # , label='Blackhole Outer Shadow'
 
@@ -87,7 +87,7 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
     ax1.axvline(230, color='k', linestyle=":")
     ax1.axvline(poi["conv_1"],
                 color=conv_1_style["color"], linestyle=conv_1_style["linestyle"], linewidth=conv_1_style["linewidth"])
-    ax1.axvline(poi["flux_peak"], color=flux_peak_style["color"],
+    ax1.axvline(poi["flux_peak_thick"], color=flux_peak_style["color"],
                 linestyle=flux_peak_style["linestyle"], linewidth=flux_peak_style["linewidth"])
     ax1.axhline(poi["r_outer"],color=r_outer_style["color"],
                 linestyle=r_outer_style["linestyle"], linewidth=r_outer_style["linewidth"])  # , label='Blackhole Outer Shadow'
@@ -96,12 +96,6 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
     ax1.plot(xaxis, mean_radii_Thick[:, 1], ':', label=R'n=1', color='tab:orange', linewidth=3)
     ax1.plot(xaxis, mean_radii_Thick[:, 2], '--', label=R'n=2', color='tab:blue', linewidth=3)
     ax1.plot(xaxis, mean_radii_Thick[:, 3], '-.', label='Cumulative', color='tab:purple', linewidth=3)
-
-
-
-    # ax1.axvline(conv_1, color='b',label=R'1% diff', linestyle="--")
-    # ax1.axvline(conv_5, color='g',label=R'5% diff', linestyle=":")
-    # ax1.axvline(conv_10, color='r',label=R'10% diff', linestyle="-.")
 
     # Labels
     ax1.set_xlabel(astroModels.var_label[action["var"]].replace('=', '')
@@ -132,7 +126,7 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
 
 
 def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
-                   poi, conv_1_style, r_outer_style,flux_peak_style, action):
+                  poi, conv_1_style, r_outer_style,flux_peak_style, action):
     ax.plot(xaxis, janksys_thin[:, 0], '-', label='n=0', color='tab:red', linewidth=3)
     ax.plot(xaxis, janksys_thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
     ax.plot(xaxis, janksys_thin[:, 2], '--', label='n=2', color='tab:blue', linewidth=3)
@@ -142,6 +136,8 @@ def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
 
     ax.axhline(.5, color='k', label=R'.5 $J_y$', linestyle=":")
     ax.axvline(230, color='k', linestyle=":")
+    ax.axvline(poi["flux_peak_thin"], color=flux_peak_style["color"],
+               linestyle=flux_peak_style["linestyle"], linewidth=flux_peak_style["linewidth"])
 
     # Labels
     ax.set_ylabel("Total Flux ({})".format(R'$J_y$'))
@@ -169,7 +165,7 @@ def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
     ax1.axvline(230, color='k', linestyle=":")
     ax1.axvline(poi["conv_1"],
                 color=conv_1_style["color"], linestyle=conv_1_style["linestyle"], linewidth=conv_1_style["linewidth"])
-    ax1.axvline(poi["flux_peak"], color=flux_peak_style["color"],
+    ax1.axvline(poi["flux_peak_thick"], color=flux_peak_style["color"],
                 linestyle=flux_peak_style["linestyle"], linewidth=flux_peak_style["linewidth"])
 
     ax1.plot(xaxis, janksys_thick[:, 0], '-', label=R'$n=0$', color='tab:red', linewidth=3)
