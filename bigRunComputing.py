@@ -497,10 +497,10 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         # ax1.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
         #
         # ax1.legend(loc='lower left')
-
-        plt.savefig(fluxVNu_path + "flux.jpg", bbox_inches='tight')
+        figname = fluxVNu_path + model + "Flux.jpg"
+        plt.savefig(figname, bbox_inches='tight')
         plt.close()
-        print("Image '{}' Created".format(fluxVNu_path + "flux.jpg"))
+        print("Image '{}' Created".format(figname))
 
         # ______________________________________________
         # ______________________________________________
@@ -531,7 +531,6 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
         ax.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
         ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
-
 
         n = 4  # Keeps every 4th label
         [l.set_visible(False) for (i, l) in enumerate(ax.xaxis.get_minorticklabels()) if i % n != 0]
@@ -593,8 +592,9 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
         ax1.tick_params('x', length=20, width=1, which='major', labelrotation=80)
         ax1.title.set_text('Full Solution')
-        plt.savefig(radVNu_path + "Radii.jpeg", bbox_inches='tight')
-        print("Image '{}' Created".format(radVNu_path + "Radii.jpeg"))
+        figname = radVNu_path + model + "Radii.jpeg"
+        plt.savefig(figname, bbox_inches='tight')
+        print("Image '{}' Created".format(figname))
         plt.close()
 
         # --------------------------------------------------
@@ -631,8 +631,9 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         #
         # ax.axvline(flux_peak, color='k', linestyle="-.")
         # ax.legend()
-        # plt.savefig(Optical_depth_path + "Optical Depth.jpeg", bbox_inches='tight')
-        print("Image '{}' Created".format(Optical_depth_path + "Optical Depth.jpeg"))
+        figname = Optical_depth_path + model + "OpticalDepth.jpeg"
+        plt.savefig(figname, bbox_inches='tight')
+        print("Image '{}' Created".format(figname))
         plt.close()
 
         '''Full Images----------------------------------'''

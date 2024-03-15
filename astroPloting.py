@@ -42,15 +42,17 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
     '''
     # ax.axhline(r_inner, color='k', linewidth=3, linestyle=":")  # , label='Blackhole Inner Shadow'
 
-    ax.plot(xaxis, mean_radii_Thin[:, 0], '-', label='n=0', color='tab:red', linewidth=3)
-    ax.plot(xaxis, mean_radii_Thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
-    ax.plot(xaxis, mean_radii_Thin[:, 2], '-.', label='n=2', color='tab:blue', linewidth=3)
-
     ax.axvline(poi["flux_peak"], color=flux_peak_style["color"],
                linestyle=flux_peak_style["linestyle"], linewidth=flux_peak_style["linewidth"])
     ax.axvline(230, color='k', linestyle=":")
     ax.axhline(poi["r_outer"],color=r_outer_style["color"],
                linestyle=r_outer_style["linestyle"], linewidth=r_outer_style["linewidth"])  # , label='Blackhole Outer Shadow'
+
+    ax.plot(xaxis, mean_radii_Thin[:, 0], '-', label='n=0', color='tab:red', linewidth=3)
+    ax.plot(xaxis, mean_radii_Thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
+    ax.plot(xaxis, mean_radii_Thin[:, 2], '-.', label='n=2', color='tab:blue', linewidth=3)
+
+
     # Labels
 
     ax.set_xscale('log')
@@ -129,9 +131,6 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
 
 def opticalDepth(ax,xaxis,mean_optical_depth,
                  poi, conv_1_style,flux_peak_style, action):
-    ax.plot(xaxis, mean_optical_depth[0], '-', label='n=0', color='tab:red', linewidth=3)
-    ax.plot(xaxis, mean_optical_depth[1], ':', label='n=1', color='tab:orange', linewidth=3)
-    ax.plot(xaxis, mean_optical_depth[2], '-.', label='n=2', color='tab:blue', linewidth=3)
 
     ax.axvline(230, color='k', linestyle=":")
     ax.axvline(230, color='k', linestyle=":")
@@ -139,6 +138,11 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
                color=conv_1_style["color"], linestyle=conv_1_style["linestyle"], linewidth=conv_1_style["linewidth"])
     ax.axvline(poi["flux_peak"], color=flux_peak_style["color"],
                linestyle=flux_peak_style["linestyle"], linewidth=flux_peak_style["linewidth"])
+
+    ax.plot(xaxis, mean_optical_depth[0], '-', label='n=0', color='tab:red', linewidth=3)
+    ax.plot(xaxis, mean_optical_depth[1], ':', label='n=1', color='tab:orange', linewidth=3)
+    ax.plot(xaxis, mean_optical_depth[2], '-.', label='n=2', color='tab:blue', linewidth=3)
+
 
     ax.set_xscale('log')
     ax.xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
