@@ -244,7 +244,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
     # current_intensity_model_name = intensity_models[i][0]
     # current_intensity_model = intensity_models[i][1]
     # full_current_model_name = current_geo_model + current_intensity_model_name.replace("Model", "")
-
+    j = 0
     for model in all_intent_names:
         print(line)
         print("Running " + model)
@@ -580,10 +580,10 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
         '''Full Images----------------------------------'''
         k = action["start"]
-
         print("Constructing Full images for " + model)
         for i in range(num_of_intensity_points):
-            brightparams = all_brightparams[i]
+            brightparams = all_brightparams[j]
+            brightparams["nu0"] = k
             print("Full image production for intensity frame: ", i)
             print(R"Observation frequency $\nu=$",k)
             # optically thin radii
@@ -706,6 +706,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
             plt.close()
 
             k += action['step']
+        j += 1  # marker for which brightparams to use
 
 
 def fmt(x, pos):

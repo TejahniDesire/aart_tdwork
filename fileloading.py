@@ -152,7 +152,7 @@ def type2Grid(grid_params:dict,defined_list, variable_param_ranges, constant_par
     all_models = [] # tuple (name, bright parameters)
     for i in range(variable_param_ranges[defined_list[0]]):
         for j in range(variable_param_ranges[defined_list[1]]):
-            current_model = {}
+            current_model = {}  # brightparams
             current_model_name = "Model" + str(i + 1) + str(j + 1)
             # Fill out the constant parameters
             for key in list(constant_param):
