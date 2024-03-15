@@ -430,8 +430,8 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
         fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True)
 
-        astroPloting.fluxThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
-                                    poi, conv_1_style, r_outer_style, flux_peak_style, action)
+        astroPloting.fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
+                                   poi, conv_1_style, r_outer_style, flux_peak_style, action)
         #
         # ax.plot(xaxis, janksys_thin[:, 0], '-', label='n=0', color='tab:red', linewidth=3)
         # ax.plot(xaxis, janksys_thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
