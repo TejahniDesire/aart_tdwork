@@ -439,7 +439,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
         # Labels
         ax1.set_ylabel("Total Flux ({})".format(R'$J_y$'))
-        ax.set_xlabel(
+        ax1.set_xlabel(
             astroModels.var_label[action["var"]].replace('=', '') + ' (' + astroModels.units_label[action["var"]] + ')')
         ax1.set_xscale('log')
         ax1.set_yscale('log')
@@ -563,10 +563,10 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         ax.plot(xaxis, mean_optical_depth_I1, ':', label='n=1', color='tab:orange', linewidth=3)
         ax.plot(xaxis, mean_optical_depth_I2, '-.', label='n=2', color='tab:blue', linewidth=3)
         ax.set_xscale('log')
-        ax.xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.0f'))
-        ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
-        ax.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.0f'))
-        ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
+        ax.xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
+        ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
+        ax.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.2f'))
+        ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
         ax.set_xlabel(astroModels.var_label[action["var"]].replace('=', '')
                        + ' (' + astroModels.units_label[action["var"]] + ')')
         ax.set_ylabel("Optical Depth")
