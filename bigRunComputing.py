@@ -17,6 +17,7 @@ import params
 import astroModels
 import fileloading
 from movieMakerV2 import movieMakerIntensity
+import normalizingBrightparams
 from astropy import units as u
 
 kw_action = {
@@ -153,7 +154,27 @@ def createGeoGrid(sub_path, input_geo_grid, run):
 line = "\n________________________\n"
 
 
-def creatIntensityGrid(sub_path, input_geo_grid, run, intensity_models, full_string, geo_grid_values, action):
+def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], geo_grid_list,
+                       intensity_models:list[tuple], var_params:list, constant_params:list,
+                       total_models_count:int, action:dict):
+    """
+
+    Args:
+        total_models_count:
+        constant_params: parameters that will remain constant for all models
+        var_params: list of key names to be varable parameters in the current run,
+                    correspond to more than 1 entry in list for grid params
+        sub_path: dictionary for all file paths
+        input_geo_grid_names: list of the params files
+        run: run name
+        intensity_models: list[tuple(model_name,brightparams)]
+        geo_grid_list: list[tuple(geo parameter, value)]
+        action:
+
+    Returns:
+
+    """
+
     funckeys = {
         "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
         "bkey": 2,  # bkey
@@ -163,63 +184,101 @@ def creatIntensityGrid(sub_path, input_geo_grid, run, intensity_models, full_str
     }
 
     all_intent_names = []
+    all_total_names = []
     all_bright_params = []
-    for j in range(len(input_geo_grid)):
+    for j in range(len(input_geo_grid_names)):
         for i in range(len(intensity_models)):
-            current_geo_model = input_geo_grid[j]
+            current_geo_model = input_geo_grid_names[j]
             fileloading.loadGeoModel(current_geo_model, run)
             lband = sub_path["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
             rtray = sub_path["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
 
-            # Intensity
+            # String Names
+            all_intent_names += [intensity_models[i][0]]
+            all_total_names += [current_geo_model + all_intent_names[i].replace("Model", "")]
 
-            current_intensity_model_name = intensity_models[i][0]
-            print("Creating Intensity Movie for Model ", current_intensity_model_name)
-            current_brightparams = intensity_models[i][1]
-            full_current_model_name = current_geo_model + current_intensity_model_name.replace("Model", "")
+            # ________________________________
+            all_bright_params += [intensity_models[i][1]]
+            # TODO: FIX
+            normalizingBrightparams.normalize(all_bright_params[i])
 
+            print("Creating Intensity Movie for Model ", all_total_names[i])
             movieMakerIntensity.intensity_movie(action, sub_path,
-                                                full_current_model_name, 2, current_brightparams)
+                                                all_total_names[i], 2, all_bright_params[i])
 
-            all_intent_names += [full_current_model_name]
-            all_bright_params += [current_brightparams]
-            # args = createIntensityArgs(current_brightparams)
-            #
-            # args += "--lband " + lband + " --rtray " + rtray
-            #
-            # subprocess.run(['python3 ' + EZPaths.aartPath + '/radialintensity.py' + args], shell=True)
-            #
-            # new_intensity_path = sub_path["intensityPath"] + full_current_model_name + "Intensity" + ".h5"
-            #
-            # fnrays = fileloading.intensityNameNoUnits(current_brightparams, funckeys)
-            #
-            # subprocess.run(["mv " + fnrays + ' ' + new_intensity_path], shell=True)
-            #
+    # Make Docstring_____________________________________________
 
-    # Make Docstring
     doc_string_file = EZPaths.modelRunsDir + run + "/" + "AllModels.txt"
     cmd = "touch " + doc_string_file
     subprocess.run([cmd], shell=True)
 
-    geo_models_string = "\nGEOMODELS\n"
-    for i in range(len(geo_grid_values)):
-        geo_models_string += input_geo_grid[i] + "| "
-        for j in range(len(geo_grid_values[i][0])):
-            geo_models_string += '\n    ' + geo_grid_values[i][0][j] + ": " + geo_grid_values[i][1][j]
-        geo_models_string += '\n'
+    # Astrophysical part
+    full_string = intensityModelsDocString(all_intent_names, all_bright_params,
+                                           var_params, constant_params, total_models_count)
 
+    # Geometrical Part
+    geo_string = geoModelDocString(geo_grid_list, input_geo_grid_names)
+
+    # writing
     doc_string_file = open(doc_string_file, 'w')
-    doc_string_file.write(full_string + geo_models_string)
+    # doc_string_file.write(full_string + geo_models_string)
+    doc_string_file.write(full_string + geo_string)
     doc_string_file.close()
 
-    all_intent_names = np.array(all_intent_names)
+    all_total_names = np.array(all_total_names)
     all_bright_params = np.array(all_bright_params)
 
     bright_numpy_name = EZPaths.modelRunsDir + run + "/" + "AllBrightParamsList"
     numpy_name = EZPaths.modelRunsDir + run + "/" + "AllModelsList"
 
-    np.save(numpy_name, all_intent_names)
+    np.save(numpy_name, all_total_names)
     np.save(bright_numpy_name, all_bright_params)
+
+
+def geoModelDocString(geo_grid_list:list[tuple[list]], input_geo_grid_names):
+
+    geo_models_string = "\nGEOMODELS\n"
+    for i in range(len(geo_grid_list)):
+        geo_models_string += input_geo_grid_names[i] + "| "
+        for j in range(len(geo_grid_list[i][0])):
+            geo_models_string += '\n    ' + geo_grid_list[i][0][j] + ": " + geo_grid_list[i][1][j]
+        geo_models_string += '\n'
+
+    return geo_models_string
+
+
+def intensityModelsDocString(all_intent_names, all_bright_params, var_params, constant_params, total_models_count):
+    """
+
+    Args:
+        all_intent_names: [intensity name]
+        all_bright_params: [brightparams]
+        var_params: list of key names to be varable parameters in the current run,
+              correspond to more than 1 entry in list for grid params
+        constant_params: list of parameters that will remain constant for all models
+        total_models_count: total number of models for this run
+
+    Returns:
+
+    """
+
+    line_small = "________________________________ \n"
+    breaker = "     "
+
+    string = line_small + line_small + line_small + "Total Number of Models: " + str(total_models_count) + '\n' + "Constant Params: " + '\n'
+    for key in list(constant_params):
+        string += breaker + key + ": " + str(constant_params[key]) + '\n'
+
+    string += line_small
+    for i in range(len(all_intent_names)):
+        current_name = all_intent_names[i]
+        current_model = all_bright_params[i]
+        string += line_small + current_name + '\n'
+
+        for k in range(len(var_params)):
+            string += breaker + var_params[k] + ": " + str(current_model[var_params[k]]) + '\n'
+
+    return string + line_small + line_small + line_small
 
 
 def graphCreation(sub_path, run, action, intent_grid_type=2):

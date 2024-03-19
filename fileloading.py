@@ -100,7 +100,7 @@ def creatSubDirectory(path_chosen,purpose:str = '',kill_policy=False):
             os.makedirs(path_chosen)
             print("A Subdirectory for " + purpose + " '{}' was created".format(path_chosen))
         else:
-            print("Subdirectory for " + purpose + " '{}' already exist".format(path_chosen))
+            print("Subdirectory for " + purpose + " '{}' already exist, doing nothing".format(path_chosen))
 
 
 def runsInit(run:str, grid_params:dict, var_params):
@@ -136,18 +136,6 @@ def runsInit(run:str, grid_params:dict, var_params):
         "convHist": image_path + "convHist/"
     }
 
-    # sub_paths = {
-    #     "GeoDoth5Path": main_path + "geo/",
-    #     "intensityPath": main_path + "intensity/",
-    #     "fluxPath": main_path + "fluxVNu/",
-    #     "radPath":main_path + "radVNu/",
-    #     "imagePath":main_path + "image/",
-    #     "opticalDepth": main_path + "opticalDepth/",
-    #     "peakHistThin": main_path + "peakHistThin/",
-    #     "peakHistThick": main_path + "peakHistThick/",
-    #     "convHist": main_path + "convHist/"
-    #
-    # }
     for key in list(sub_paths):
         # creatSubDirectory(sub_paths[key])
         isDir = os.path.exists(sub_paths[key])
@@ -155,16 +143,45 @@ def runsInit(run:str, grid_params:dict, var_params):
             os.makedirs(sub_paths[key])
             print("Subdirectory {} Created".format(sub_paths[key]))
 
-    all_models, names = createAstroParams(grid_params, var_params)
+    all_intensity_models,total_models_count, run_type, variable_param_ranges, constant_param= (
+        createAstroParams(grid_params, var_params))
 
-    return sub_paths, all_models, names
+    return sub_paths, all_intensity_models, total_models_count, run_type, variable_param_ranges, constant_param
 
 
-def createAstroParams(grid_params:dict,var_params:list[str]):
+def createAstroParams(intensity_grid_params:dict, var_params:list[str]):
     """
 
     Args:
-        grid_params: dictionary containing all intensity parameters. Each value is a
+        intensity_grid_params: dictionary containing all intensity parameters. Each value is a
+                     list containing all parameters to be computed in current run
+        var_params: list of key names to be varable parameters in the current run,
+                    correspond to more than 1 entry in list for grid params
+
+    Returns: list[tuple(model_name,brightparams)] without Normalization
+
+    """
+
+    total_models_count, run_type, variable_param_ranges, constant_param = (
+        analyzeRunType(intensity_grid_params, var_params)
+    )
+
+    # Create the Models
+    grid_types = {
+        2: type2Grid
+    }
+
+    all_models = grid_types[run_type](intensity_grid_params, var_params,
+                                      variable_param_ranges, constant_param, total_models_count)
+
+    return all_models, total_models_count, run_type, variable_param_ranges, constant_param
+
+
+def analyzeRunType(intensity_grid_params:dict, var_params:list[str]):
+    """
+
+    Args:
+        intensity_grid_params: dictionary containing all intensity parameters. Each value is a
                      list containing all parameters to be computed in current run
         var_params: list of key names to be varable parameters in the current run,
                     correspond to more than 1 entry in list for grid params
@@ -173,34 +190,26 @@ def createAstroParams(grid_params:dict,var_params:list[str]):
 
     """
 
-    # Read Inputted Models
     total_models_count = 1
-    total_model_types = 0
+    run_type = 0
     variable_param_ranges = {}
     constant_param = {}
-    for key in list(grid_params):
 
-        param_range = len(grid_params[key])
+    for key in list(intensity_grid_params):
+
+        param_range = len(intensity_grid_params[key])
         # print("Key, " + key + " count: " + str(var_params.count(key)))
         if param_range > 1 and var_params.count(key) == 0:
             raise ValueError("More than one parameter put in for static parameter")
 
         if var_params.count(key) == 1:
-            total_model_types += 1
+            run_type += 1
             variable_param_ranges[key] = param_range
             total_models_count = total_models_count * param_range
         else:
-            constant_param[key] = grid_params[key][0]
+            constant_param[key] = intensity_grid_params[key][0]
 
-    # Create the Models
-    grid_types = {
-        2: type2Grid
-    }
-
-    all_models, names = grid_types[total_model_types](grid_params,var_params,
-                                                      variable_param_ranges, constant_param, total_models_count)
-
-    return all_models, names
+    return total_models_count, run_type, variable_param_ranges, constant_param
 
 
 def type2Grid(grid_params:dict, var_params:list[str], variable_param_ranges:dict,
@@ -216,7 +225,7 @@ def type2Grid(grid_params:dict, var_params:list[str], variable_param_ranges:dict
         constant_params: parameters that will remain constant for all models
         total_models_count: total number of models for this run
 
-    Returns:
+    Returns: list[tuple(model_name,brightparams)]
 
     """
     all_models = [] # list[tuple (name, bright parameters)]
@@ -233,7 +242,7 @@ def type2Grid(grid_params:dict, var_params:list[str], variable_param_ranges:dict
 
             all_models += [(current_model_name, current_model)]
 
-    return all_models, tupleToString(all_models, var_params, constant_params, total_models_count)
+    return all_models
 
 
 line = "________________________________ \n"
