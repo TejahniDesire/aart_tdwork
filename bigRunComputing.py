@@ -218,11 +218,14 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
             current_bp["n_th0"] = normalizingBrightparams.normalize(lband,rtray,current_bp)
             print("\n" + current_total_name + " normalized with a value of n_th0="
                   + str(current_bp["n_th0"]) + "\n")
+
             print("Creating Intensity Movie for Model ", current_total_name)
             print(long_line)
             intermodel_data = movieMakerIntensity.intensity_movie(
                 action, sub_path,current_total_name, 2, current_bp)
 
+            print("\nTotal flux at 230GHz for Optically Thin Assumption: " + intermodel_data["thin_total_flux"])
+            print("Total flux at 230GHz for Full Solution: " + intermodel_data["thick_total_flux"] + "\n")
             all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
             all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
             k += 1
