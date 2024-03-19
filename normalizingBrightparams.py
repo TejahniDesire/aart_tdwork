@@ -29,7 +29,7 @@ def normalize(lband,rtray,brightparams:dict):
 def total_jy_normal_func(fitparams,lband,rtray,bp,y):
 
     bp["n_th0"] = fitparams['n_th0'].value
-    print("Running normalizing instance with n_th0 value of " + bp["n_th0"] + "______________________________________")
+    print("Running normalizing instance with n_th0 value of " + str(bp["n_th0"]) + "______________________________________")
 
     args = bigRunComputing.createIntensityArgs(bp)
     args += "--lband " + lband + " --rtray " + rtray
