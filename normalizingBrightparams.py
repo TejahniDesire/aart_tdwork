@@ -17,7 +17,7 @@ import astroModels
 def normalize(lband,rtray,brightparams:dict):
 
     bp = brightparams.copy()
-
+    bp["n_th0"] = 230e9
     fitparams = Parameters()
     fitparams.add('n_th0', value=1.3 * 10 ** 5)
     # params.add('n_th0', value=1)
@@ -32,6 +32,18 @@ def total_jy_normal_func(fitparams,lband,rtray,bp,y):
     print("______________________________________ Running normalizing instance with n_th0 value of "
           + str(bp["n_th0"]) + " ______________________________________")
 
+    thin_total_flux,thick_total_flux = totalIntensity230Point(lband,rtray,bp,True)
+
+    return y - thin_total_flux
+
+
+def totalIntensity230Point(lband,rtray,brightparams:dict,already230=False):
+    if already230:
+        bp = brightparams
+    else:
+        bp = brightparams.copy()
+        bp["nu0"] = 230e9
+
     args = bigRunComputing.createIntensityArgs(bp)
     args += "--lband " + lband + " --rtray " + rtray
 
@@ -39,7 +51,7 @@ def total_jy_normal_func(fitparams,lband,rtray,bp,y):
 
     # Read created file
 
-    fnrays = fileloading.intensityNameNoUnits(bp,astroModels.funckeys)
+    fnrays = fileloading.intensityNameNoUnits(bp, astroModels.funckeys)
     h5f = h5py.File(fnrays, 'r')
 
     I0 = h5f['bghts0'][:]
@@ -49,7 +61,7 @@ def total_jy_normal_func(fitparams,lband,rtray,bp,y):
     # I0_Absorb = h5f['bghts0_absorbtion'][:]
     # I1_Absorb = h5f['bghts1_absorbtion'][:]
     # I2_Absorb = h5f['bghts2_absorbtion'][:]
-    # Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+    Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
     #
     # tau2 = h5f['tau2'][:]
     # tau1 = h5f['tau1'][:]
@@ -57,9 +69,9 @@ def total_jy_normal_func(fitparams,lband,rtray,bp,y):
 
     h5f.close()
 
-    thin_total_fluxes = ilp.total_jy(I0 + I1 + I2, 230e9, bp["mass"]).value
-    # thick_total_fluxes = ilp.total_jy(Absorbtion_Image, 230e9, bp["mass"])
-
     subprocess.run(["rm " + fnrays], shell=True)
 
-    return y - thin_total_fluxes
+    thin_total_flux = ilp.total_jy(I0 + I1 + I2,230e9,bp["mass"]).value
+    thick_total_flux = ilp.total_jy(Absorbtion_Image,230e9,bp["mass"]).value
+
+    return thin_total_flux,thick_total_flux
