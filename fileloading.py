@@ -83,56 +83,69 @@ def loadGeoModel(current_model:str, run:str):
     importlib.reload(params)
 
 
-def creatSubDirectory(path_chosen,purpose:str = ''):
+def creatSubDirectory(path_chosen,purpose:str = '',kill_policy=False):
     isDir = os.path.exists(path_chosen)
-    if not isDir:
-        os.makedirs(path_chosen)
-        print("A Subdirectory " + purpose + " '{}' was created".format(path_chosen))
+    if kill_policy:
+        if isDir:
+            print("Subdirectory for " + purpose + " '{}' already exist, removing...".format(path_chosen))
+            os.rmdir(path_chosen)
+            os.makedirs(path_chosen)
+            print("A Subdirectory for " + purpose + " '{}' was created".format(path_chosen))
+        else:
+            os.makedirs(path_chosen)
+            print("A Subdirectory for " + purpose + " '{}' was created".format(path_chosen))
 
-def runsInit(run:str, grid_params, var_params):
-    """
-    var_params: list of key names to be varable parameters in the current run
-    """
-    isDir = os.path.exists(EZPaths.modelRunsDir)
-    if not isDir:
-        os.makedirs(EZPaths.modelRunsDir)
-        print("A directory '{}' was created to store the run results".format(EZPaths.modelRunsDir))
+    else:
+        if not isDir:
+            os.makedirs(path_chosen)
+            print("A Subdirectory " + purpose + " '{}' was created".format(path_chosen))
 
+
+def runsInit(run:str, grid_params:dict, var_params):
+    """
+    Args:
+        run: name of this run
+        grid_params: dictionary containing all intensity parameters. Each value is a
+                     list containing all parameters to be computed in current run
+        var_params: list of key names to be varable parameters in the current run,
+                    correspond to more than 1 entry in list for grid params
+    Returns:
+
+    """
+
+    creatSubDirectory(EZPaths.modelRunsDir, "storing all run results")
     main_path = EZPaths.modelRunsDir + run + "/"
-    isDir = os.path.exists(main_path)
-    if not isDir:
-        os.makedirs(main_path)
-        print("A directory '{}' was created to store the run results".format(main_path))
+    creatSubDirectory(main_path, "storing this run result")
 
-    # image_path = main_path + "Images/"
-    # data_path = main_path + "Data/"
-    # creatSubDirectory(image_path,"for images")
-    # creatSubDirectory(data_path, "for data")
-    #
-    # sub_paths = {
-    #     "GeoDoth5Path": data_path + "geo/",
-    #     "intensityPath": data_path + "intensity/",
-    #     "fluxPath": image_path + "fluxVNu/",
-    #     "radPath":image_path + "radVNu/",
-    #     "imagePath":image_path + "image/",
-    #     "opticalDepth": image_path + "opticalDepth/",
-    #     "peakHistThin": image_path + "peakHistThin/",
-    #     "peakHistThick": image_path + "peakHistThick/",
-    #     "convHist": image_path + "convHist/"
-    # }
+    image_path = main_path + "Images/"
+    data_path = main_path + "Data/"
+    creatSubDirectory(image_path,"images")
+    creatSubDirectory(data_path, "data")
 
     sub_paths = {
-        "GeoDoth5Path": main_path + "geo/",
-        "intensityPath": main_path + "intensity/",
-        "fluxPath": main_path + "fluxVNu/",
-        "radPath":main_path + "radVNu/",
-        "imagePath":main_path + "image/",
-        "opticalDepth": main_path + "opticalDepth/",
-        "peakHistThin": main_path + "peakHistThin/",
-        "peakHistThick": main_path + "peakHistThick/",
-        "convHist": main_path + "convHist/"
-
+        "GeoDoth5Path": data_path + "geo/",
+        "intensityPath": data_path + "intensity/",
+        "fluxPath": image_path + "fluxVNu/",
+        "radPath":image_path + "radVNu/",
+        "imagePath":image_path + "image/",
+        "opticalDepth": image_path + "opticalDepth/",
+        "peakHistThin": image_path + "peakHistThin/",
+        "peakHistThick": image_path + "peakHistThick/",
+        "convHist": image_path + "convHist/"
     }
+
+    # sub_paths = {
+    #     "GeoDoth5Path": main_path + "geo/",
+    #     "intensityPath": main_path + "intensity/",
+    #     "fluxPath": main_path + "fluxVNu/",
+    #     "radPath":main_path + "radVNu/",
+    #     "imagePath":main_path + "image/",
+    #     "opticalDepth": main_path + "opticalDepth/",
+    #     "peakHistThin": main_path + "peakHistThin/",
+    #     "peakHistThick": main_path + "peakHistThick/",
+    #     "convHist": main_path + "convHist/"
+    #
+    # }
     for key in list(sub_paths):
         # creatSubDirectory(sub_paths[key])
         isDir = os.path.exists(sub_paths[key])
@@ -146,6 +159,17 @@ def runsInit(run:str, grid_params, var_params):
 
 
 def createAstroParams(grid_params:dict,var_params:list[str]):
+    """
+
+    Args:
+        grid_params: dictionary containing all intensity parameters. Each value is a
+                     list containing all parameters to be computed in current run
+        var_params: list of key names to be varable parameters in the current run,
+                    correspond to more than 1 entry in list for grid params
+
+    Returns:
+
+    """
 
     # Read Inputted Models
     total_models_count = 1
@@ -171,34 +195,62 @@ def createAstroParams(grid_params:dict,var_params:list[str]):
         2: type2Grid
     }
 
-    all_models, names = grid_types[total_model_types](grid_params,var_params,variable_param_ranges, constant_param, total_models_count)
+    all_models, names = grid_types[total_model_types](grid_params,var_params,
+                                                      variable_param_ranges, constant_param, total_models_count)
 
     return all_models, names
 
 
-def type2Grid(grid_params:dict,defined_list, variable_param_ranges, constant_param, total_models_count):
-    all_models = [] # tuple (name, bright parameters)
-    for i in range(variable_param_ranges[defined_list[0]]):
-        for j in range(variable_param_ranges[defined_list[1]]):
+def type2Grid(grid_params:dict, var_params:list[str], variable_param_ranges:dict,
+              constant_params:dict, total_models_count:int):
+    """
+
+    Args:
+        grid_params: dictionary containing all intensity parameters. Each value is a
+                     list containing all parameters to be computed in current run
+        var_params: list of key names to be varable parameters in the current run,
+                      correspond to more than 1 entry in list for grid params
+        variable_param_ranges: contain number of values to run through for a given key/parameter
+        constant_params: parameters that will remain constant for all models
+        total_models_count: total number of models for this run
+
+    Returns:
+
+    """
+    all_models = [] # list[tuple (name, bright parameters)]
+    for i in range(variable_param_ranges[var_params[0]]):
+        for j in range(variable_param_ranges[var_params[1]]):
             current_model = {}  # brightparams
             current_model_name = "Model" + str(i + 1) + str(j + 1)
             # Fill out the constant parameters
-            for key in list(constant_param):
-                current_model[key] = constant_param[key]
+            for key in list(constant_params):
+                current_model[key] = constant_params[key]
 
-            current_model[defined_list[0]] = grid_params[defined_list[0]][i]
-            current_model[defined_list[1]] = grid_params[defined_list[1]][j]
+            current_model[var_params[0]] = grid_params[var_params[0]][i]
+            current_model[var_params[1]] = grid_params[var_params[1]][j]
 
             all_models += [(current_model_name, current_model)]
 
-    return all_models, tupleToString(all_models, defined_list, constant_param,total_models_count)
+    return all_models, tupleToString(all_models, var_params, constant_params, total_models_count)
 
 
 line = "________________________________ \n"
 breaker = "     "
 
 
-def tupleToString(all_models, defined_list, constant_params, total_models_count):
+def tupleToString(all_models:list[tuple], var_params, constant_params, total_models_count):
+    """
+
+    Args:
+        all_models: list[(name:str, bright parameters:dict)]
+        var_params: list of key names to be varable parameters in the current run,
+              correspond to more than 1 entry in list for grid params
+        constant_params: parameters that will remain constant for all models
+        total_models_count: total number of models for this run
+
+    Returns:
+
+    """
     string = line + line + line + "Total Number of Models: " + str(total_models_count) + '\n' + "Constant Params: " + '\n'
     for key in list(constant_params):
         string += breaker + key + ": " + str(constant_params[key]) + '\n'
@@ -207,8 +259,8 @@ def tupleToString(all_models, defined_list, constant_params, total_models_count)
     for i in range(len(all_models)):
         string += line + all_models[i][0] + '\n'
         current_model = all_models[i][1]
-        for k in range(len(defined_list)):
-            string += breaker + defined_list[k] + ": " + str(current_model[defined_list[k]]) + '\n'
+        for k in range(len(var_params)):
+            string += breaker + var_params[k] + ": " + str(current_model[var_params[k]]) + '\n'
 
     return string + line + line + line
 

@@ -56,5 +56,5 @@ sub_paths, all_intent_models, model_name_string = fileloading.runsInit(current_r
 # bigRunComputing.fileloading.loadGeoModel(current_geo_grid[0],current_run)
 # bigRunComputing.createGeoGrid(sub_paths, current_geo_grid, current_run)
 # bigRunComputing.creatIntensityGrid(sub_paths,current_geo_grid,current_run,
-#                                    all_intent_models,model_name_string,current_geo_grid_values,action)
-bigRunComputing.graphCreation(sub_paths,current_run,action,2)
+# #                                    all_intent_models,model_name_string,current_geo_grid_values,action)
+# bigRunComputing.graphCreation(sub_paths,current_run,action,2)
