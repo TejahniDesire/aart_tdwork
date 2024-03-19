@@ -5,6 +5,7 @@ import astroModels
 import bigRunComputing
 import fileloading
 import image_tools
+import normalizingBrightparams
 
 sys.path.append(EZPaths.aartPath)
 import subprocess
@@ -277,7 +278,7 @@ def totalIntensity230Point(sub_path, model:str, intent_grid_type, brightparams:d
 
     # Read created file
 
-    fnrays = fileloading.intensityNameNoUnits(brightparams, astroModels.funckeys)
+    fnrays = fileloading.intensityNameNoUnits(bp, astroModels.funckeys)
     h5f = h5py.File(fnrays, 'r')
 
     I0 = h5f['bghts0'][:]
@@ -301,6 +302,17 @@ def totalIntensity230Point(sub_path, model:str, intent_grid_type, brightparams:d
     thick_total_flux = ilp.total_jy(Absorbtion_Image,230e9,bp["mass"])
 
     return thin_total_flux,thick_total_flux
+
+
+def normalize(sub_path, model:str, intent_grid_type, brightparams:dict):
+
+    geo_model = model[0:len(model)-intent_grid_type]  # remove numbers from model
+    lband = sub_path["GeoDoth5Path"] + geo_model + "Lensing" + ".h5"
+    rtray = sub_path["GeoDoth5Path"] + geo_model + "RayTracing" + ".h5"
+
+    normalizingBrightparams.normalize(lband,rtray,brightparams)
+
+
 
 
 

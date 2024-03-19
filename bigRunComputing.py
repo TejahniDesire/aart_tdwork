@@ -197,7 +197,7 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
             # ________________________________
             all_bright_params += [intensity_models[i][1]]
             # TODO: FIX
-            normalizingBrightparams.normalize(all_bright_params[i])
+            normalizingBrightparams.normalize(sub_path,current_geo_model,all_bright_params[i], 2)
 
             print("Creating Intensity Movie for Model ", all_total_names[i])
             intermodel_data = movieMakerIntensity.intensity_movie(
