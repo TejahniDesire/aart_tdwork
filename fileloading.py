@@ -121,8 +121,10 @@ def runsInit(run:str, grid_params:dict, var_params):
 
     image_path = main_path + "Images/"
     data_path = main_path + "Data/"
+    meta_path = main_path + "InterModel/"
     creatSubDirectory(image_path,"images")
     creatSubDirectory(data_path, "data")
+    creatSubDirectory(meta_path, "inter model data")
 
     sub_paths = {
         "GeoDoth5Path": data_path + "geo/",
@@ -133,7 +135,10 @@ def runsInit(run:str, grid_params:dict, var_params):
         "opticalDepth": image_path + "opticalDepth/",
         "peakHistThin": image_path + "peakHistThin/",
         "peakHistThick": image_path + "peakHistThick/",
-        "convHist": image_path + "convHist/"
+        "convHist": image_path + "convHist/",
+        "totalFlux":image_path + "totalFlux230Ghz/",
+        "meta": meta_path
+
     }
 
     for key in list(sub_paths):

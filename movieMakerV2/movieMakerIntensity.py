@@ -1,6 +1,7 @@
 import os.path
 import sys
 import EZPaths
+import astroModels
 import bigRunComputing
 import fileloading
 import image_tools
@@ -100,19 +101,19 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
     mean_optical_depth_I1 = np.zeros(num_iterations)
     mean_optical_depth_I2 = np.zeros(num_iterations)
 
+    # total jy at 230GHz
+
+    thin_total_flux, thick_total_flux = totalIntensity230Point(sub_path, model, intent_grid_type, brightparams)
+
+    intermodel_data = {
+        "thin_total_flux": thin_total_flux,
+        "thick_total_flux":thick_total_flux
+    }
 
     # # Intensity images
     # I_thins = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
     # I_thicks = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
     # #
-    funckeys = {
-        "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
-        "bkey": 2,  # bkey
-        "nnoisykey": 0,  # nnoisykey Inoisy density. 0 = no noise, 1 = noise
-        "tnoisykey": 0,  # tnoisykey Inoisy temperature
-        "bnoisykey": 0  # bnoisykey Inoisy magnetic field
-    }
-
     for i in range(num_iterations):
         print(line)
         print(line)
@@ -133,7 +134,7 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
 
         # Read created file
 
-        fnrays = fileloading.intensityNameNoUnits(brightparams, funckeys)
+        fnrays = fileloading.intensityNameNoUnits(brightparams, astroModels.funckeys)
         new_intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
         subprocess.run(["mv " + fnrays + ' ' + new_intensity_path], shell=True)
 
@@ -221,6 +222,8 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
 
         h5f.close()
 
+
+
     final_data_path = current_model_file + "numpy/"
 
     if not os.path.isdir(final_data_path):
@@ -255,3 +258,49 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
     np.save(final_data_path + "mean_optical_depth_I0",mean_optical_depth_I0)
     np.save(final_data_path + "mean_optical_depth_I1", mean_optical_depth_I1)
     np.save(final_data_path + "mean_optical_depth_I2", mean_optical_depth_I2)
+
+    return intermodel_data
+
+
+def totalIntensity230Point(sub_path, model:str, intent_grid_type, brightparams:dict):
+    bp = brightparams.copy()
+    bp["nu0"] = 230e9
+
+    geo_model = model[0:len(model)-intent_grid_type]  # remove numbers from model
+    lband = sub_path["GeoDoth5Path"] + geo_model + "Lensing" + ".h5"
+    rtray = sub_path["GeoDoth5Path"] + geo_model + "RayTracing" + ".h5"
+
+    args = bigRunComputing.createIntensityArgs(bp)
+    args += "--lband " + lband + " --rtray " + rtray
+
+    subprocess.run(['python3 ' + EZPaths.aartPath + '/radialintensity.py' + args], shell=True)
+
+    # Read created file
+
+    fnrays = fileloading.intensityNameNoUnits(brightparams, astroModels.funckeys)
+    h5f = h5py.File(fnrays, 'r')
+
+    I0 = h5f['bghts0'][:]
+    I1 = h5f['bghts1'][:]
+    I2 = h5f['bghts2'][:]
+
+    # I0_Absorb = h5f['bghts0_absorbtion'][:]
+    # I1_Absorb = h5f['bghts1_absorbtion'][:]
+    # I2_Absorb = h5f['bghts2_absorbtion'][:]
+    Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+    #
+    # tau2 = h5f['tau2'][:]
+    # tau1 = h5f['tau1'][:]
+    # tau0 = h5f['tau0'][:]
+
+    h5f.close()
+
+    subprocess.run(["rm " + fnrays], shell=True)
+
+    thin_total_flux = ilp.total_jy(I0 + I1 + I2,230e9,bp["mass"])
+    thick_total_flux = ilp.total_jy(Absorbtion_Image,230e9,bp["mass"])
+
+    return thin_total_flux,thick_total_flux
+
+
+

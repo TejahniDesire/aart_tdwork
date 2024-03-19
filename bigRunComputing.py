@@ -1,6 +1,7 @@
 import subprocess
 
 import kgeo
+import numpy as np
 from matplotlib import ticker
 
 
@@ -26,6 +27,7 @@ kw_action = {
     "stop": 6.00e+10,
     "step": 1.00e+10
 }
+funckeys = astroModels.funckeys
 
 
 def createIntensityArgs(brightparams):
@@ -54,13 +56,6 @@ def createIntensityArgs(brightparams):
         "bnoisykey": '--bnoisykey ',
     }
 
-    funckeys = {
-        "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
-        "bkey": 2,  # bkey
-        "nnoisykey": 0,  # nnoisykey Inoisy density. 0 = no noise, 1 = noise
-        "tnoisykey": 0,  # tnoisykey Inoisy temperature
-        "bnoisykey": 0  # bnoisykey Inoisy magnetic field
-    }
 
     # brightparams = fpp.bp_steeperT
     # funckeys = fpp.fk_fiducial
@@ -186,6 +181,8 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
     all_intent_names = []
     all_total_names = []
     all_bright_params = []
+    all_230_total_jy_thin = []
+    all_230_total_jy_thick = []
     for j in range(len(input_geo_grid_names)):
         for i in range(len(intensity_models)):
             current_geo_model = input_geo_grid_names[j]
@@ -203,8 +200,12 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
             normalizingBrightparams.normalize(all_bright_params[i])
 
             print("Creating Intensity Movie for Model ", all_total_names[i])
-            movieMakerIntensity.intensity_movie(action, sub_path,
-                                                all_total_names[i], 2, all_bright_params[i])
+            intermodel_data = movieMakerIntensity.intensity_movie(
+                action, sub_path, all_total_names[i], 2, all_bright_params[i])
+
+            all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
+            all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
+
 
     # Make Docstring_____________________________________________
 
@@ -225,14 +226,15 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
     doc_string_file.write(full_string + geo_string)
     doc_string_file.close()
 
-    all_total_names = np.array(all_total_names)
-    all_bright_params = np.array(all_bright_params)
+    brightparams_numpy_name = sub_path["meta"] + "AllBrightParamsList"
+    all_full_names_numpy_name = sub_path["meta"] + "AllModelsList"
+    all_230_total_jy_thin_numpy_name = sub_path["meta"] + "thin_total_flux"
+    all_230_total_jy_thick_numpy_name = sub_path["meta"] + "thick_total_flux"
 
-    bright_numpy_name = EZPaths.modelRunsDir + run + "/" + "AllBrightParamsList"
-    numpy_name = EZPaths.modelRunsDir + run + "/" + "AllModelsList"
-
-    np.save(numpy_name, all_total_names)
-    np.save(bright_numpy_name, all_bright_params)
+    np.save(all_full_names_numpy_name, np.array(all_total_names))
+    np.save(brightparams_numpy_name, np.array(all_bright_params))
+    np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
+    np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
 
 
 def geoModelDocString(geo_grid_list:list[tuple[list]], input_geo_grid_names):
@@ -299,8 +301,10 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
     print(line)
     print(line)
     print("Initializing Graph Creation")
-    all_intent_names = np.load(EZPaths.modelRunsDir + run + "/" + "AllModelsList.npy")
-    all_brightparams = np.load(EZPaths.modelRunsDir + run + "/" + "AllBrightParamsList.npy", allow_pickle=True)
+    all_full_model_names = np.load(sub_path["meta"] + "AllModelsList.npy")
+    all_brightparams = np.load(sub_path["meta"] + "AllBrightParamsList.npy", allow_pickle=True)
+    thin_total_flux = np.load(sub_path["meta"] + "thin_total_flux.npy")
+    thick_total_flux = np.load(sub_path["meta"] + "thick_total_flux.npy")
     # current_intensity_model_name = intensity_models[i][0]
     # current_intensity_model = intensity_models[i][1]
     # full_current_model_name = current_geo_model + current_intensity_model_name.replace("Model", "")
@@ -309,7 +313,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
     hist_flux_peaks_thicks = []
     hist_convs = []
     dim = [10, 8]
-    for model in all_intent_names:
+    for model in all_full_model_names:
         print(line)
         print("Running " + model)
 
@@ -444,6 +448,8 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
             print("Subdirectory '{}' created".format(file_creation[i]))
 
         # Points of Interest
+
+
 
         conv_1 = action["start"] + action["step"] * ilp.ring_convergance(mean_radii_Thick[:, 2], mean_radii_Thick[:, 3],
                                                                          3)
@@ -660,6 +666,9 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
             print("Jpeg Created:  " + pltname)
             plt.close()
 
+            # Get total jansky
+
+
             k += action['step']
         j += 1  # marker for which brightparams to use
     # histograms
@@ -669,12 +678,13 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
     peak_hist_thin_path = sub_path["peakHistThin"]
     peak_hist_thick_path = sub_path["peakHistThick"]
     conv_hist_path = sub_path["convHist"]
+    total_flux_path = sub_path["totalFlux"]
 
     # Thin_________________
 
     fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-    astroPloting.histogram(ax,hist_flux_peaks_thins,"Flux Peak","Frequency")
+    astroPloting.histogram(ax,hist_flux_peaks_thins,"Flux Peak","Optically Thin Assumption Frequency")
 
     figname = peak_hist_thin_path + "FluxPeakThin.jpeg"
     plt.savefig(figname, bbox_inches='tight')
@@ -702,9 +712,27 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
     print("Image '{}' Created".format(figname))
     plt.close()
 
+    """230 total flux Thin___________________________________________________________"""
+    fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
+    astroPloting.bar(ax, np.arange(len(all_full_model_names)),thin_total_flux, "Total Flux at 230GHz",
+                     "Optically Thin Assumption Frequency",all_full_model_names)
 
+    figname = total_flux_path + "thin.jpeg"
+    plt.savefig(figname, bbox_inches='tight')
+    print("Image '{}' Created".format(figname))
+    plt.close()
 
+    """230 total flux Thick___________________________________________________________"""
+    fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+
+    astroPloting.bar(ax, np.arange(len(all_full_model_names)), thick_total_flux, "Total Flux at 230GHz",
+                     "Full Solution Frequency", all_full_model_names)
+
+    figname = total_flux_path + "thick.jpeg"
+    plt.savefig(figname, bbox_inches='tight')
+    print("Image '{}' Created".format(figname))
+    plt.close()
 
 def fmt(x, pos):
     x = x / 1e9

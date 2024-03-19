@@ -19,9 +19,6 @@ from movieMakerV2 import movieMakerIntensity
 from astropy import units as u
 
 
-
-
-
 def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
                    poi, conv_1_style, r_outer_style,flux_peak_style, action):
     '''
@@ -234,5 +231,12 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
 
 def histogram(ax,data,xlabel,ylabel):
     ax.hist(data)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+
+
+def bar(ax,xdata,ydata,xlabel,ylabel,xbarlabel):
+    ax.bar(xdata,ydata)
+    plt.xticks(xdata, labels=xbarlabel)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
