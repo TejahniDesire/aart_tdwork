@@ -185,29 +185,39 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
     all_230_total_jy_thick = []
 
     k = 0
+    print(line)
+    print(line)
+    print(line)
+    print("Running Intensity Grid for " + run)
     print("All GeoGrid Names:  " + "\n" + str(input_geo_grid_names))
     for j in range(len(input_geo_grid_names)):
+        current_geo_model = input_geo_grid_names[j]
+        fileloading.loadGeoModel(current_geo_model, run)
+        lband = sub_path["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
+        rtray = sub_path["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
+
         for i in range(len(intensity_models)):
-            current_geo_model = input_geo_grid_names[j]
-            fileloading.loadGeoModel(current_geo_model, run)
-            lband = sub_path["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
-            rtray = sub_path["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
-
             # String Names
-            all_intent_names += [intensity_models[i][0]]
-            all_total_names += [current_geo_model + all_intent_names[k].replace("Model", "")]
+            print(line)
+            print(line)
+            print("Model number: " + str(k))
 
+            all_intent_names += [intensity_models[i][0]]
+            current_intent_name = all_intent_names[k]
+            all_total_names += [current_geo_model + current_intent_name.replace("Model", "")]
+            current_total_name = all_total_names[k]
+            print("     " + current_total_name)
             # ________________________________
             all_bright_params += [intensity_models[i][1]]
-            # TODO: FIX
-            print("Normalizing " + all_total_names[k])
-            all_bright_params[k]["n_th0"] = normalizingBrightparams.normalize(lband,rtray,all_bright_params[k])
-            print("\n" + all_total_names[k] + "Normalized with a value of n_th0="
-                  + str(all_bright_params[k]["n_th0"]) + "\n")
+            current_bp = all_bright_params[k]
 
-            print("Creating Intensity Movie for Model ", all_total_names[k])
+            print("\n" + "Normalizing " + current_total_name + "\n")
+            current_bp["n_th0"] = normalizingBrightparams.normalize(lband,rtray,current_bp)
+            print("\n" + current_total_name + " normalized with a value of n_th0="
+                  + str(current_bp["n_th0"]) + "\n")
+            print("Creating Intensity Movie for Model ", current_total_name)
             intermodel_data = movieMakerIntensity.intensity_movie(
-                action, sub_path, all_total_names[k], 2, all_bright_params[k])
+                action, sub_path,current_total_name, 2, current_bp)
 
             all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
             all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
@@ -216,7 +226,7 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
 
     # Make Docstring_____________________________________________
 
-    doc_string_file = EZPaths.modelRunsDir + run + "/" + "AllModels.txt"
+    doc_string_file = sub_path["meta"] + "AllModels.txt"
     cmd = "touch " + doc_string_file
     subprocess.run([cmd], shell=True)
 
