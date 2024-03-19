@@ -270,7 +270,7 @@ def intensityModelsDocString(all_intent_names, all_bright_params, var_params, co
 
     string = line_small + line_small + line_small + "Total Number of Models: " + str(total_models_count) + '\n' + "Constant Params: " + '\n'
     for key in list(constant_params):
-        if key is not "n_th0":
+        if key != "n_th0":
             string += breaker + key + ": " + str(constant_params[key]) + '\n'
 
     string += line_small
