@@ -197,7 +197,7 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
             # ________________________________
             all_bright_params += [intensity_models[i][1]]
             # TODO: FIX
-            normalizingBrightparams.normalize(sub_path,current_geo_model,all_bright_params[i], 2)
+            all_bright_params[i]["n_th0"] = normalizingBrightparams.normalize(sub_path,current_geo_model,all_bright_params[i], 2)
 
             print("Creating Intensity Movie for Model ", all_total_names[i])
             intermodel_data = movieMakerIntensity.intensity_movie(
@@ -269,7 +269,8 @@ def intensityModelsDocString(all_intent_names, all_bright_params, var_params, co
 
     string = line_small + line_small + line_small + "Total Number of Models: " + str(total_models_count) + '\n' + "Constant Params: " + '\n'
     for key in list(constant_params):
-        string += breaker + key + ": " + str(constant_params[key]) + '\n'
+        if key is not "n_th0":
+            string += breaker + key + ": " + str(constant_params[key]) + '\n'
 
     string += line_small
     for i in range(len(all_intent_names)):
@@ -279,6 +280,7 @@ def intensityModelsDocString(all_intent_names, all_bright_params, var_params, co
 
         for k in range(len(var_params)):
             string += breaker + var_params[k] + ": " + str(current_model[var_params[k]]) + '\n'
+        string += breaker + "n_th0: " + str(current_model["n_th0"]) + '\n'
 
     return string + line_small + line_small + line_small
 
