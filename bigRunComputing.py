@@ -198,39 +198,38 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
         rtray = sub_path["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
 
         for i in range(len(intensity_models)):
-            if j != 1:
-                print("Skipping Model: " + str(k))
 
-            else:
-                print(line)
-                print(line)
-                print("Model number: " + str(k))
+            print(line)
+            print(line)
+            print("Model number: " + str(k))
 
-                # String Names
-                all_intent_names += [intensity_models[i][0]]
-                current_intent_name = all_intent_names[k]
-                all_total_names += [current_geo_model + current_intent_name.replace("Model", "")]
-                current_total_name = all_total_names[k]
-                print("     " + current_total_name)
-                # ________________________________
-                all_bright_params += [intensity_models[i][1]]
-                current_bp = all_bright_params[k]
+            # String Names
+            all_intent_names += [intensity_models[i][0]]
+            current_intent_name = all_intent_names[k]
+            all_total_names += [current_geo_model + current_intent_name.replace("Model", "")]
+            current_total_name = all_total_names[k]
+            print("     " + current_total_name)
+            # ________________________________
+            all_bright_params += [intensity_models[i][1]]
+            current_bp = all_bright_params[k]
 
-                print("\n" + "Normalizing " + current_total_name + "\n")
-                print(long_line)
-                current_bp["n_th0"] = normalizingBrightparams.normalize(lband,rtray,current_bp)
-                print("\n" + current_total_name + " normalized with a value of n_th0="
-                      + str(current_bp["n_th0"]) + "\n")
+            print("\n" + "Normalizing " + current_total_name + "\n")
+            print(long_line)
 
-                print("Creating Intensity Movie for Model ", current_total_name)
-                print(long_line)
-                intermodel_data = movieMakerIntensity.intensity_movie(
-                    action, sub_path,current_total_name, 2, current_bp)
+            current_bp["n_th0"] = normalizingBrightparams.normalize(lband,rtray,current_bp)
 
-                print("\nTotal flux at 230GHz for Optically Thin Assumption: " + intermodel_data["thin_total_flux"])
-                print("Total flux at 230GHz for Full Solution: " + intermodel_data["thick_total_flux"] + "\n")
-                all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
-                all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
+            print("\n" + current_total_name + " normalized with a value of n_th0="
+                  + str(current_bp["n_th0"]) + "\n")
+            print("Creating Intensity Movie for Model ", current_total_name)
+            print(long_line)
+
+            intermodel_data = movieMakerIntensity.intensity_movie(
+                action, sub_path,current_total_name, 2, current_bp)
+
+            print("\nTotal flux at 230GHz for Optically Thin Assumption: " + intermodel_data["thin_total_flux"])
+            print("Total flux at 230GHz for Full Solution: " + intermodel_data["thick_total_flux"] + "\n")
+            all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
+            all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
             k += 1
 
 
