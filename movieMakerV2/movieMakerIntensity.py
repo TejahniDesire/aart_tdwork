@@ -303,16 +303,16 @@ def totalIntensity230Point(sub_path, model:str, intent_grid_type, brightparams:d
 
     return thin_total_flux,thick_total_flux
 
-
-def normalize(sub_path, model:str, intent_grid_type, brightparams:dict):
-
-    geo_model = model[0:len(model)-intent_grid_type]  # remove numbers from model
-    lband = sub_path["GeoDoth5Path"] + geo_model + "Lensing" + ".h5"
-    rtray = sub_path["GeoDoth5Path"] + geo_model + "RayTracing" + ".h5"
-
-    normalizingBrightparams.normalize(lband,rtray,brightparams)
-
-
+#
+# def normalize(sub_path, model:str, intent_grid_type, brightparams:dict):
+#
+#     geo_model = model[0:len(model)-intent_grid_type]  # remove numbers from model
+#     lband = sub_path["GeoDoth5Path"] + geo_model + "Lensing" + ".h5"
+#     rtray = sub_path["GeoDoth5Path"] + geo_model + "RayTracing" + ".h5"
+#
+#     normalizingBrightparams.normalize(lband,rtray,brightparams)
+#
+#
 
 
 
