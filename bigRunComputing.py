@@ -87,63 +87,42 @@ def createGeoGrid(sub_path, input_geo_grid, run):
 
         print("Reading file: ", fnbands)
 
-        h5f = h5py.File(fnbands, 'r')
+        '''Analytical Ray-tracing______________________________________________________'''
+        print("Analytical Raytracing of {}".format(input_geo_grid[i]))
+        subprocess.run(['python3 ' + EZPaths.aartPath + '/raytracing.py '], shell=True)
+        fnrays1 = path + "Rays_a_%s_i_%s.h5" % (spin_case, i_case)
 
-        # Points for the boundary of the BH shadow
-        alpha_critc = h5f['alpha'][:]
-        beta_critc = h5f['beta'][:]
+        # Move lensing bands and raytracing bands
+        subprocess.run(["mv " + fnbands + ' ' + new_lband], shell=True)
+        subprocess.run(["mv " + fnrays1 + ' ' + new_rtray], shell=True)
 
-        # The concave hulls for the lensing bands
-        hull_0i = h5f['hull_0i'][:]
-        hull_0e = h5f['hull_0e'][:]
-        hull_1i = h5f['hull_1i'][:]
-        hull_1e = h5f['hull_1e'][:]
-        hull_2i = h5f['hull_2i'][:]
-        hull_2e = h5f['hull_2e'][:]
+    # Create normalizing lensing band
 
-        # The grid points for each lensing band
-        supergrid0 = h5f['grid0'][:]
-        N0 = int(h5f["N0"][0])
-        mask0 = h5f['mask0'][:]
-        lim0 = int(h5f["lim0"][0])
-        supergrid1 = h5f['grid1'][:]
-        N1 = int(h5f["N1"][0])
-        mask1 = h5f['mask1'][:]
-        lim1 = int(h5f["lim1"][0])
-        supergrid2 = h5f['grid2'][:]
-        N2 = int(h5f["N2"][0])
-        mask2 = h5f['mask2'][:]
-        lim2 = int(h5f["lim2"][0])
+        fileloading.loadGeoModel(input_geo_grid[i] + "Normalizing", run)
+        importlib.reload(params)
 
-        h5f.close()
+        new_lband = sub_path["GeoDoth5Path"] + input_geo_grid[i] + "Lensing" + ".h5"
+        new_rtray = sub_path["GeoDoth5Path"] + input_geo_grid[i] + "RayTracing" + ".h5"
+        print("Computation of {} Lensing Bands".format(input_geo_grid[i]))
+        """Computation of the lensing bands______________________________________________________"""
+        subprocess.run(['python3 ' + EZPaths.aartPath + '/lensingbands.py '], shell=True)
+
+        spin_case = params.spin_case
+        i_case = params.i_case
+
+        fnbands = path + "LensingBands_a_%s_i_%s.h5" % (params.spin_case, params.i_case)
+
+        print("Reading file: ", fnbands)
 
         '''Analytical Ray-tracing______________________________________________________'''
         print("Analytical Raytracing of {}".format(input_geo_grid[i]))
         subprocess.run(['python3 ' + EZPaths.aartPath + '/raytracing.py '], shell=True)
         fnrays1 = path + "Rays_a_%s_i_%s.h5" % (spin_case, i_case)
 
-        h5f = h5py.File(fnrays1, 'r')
-
-        rs0 = h5f['rs0'][:]
-        sign0 = h5f['sign0'][:]
-        t0 = h5f['t0'][:]
-        phi0 = h5f['phi0'][:]
-
-        rs1 = h5f['rs1'][:]
-        sign1 = h5f['sign1'][:]
-        t1 = h5f['t1'][:]
-        phi1 = h5f['phi1'][:]
-
-        rs2 = h5f['rs2'][:]
-        sign2 = h5f['sign2'][:]
-        t2 = h5f['t2'][:]
-        phi2 = h5f['phi2'][:]
-
-        h5f.close()
-
         # Move lensing bands and raytracing bands
         subprocess.run(["mv " + fnbands + ' ' + new_lband], shell=True)
         subprocess.run(["mv " + fnrays1 + ' ' + new_rtray], shell=True)
+
 
 
 line = "\n________________________\n"
@@ -197,6 +176,9 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
         lband = sub_path["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
         rtray = sub_path["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
 
+        normlband = sub_path["GeoDoth5Path"] + current_geo_model + "Normalizing" + "Lensing" + ".h5"
+        normrtray = sub_path["GeoDoth5Path"] + current_geo_model + "Normalizing"  + "RayTracing" + ".h5"
+
         for i in range(len(intensity_models)):
 
             print(line)
@@ -216,7 +198,7 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
             print("\n" + "Normalizing " + current_total_name + "\n")
             print(long_line)
 
-            current_bp["n_th0"] = normalizingBrightparams.normalize(lband,rtray,current_bp)
+            current_bp["n_th0"] = normalizingBrightparams.normalize(normlband,normrtray,current_bp)
 
             print("\n" + current_total_name + " normalized with a value of n_th0="
                   + str(current_bp["n_th0"]) + "\n")

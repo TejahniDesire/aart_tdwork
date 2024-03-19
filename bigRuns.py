@@ -54,8 +54,7 @@ action = {
 
 sub_paths, all_intensity_models, total_models_count, run_type, variable_param_ranges, constant_params =\
     fileloading.runsInit(current_run,current_bp,current_var_params)
-# bigRunComputing.fileloading.loadGeoModel(current_geo_grid_names[0], current_run)
-# bigRunComputing.createGeoGrid(sub_paths, current_geo_grid_names, current_run)
+bigRunComputing.createGeoGrid(sub_paths, current_geo_grid_names, current_run)
 bigRunComputing.creatIntensityGrid(sub_paths, current_run, current_geo_grid_names, current_geo_grid_values,
                                    all_intensity_models, current_var_params, constant_params,
                                    total_models_count,action)
