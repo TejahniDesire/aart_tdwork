@@ -147,6 +147,7 @@ def createGeoGrid(sub_path, input_geo_grid, run):
 
 
 line = "\n________________________\n"
+long_line = "\n________________________________________________________________________\n"
 
 
 def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], geo_grid_list,
@@ -212,10 +213,12 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
             current_bp = all_bright_params[k]
 
             print("\n" + "Normalizing " + current_total_name + "\n")
+            print(long_line)
             current_bp["n_th0"] = normalizingBrightparams.normalize(lband,rtray,current_bp)
             print("\n" + current_total_name + " normalized with a value of n_th0="
                   + str(current_bp["n_th0"]) + "\n")
             print("Creating Intensity Movie for Model ", current_total_name)
+            print(long_line)
             intermodel_data = movieMakerIntensity.intensity_movie(
                 action, sub_path,current_total_name, 2, current_bp)
 
