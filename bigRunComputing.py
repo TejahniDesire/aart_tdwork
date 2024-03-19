@@ -72,7 +72,6 @@ def createIntensityArgs(brightparams):
 def createGeoGrid(sub_path, input_geo_grid, run):
     for i in range(len(input_geo_grid)):
         # Create normalizing lensing band
-        print("STUPID")
 
         normal_param_name = input_geo_grid[i] + "_Normalizing"
 
