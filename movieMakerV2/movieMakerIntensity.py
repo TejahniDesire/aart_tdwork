@@ -298,8 +298,8 @@ def totalIntensity230Point(sub_path, model:str, intent_grid_type, brightparams:d
 
     subprocess.run(["rm " + fnrays], shell=True)
 
-    thin_total_flux = ilp.total_jy(I0 + I1 + I2,230e9,bp["mass"])
-    thick_total_flux = ilp.total_jy(Absorbtion_Image,230e9,bp["mass"])
+    thin_total_flux = ilp.total_jy(I0 + I1 + I2,230e9,bp["mass"]).value
+    thick_total_flux = ilp.total_jy(Absorbtion_Image,230e9,bp["mass"]).value
 
     return thin_total_flux,thick_total_flux
 
