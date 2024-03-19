@@ -104,11 +104,11 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
 
     # total jy at 230GHz
 
-    thin_total_flux, thick_total_flux = totalIntensity230Point(sub_path, model, intent_grid_type, brightparams)
+    thin_total_flux, thick_total_flux = normalizingBrightparams.totalIntensity230Point(lband,rtray,brightparams,False)
 
     intermodel_data = {
         "thin_total_flux": thin_total_flux,
-        "thick_total_flux":thick_total_flux
+        "thick_total_flux": thick_total_flux
     }
 
     # # Intensity images
@@ -263,56 +263,6 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
     return intermodel_data
 
 
-def totalIntensity230Point(sub_path, model:str, intent_grid_type, brightparams:dict):
-    bp = brightparams.copy()
-    bp["nu0"] = 230e9
-
-    geo_model = model[0:len(model)-intent_grid_type]  # remove numbers from model
-    lband = sub_path["GeoDoth5Path"] + geo_model + "Lensing" + ".h5"
-    rtray = sub_path["GeoDoth5Path"] + geo_model + "RayTracing" + ".h5"
-
-    args = bigRunComputing.createIntensityArgs(bp)
-    args += "--lband " + lband + " --rtray " + rtray
-
-    subprocess.run(['python3 ' + EZPaths.aartPath + '/radialintensity.py' + args], shell=True)
-
-    # Read created file
-
-    fnrays = fileloading.intensityNameNoUnits(bp, astroModels.funckeys)
-    h5f = h5py.File(fnrays, 'r')
-
-    I0 = h5f['bghts0'][:]
-    I1 = h5f['bghts1'][:]
-    I2 = h5f['bghts2'][:]
-
-    # I0_Absorb = h5f['bghts0_absorbtion'][:]
-    # I1_Absorb = h5f['bghts1_absorbtion'][:]
-    # I2_Absorb = h5f['bghts2_absorbtion'][:]
-    Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
-    #
-    # tau2 = h5f['tau2'][:]
-    # tau1 = h5f['tau1'][:]
-    # tau0 = h5f['tau0'][:]
-
-    h5f.close()
-
-    subprocess.run(["rm " + fnrays], shell=True)
-
-    thin_total_flux = ilp.total_jy(I0 + I1 + I2,230e9,bp["mass"]).value
-    thick_total_flux = ilp.total_jy(Absorbtion_Image,230e9,bp["mass"]).value
-
-    return thin_total_flux,thick_total_flux
-
-#
-# def normalize(sub_path, model:str, intent_grid_type, brightparams:dict):
-#
-#     geo_model = model[0:len(model)-intent_grid_type]  # remove numbers from model
-#     lband = sub_path["GeoDoth5Path"] + geo_model + "Lensing" + ".h5"
-#     rtray = sub_path["GeoDoth5Path"] + geo_model + "RayTracing" + ".h5"
-#
-#     normalizingBrightparams.normalize(lband,rtray,brightparams)
-#
-#
 
 
 
