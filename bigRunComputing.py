@@ -198,11 +198,12 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
         rtray = sub_path["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
 
         for i in range(len(intensity_models)):
-            # String Names
+
             print(line)
             print(line)
             print("Model number: " + str(k))
 
+            # String Names
             all_intent_names += [intensity_models[i][0]]
             current_intent_name = all_intent_names[k]
             all_total_names += [current_geo_model + current_intent_name.replace("Model", "")]
@@ -234,7 +235,7 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
     subprocess.run([cmd], shell=True)
 
     # Astrophysical part
-    full_string = intensityModelsDocString(all_intent_names, all_bright_params,
+    full_string = intensityModelsDocString(all_total_names, all_bright_params,
                                            var_params, constant_params, total_models_count)
 
     # Geometrical Part
@@ -269,11 +270,11 @@ def geoModelDocString(geo_grid_list:list[tuple[list]], input_geo_grid_names):
     return geo_models_string
 
 
-def intensityModelsDocString(all_intent_names, all_bright_params, var_params, constant_params, total_models_count):
+def intensityModelsDocString(all_total_names, all_bright_params, var_params, constant_params, total_models_count):
     """
 
     Args:
-        all_intent_names: [intensity name]
+        all_total_names: [intensity name]
         all_bright_params: [brightparams]
         var_params: list of key names to be varable parameters in the current run,
               correspond to more than 1 entry in list for grid params
@@ -293,8 +294,8 @@ def intensityModelsDocString(all_intent_names, all_bright_params, var_params, co
             string += breaker + key + ": " + str(constant_params[key]) + '\n'
 
     string += line_small
-    for i in range(len(all_intent_names)):
-        current_name = all_intent_names[i]
+    for i in range(len(all_total_names)):
+        current_name = all_total_names[i]
         current_model = all_bright_params[i]
         string += line_small + current_name + '\n'
 
