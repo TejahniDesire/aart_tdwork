@@ -24,31 +24,31 @@ import astroModels
 import fileloading
 
 # Test Run
-# current_run = "testRun1"
-# current_bp = astroModels.bp_testRun1
-# current_var_params = ["p_temp","p_mag"]
-# current_geo_grid = ["ModelA", "ModelB"]
-# current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
-# sub_paths, all_intent_models, model_name_string = fileloading.runsInit(current_run,current_bp,current_var_params)
-# action = {
-#     "var": "nu0",
-#     "start": 3.00e+10,
-#     "stop": 6.00e+10,
-#     "step": 1.00e+10
-# }
-
-# Full Run
-current_run = "run1"
-current_bp = astroModels.bp_run1
-current_var_params = ["p_temp", "p_mag"]
+current_run = "testRun1"
+current_bp = astroModels.bp_testRun1
+current_var_params = ["p_temp","p_mag"]
 current_geo_grid = ["ModelA", "ModelB"]
 current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
+sub_paths, all_intent_models, model_name_string = fileloading.runsInit(current_run,current_bp,current_var_params)
 action = {
     "var": "nu0",
-    "start": 10e9,
-    "stop": 700e9,
-    "step": 20e9
+    "start": 3.00e+10,
+    "stop": 6.00e+10,
+    "step": 1.00e+10
 }
+
+# Full Run
+# current_run = "run1"
+# current_bp = astroModels.bp_run1
+# current_var_params = ["p_temp", "p_mag"]
+# current_geo_grid = ["ModelA", "ModelB"]
+# current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
+# action = {
+#     "var": "nu0",
+#     "start": 10e9,
+#     "stop": 700e9,
+#     "step": 20e9
+# }
 
 
 
