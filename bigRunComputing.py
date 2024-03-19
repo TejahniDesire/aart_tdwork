@@ -187,8 +187,8 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
         for i in range(len(intensity_models)):
             current_geo_model = input_geo_grid_names[j]
             fileloading.loadGeoModel(current_geo_model, run)
-            lband = sub_path["GeoDoth5Path"] + current_geo_model + "/Lensing" + ".h5"
-            rtray = sub_path["GeoDoth5Path"] + current_geo_model + "/RayTracing" + ".h5"
+            lband = sub_path["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
+            rtray = sub_path["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
 
             # String Names
             all_intent_names += [intensity_models[i][0]]
