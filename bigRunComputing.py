@@ -98,12 +98,14 @@ def createGeoGrid(sub_path, input_geo_grid, run):
 
     # Create normalizing lensing band
 
-        fileloading.loadGeoModel(input_geo_grid[i] + "Normalizing", run)
+        normal_param_name = input_geo_grid[i] + "_Normalizing"
+
+        fileloading.loadGeoModel(normal_param_name, run)
         importlib.reload(params)
 
-        new_lband = sub_path["GeoDoth5Path"] + input_geo_grid[i] + "Lensing" + ".h5"
-        new_rtray = sub_path["GeoDoth5Path"] + input_geo_grid[i] + "RayTracing" + ".h5"
-        print("Computation of {} Lensing Bands".format(input_geo_grid[i]))
+        new_lband = sub_path["GeoDoth5Path"] + normal_param_name + "Lensing" + ".h5"
+        new_rtray = sub_path["GeoDoth5Path"] + normal_param_name + "RayTracing" + ".h5"
+        print("Computation of {} Lensing Bands".format(normal_param_name))
         """Computation of the lensing bands______________________________________________________"""
         subprocess.run(['python3 ' + EZPaths.aartPath + '/lensingbands.py '], shell=True)
 
@@ -115,7 +117,7 @@ def createGeoGrid(sub_path, input_geo_grid, run):
         print("Reading file: ", fnbands)
 
         '''Analytical Ray-tracing______________________________________________________'''
-        print("Analytical Raytracing of {}".format(input_geo_grid[i]))
+        print("Analytical Raytracing of {}".format(normal_param_name))
         subprocess.run(['python3 ' + EZPaths.aartPath + '/raytracing.py '], shell=True)
         fnrays1 = path + "Rays_a_%s_i_%s.h5" % (spin_case, i_case)
 
@@ -208,8 +210,8 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
             intermodel_data = movieMakerIntensity.intensity_movie(
                 action, sub_path,current_total_name, 2, current_bp)
 
-            print("\nTotal flux at 230GHz for Optically Thin Assumption: " + intermodel_data["thin_total_flux"])
-            print("Total flux at 230GHz for Full Solution: " + intermodel_data["thick_total_flux"] + "\n")
+            print("\nTotal flux at 230GHz for Optically Thin Assumption: " + str(intermodel_data["thin_total_flux"]))
+            print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"] + "\n"))
             all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
             all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
             k += 1
