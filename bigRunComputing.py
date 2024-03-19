@@ -71,32 +71,8 @@ def createIntensityArgs(brightparams):
 
 def createGeoGrid(sub_path, input_geo_grid, run):
     for i in range(len(input_geo_grid)):
-        fileloading.loadGeoModel(input_geo_grid[i], run)
-        importlib.reload(params)
-
-        new_lband = sub_path["GeoDoth5Path"] + input_geo_grid[i] + "Lensing" + ".h5"
-        new_rtray = sub_path["GeoDoth5Path"] + input_geo_grid[i] + "RayTracing" + ".h5"
-        print("Computation of {} Lensing Bands".format(input_geo_grid[i]))
-        """Computation of the lensing bands______________________________________________________"""
-        subprocess.run(['python3 ' + EZPaths.aartPath + '/lensingbands.py '], shell=True)
-
-        spin_case = params.spin_case
-        i_case = params.i_case
-
-        fnbands = path + "LensingBands_a_%s_i_%s.h5" % (params.spin_case, params.i_case)
-
-        print("Reading file: ", fnbands)
-
-        '''Analytical Ray-tracing______________________________________________________'''
-        print("Analytical Raytracing of {}".format(input_geo_grid[i]))
-        subprocess.run(['python3 ' + EZPaths.aartPath + '/raytracing.py '], shell=True)
-        fnrays1 = path + "Rays_a_%s_i_%s.h5" % (spin_case, i_case)
-
-        # Move lensing bands and raytracing bands
-        subprocess.run(["mv " + fnbands + ' ' + new_lband], shell=True)
-        subprocess.run(["mv " + fnrays1 + ' ' + new_rtray], shell=True)
-
-    # Create normalizing lensing band
+        # Create normalizing lensing band
+        print("STUPID")
 
         normal_param_name = input_geo_grid[i] + "_Normalizing"
 
@@ -124,6 +100,33 @@ def createGeoGrid(sub_path, input_geo_grid, run):
         # Move lensing bands and raytracing bands
         subprocess.run(["mv " + fnbands + ' ' + new_lband], shell=True)
         subprocess.run(["mv " + fnrays1 + ' ' + new_rtray], shell=True)
+
+        # Actual Model Params____________________________________
+        fileloading.loadGeoModel(input_geo_grid[i], run)
+        importlib.reload(params)
+
+        new_lband = sub_path["GeoDoth5Path"] + input_geo_grid[i] + "Lensing" + ".h5"
+        new_rtray = sub_path["GeoDoth5Path"] + input_geo_grid[i] + "RayTracing" + ".h5"
+        print("Computation of {} Lensing Bands".format(input_geo_grid[i]))
+        """Computation of the lensing bands______________________________________________________"""
+        subprocess.run(['python3 ' + EZPaths.aartPath + '/lensingbands.py '], shell=True)
+
+        spin_case = params.spin_case
+        i_case = params.i_case
+
+        fnbands = path + "LensingBands_a_%s_i_%s.h5" % (params.spin_case, params.i_case)
+
+        print("Reading file: ", fnbands)
+
+        '''Analytical Ray-tracing______________________________________________________'''
+        print("Analytical Raytracing of {}".format(input_geo_grid[i]))
+        subprocess.run(['python3 ' + EZPaths.aartPath + '/raytracing.py '], shell=True)
+        fnrays1 = path + "Rays_a_%s_i_%s.h5" % (spin_case, i_case)
+
+        # Move lensing bands and raytracing bands
+        subprocess.run(["mv " + fnbands + ' ' + new_lband], shell=True)
+        subprocess.run(["mv " + fnrays1 + ' ' + new_rtray], shell=True)
+
 
 
 

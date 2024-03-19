@@ -283,11 +283,3 @@ def tupleToString(all_models:list[tuple], var_params, constant_params, total_mod
 
 
 
-
-# loadGeoModel("ModelA", "run1")
-# unloadGeoModel("ModelA","run1")
-# run_paths = runsInit("TestRun")
-# createAstroParams(astroModels.bp_run1, ["p_temp","p_mag"])
-
-# ORDER: Run initialization,
-
