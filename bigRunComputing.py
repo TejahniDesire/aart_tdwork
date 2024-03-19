@@ -213,7 +213,7 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
                 action, sub_path,current_total_name, 2, current_bp)
 
             print("\nTotal flux at 230GHz for Optically Thin Assumption: " + str(intermodel_data["thin_total_flux"]))
-            print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"] + "\n"))
+            print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"]) + "\n")
             all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
             all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
             k += 1
