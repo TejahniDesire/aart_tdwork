@@ -189,28 +189,28 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
         for i in range(len(intensity_models)):
             current_geo_model = input_geo_grid_names[j]
             print("Current Geo Model = " + current_geo_model)
-            fileloading.loadGeoModel(current_geo_model, run)
-            lband = sub_path["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
-            rtray = sub_path["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
-
-            # String Names
-            all_intent_names += [intensity_models[i][0]]
-            all_total_names += [current_geo_model + all_intent_names[i].replace("Model", "")]
-
-            # ________________________________
-            all_bright_params += [intensity_models[i][1]]
-            # TODO: FIX
-            print("Normalizing " + all_total_names[i])
-            all_bright_params[i]["n_th0"] = normalizingBrightparams.normalize(lband,rtray,all_bright_params[i])
-            print("\n" + all_total_names[i] + "Normalized with a value of n_th0="
-                  + str(all_bright_params[i]["n_th0"]) + "\n")
-
-            print("Creating Intensity Movie for Model ", all_total_names[i])
-            intermodel_data = movieMakerIntensity.intensity_movie(
-                action, sub_path, all_total_names[i], 2, all_bright_params[i])
-
-            all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
-            all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
+            # fileloading.loadGeoModel(current_geo_model, run)
+            # lband = sub_path["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
+            # rtray = sub_path["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
+            #
+            # # String Names
+            # all_intent_names += [intensity_models[i][0]]
+            # all_total_names += [current_geo_model + all_intent_names[i].replace("Model", "")]
+            #
+            # # ________________________________
+            # all_bright_params += [intensity_models[i][1]]
+            # # TODO: FIX
+            # print("Normalizing " + all_total_names[i])
+            # all_bright_params[i]["n_th0"] = normalizingBrightparams.normalize(lband,rtray,all_bright_params[i])
+            # print("\n" + all_total_names[i] + "Normalized with a value of n_th0="
+            #       + str(all_bright_params[i]["n_th0"]) + "\n")
+            #
+            # print("Creating Intensity Movie for Model ", all_total_names[i])
+            # intermodel_data = movieMakerIntensity.intensity_movie(
+            #     action, sub_path, all_total_names[i], 2, all_bright_params[i])
+            #
+            # all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
+            # all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
 
 
     # Make Docstring_____________________________________________
