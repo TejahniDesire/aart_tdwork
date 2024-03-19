@@ -98,7 +98,9 @@ def creatSubDirectory(path_chosen,purpose:str = '',kill_policy=False):
     else:
         if not isDir:
             os.makedirs(path_chosen)
-            print("A Subdirectory " + purpose + " '{}' was created".format(path_chosen))
+            print("A Subdirectory for " + purpose + " '{}' was created".format(path_chosen))
+        else:
+            print("Subdirectory for " + purpose + " '{}' already exist".format(path_chosen))
 
 
 def runsInit(run:str, grid_params:dict, var_params):
