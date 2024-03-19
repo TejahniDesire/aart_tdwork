@@ -33,6 +33,8 @@ def total_jy_normal_func(fitparams,lband,rtray,bp,y):
           + str(bp["n_th0"]) + " ______________________________________")
 
     thin_total_flux,thick_total_flux = totalIntensity230Point(lband,rtray,bp,True)
+    print("Total Thin Model Flux of ",thin_total_flux)
+    print("Total Full Model Flux of ",thick_total_flux)
 
     return y - thin_total_flux
 
