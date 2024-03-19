@@ -180,8 +180,8 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
         lband = sub_path["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
         rtray = sub_path["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
 
-        normlband = sub_path["GeoDoth5Path"] + current_geo_model + "Normalizing" + "Lensing" + ".h5"
-        normrtray = sub_path["GeoDoth5Path"] + current_geo_model + "Normalizing"  + "RayTracing" + ".h5"
+        normlband = sub_path["GeoDoth5Path"] + current_geo_model + "_Normalizing" + "Lensing" + ".h5"
+        normrtray = sub_path["GeoDoth5Path"] + current_geo_model + "_Normalizing" + "RayTracing" + ".h5"
 
         for i in range(len(intensity_models)):
 
