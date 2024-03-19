@@ -15,6 +15,7 @@ import astroModels
 
 
 def normalize(lband,rtray,brightparams:dict):
+
     bp = brightparams.copy()
 
     fitparams = Parameters()

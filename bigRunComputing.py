@@ -197,6 +197,7 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
             # ________________________________
             all_bright_params += [intensity_models[i][1]]
             # TODO: FIX
+            print("Normalizing " + all_total_names[i])
             all_bright_params[i]["n_th0"] = normalizingBrightparams.normalize(lband,rtray,all_bright_params[i])
 
             print("Creating Intensity Movie for Model ", all_total_names[i])
