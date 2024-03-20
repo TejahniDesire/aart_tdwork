@@ -243,7 +243,7 @@ def bar(ax,xdata,ydata,xlabel,ylabel,xbarlabel):
 
 
 def surfacePlot(X,Y,Z,ax,xlabel,ylabel,father_model,father_value):
-    ax.plot_surface(X, np.log10(Y), Z)
+    ax.plot_surface(X, Y, Z)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.title.set_text("All Models of a = .3, " + father_model + "=" + str(father_value))
