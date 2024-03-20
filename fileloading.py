@@ -137,7 +137,8 @@ def runsInit(run:str, grid_params:dict, var_params):
         "peakHistThick": image_path + "peakHistThick/",
         "convHist": image_path + "convHist/",
         "totalFlux":image_path + "totalFlux230Ghz/",
-        "meta": meta_path
+        "meta": meta_path,
+        "3d": image_path + "3dPloting/"
 
     }
 

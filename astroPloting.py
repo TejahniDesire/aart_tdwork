@@ -240,3 +240,10 @@ def bar(ax,xdata,ydata,xlabel,ylabel,xbarlabel):
     plt.xticks(xdata, labels=xbarlabel)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
+
+
+def surfacePlot(X,Y,Z,ax,xlabel,ylabel,father_model,father_value):
+    ax.plot_surface(X, Y, Z,cmap="afmhot")
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.title.set_text("All Models of a = .3, " + father_model + "=" + str(father_value))

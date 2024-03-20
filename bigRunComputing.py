@@ -20,6 +20,7 @@ import fileloading
 from movieMakerV2 import movieMakerIntensity
 import normalizingBrightparams
 from astropy import units as u
+import re
 
 kw_action = {
     "var": "nu0",
@@ -510,11 +511,6 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
             "linewidth": 3
         }
 
-        # '''
-        # "fluxPath"
-        # "radPath"
-        # "imagePath"
-        # '''
         # _______________________________________________
         # _______________________________________________
         # ________________________________
@@ -757,6 +753,112 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 def fmt(x, pos):
     x = x / 1e9
     return '{:.2f}'.format(x)
+
+
+def surfacePlot(sub_path,bp_grid:dict,action,var_params,geo_grid_names,intent_grid_type=2,geo_grid_type=1):
+    """
+        sub_paths = {
+        "GeoDoth5Path"
+        "intensityPath"
+        "fluxPath"
+        "radPath"
+        "imagePath"
+
+         action = {
+         "var":
+         "start":
+         "stop":
+         "step":
+    """
+    print(line)
+    print(line)
+    print("Initializing Graph Creation")
+    all_full_model_names = np.load(sub_path["meta"] + "AllModelsList.npy")
+    all_brightparams = np.load(sub_path["meta"] + "AllBrightParamsList.npy", allow_pickle=True)
+
+    focus_geo_model = all_full_model_names[0]
+    focus_geo_model = focus_geo_model[len(all_full_model_names[0]) - intent_grid_type - 1]  # letter
+    focus_intent_model = all_full_model_names[0]
+    focus_intent_model = focus_intent_model[5 + geo_grid_type]  # Number
+
+    search_query = "Model" + focus_geo_model
+    for i in range(geo_grid_type - 1):
+        search_query += "A"
+
+    search_query += focus_intent_model
+    model_matches = regexSearch(search_query,all_full_model_names)
+    print("All Matches: ", model_matches)
+
+    variable_Z = []
+    for model in model_matches:
+        print(line)
+        print("Running " + model)
+
+        # current_geo_model = model[0:len(model) - intent_grid_type]
+        # fileloading.loadGeoModel(current_geo_model, run)
+        # lband = sub_path["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
+        # rtray = sub_path["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
+
+        '''Data Readind----------------------------------'''
+        data_path = sub_path["intensityPath"] + model + "/" + "numpy/"
+
+        x_variable = np.load(data_path + "x_variable.npy")
+        # janksys_thick = np.load(data_path + "janksys_thick.npy")
+        # janksys_thin = np.load(data_path + "janksys_thin.npy")
+        # mean_radii_Thin = np.load(data_path + "mean_radii_Thin.npy")
+        # mean_radii_Thick = np.load(data_path + "mean_radii_Thick.npy")
+        # radii_I0_Thin = np.load(data_path + "radii_I0_Thin.npy")
+        # radii_I1_Thin = np.load(data_path + "radii_I1_Thin.npy")
+        # radii_I2_Thin = np.load(data_path + "radii_I2_Thin.npy")
+        # radii_Full_Thin = np.load(data_path + "radii_Full_Thin.npy")
+        #
+        # radii_I0_Thick = np.load(data_path + "radii_I0_Thick.npy")
+        # radii_I1_Thick = np.load(data_path + "radii_I1_Thick.npy")
+        # radii_I2_Thick = np.load(data_path + "radii_I2_Thick.npy")
+        # theta = np.load(data_path + "theta.npy")
+        # mean_optical_depth_I0 = np.load(data_path + "mean_optical_depth_I0.npy")
+        # mean_optical_depth_I1 = np.load(data_path + "mean_optical_depth_I1.npy")
+        # mean_optical_depth_I2 = np.load(data_path + "mean_optical_depth_I2.npy")
+
+        radii_FullAbsorption_Thick = np.load(data_path + "radii_FullAbsorption_Thick.npy")
+        #
+        #
+        #
+        # num_of_intensity_points = janksys_thin[:,0].shape[0]
+        # print("Number of Intensity Points: ", num_of_intensity_points)
+
+        variable_Z += [radii_FullAbsorption_Thick]
+
+        xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
+
+    x = bp_grid[var_params[1]]  # alpha mag
+    y = xaxis  # observation freq
+
+    X,Y = np.meshgrid(x,y)
+    Z = np.array(variable_Z)
+
+    # Plot
+    fig, ax = plt.subplots(figsize=[10, 10], subplot_kw={"projection": "3d"})
+    father_type = var_params[0]  # WE CHOSE 0, ALPHA_TEMP
+    father_value = bp_grid[father_type][0]
+    astroPloting.surfacePlot(X,Y,Z,ax,R"$\alpha_T$","Observation Frequency (GHz)",father_type,father_value)
+
+    figname = sub_path["3d"] + "3dTest"
+    plt.savefig(figname, bbox_inches='tight')
+    print("Image '{}' Created".format(figname))
+    plt.close()
+
+
+
+
+def regexSearch(query, searchList):
+    regex = ".*" + query + ".*"
+    item_list = "\n".join(searchList)
+    return re.findall(regex, item_list)
+
+
+
+
 
 # Full Run
 # current_run = "run1"
