@@ -835,7 +835,8 @@ def surfacePlot(sub_path,bp_grid:dict,action,var_params,geo_grid_names,intent_gr
     y = xaxis  # observation freq
 
     X,Y = np.meshgrid(x,y)
-    Z = np.array(variable_Z)
+    Z = np.array(variable_Z).T
+    print("Z shape ", Z.shape)
 
     # Plot
     fig, ax = plt.subplots(figsize=[10, 10], subplot_kw={"projection": "3d"})
