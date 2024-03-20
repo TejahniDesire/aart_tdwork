@@ -187,7 +187,7 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
 
             print(line)
             print(line)
-            print("Model number: " + str(k))
+            print("Model number: " + str(k + 1))
 
             # String Names
             all_intent_names += [intensity_models[i][0]]
@@ -207,7 +207,7 @@ def creatIntensityGrid(sub_path:dict, run:str, input_geo_grid_names:list[str], g
             print("\n" + current_total_name + " normalized with a value of n_th0="
                   + str(current_bp["n_th0"]) + "\n")
 
-            thin_total_flux,thick_total_flux = normalizingBrightparams.totalIntensity230Point(lband,rtray,current_bp,False)
+            thin_total_flux,thick_total_flux = normalizingBrightparams.totalIntensity230Point(normlband,normrtray,current_bp,False)
             print("\nFinal Total Thin Model Flux of ", thin_total_flux)
             print("Final Total Full Model Flux of " + str(thick_total_flux) + "\n")
 
