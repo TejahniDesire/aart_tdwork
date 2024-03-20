@@ -34,7 +34,7 @@ def total_jy_normal_func(fitparams,lband,rtray,bp,y):
     print("Total Thin Model Flux of ",thin_total_flux)
     print("Total Full Model Flux of ",thick_total_flux)
 
-    return y - thin_total_flux
+    return y - thick_total_flux
 
 
 def totalIntensity230Point(lband,rtray,brightparams:dict,already230=False):
