@@ -806,12 +806,12 @@ def surfacePlot(sub_path,bp_grid:dict,action,var_params,geo_grid_names,intent_gr
         # janksys_thick = np.load(data_path + "janksys_thick.npy")
         # janksys_thin = np.load(data_path + "janksys_thin.npy")
         # mean_radii_Thin = np.load(data_path + "mean_radii_Thin.npy")
-        # mean_radii_Thick = np.load(data_path + "mean_radii_Thick.npy")
+
         # radii_I0_Thin = np.load(data_path + "radii_I0_Thin.npy")
         # radii_I1_Thin = np.load(data_path + "radii_I1_Thin.npy")
         # radii_I2_Thin = np.load(data_path + "radii_I2_Thin.npy")
         # radii_Full_Thin = np.load(data_path + "radii_Full_Thin.npy")
-        #
+        # radii_FullAbsorption_Thick = np.load(data_path + "radii_FullAbsorption_Thick.npy")
         # radii_I0_Thick = np.load(data_path + "radii_I0_Thick.npy")
         # radii_I1_Thick = np.load(data_path + "radii_I1_Thick.npy")
         # radii_I2_Thick = np.load(data_path + "radii_I2_Thick.npy")
@@ -820,14 +820,14 @@ def surfacePlot(sub_path,bp_grid:dict,action,var_params,geo_grid_names,intent_gr
         # mean_optical_depth_I1 = np.load(data_path + "mean_optical_depth_I1.npy")
         # mean_optical_depth_I2 = np.load(data_path + "mean_optical_depth_I2.npy")
 
-        radii_FullAbsorption_Thick = np.load(data_path + "radii_FullAbsorption_Thick.npy")
+        mean_radii_Thick = np.load(data_path + "mean_radii_Thick.npy")
         #
         #
         #
         # num_of_intensity_points = janksys_thin[:,0].shape[0]
         # print("Number of Intensity Points: ", num_of_intensity_points)
 
-        variable_Z += [radii_FullAbsorption_Thick]
+        variable_Z += [mean_radii_Thick[:, 3]]
 
         xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
 
