@@ -246,5 +246,6 @@ def surfacePlot(X,Y,Z,ax,xlabel,ylabel,father_model,father_value):
     ax.plot_surface(X, Y, Z)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
+    ax.view_init(20, 80)
     ax.title.set_text("All Models of a = .3, " + father_model + "=" + str(father_value))
     # ax.set_xlim([np.min(X) * 1 / 10, np.max(X) * 10])
