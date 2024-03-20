@@ -17,11 +17,9 @@ import astroModels
 def normalize(lband,rtray,brightparams:dict):
 
     bp = brightparams.copy()
-    bp["n_th0"] = 230e9
+    bp["nu0"] = 230e9
     fitparams = Parameters()
     fitparams.add('n_th0', value=1.3 * 10 ** 5)
-    # params.add('n_th0', value=1)
-    # params.add('rg', value=rg_func(mass).value, vary=False)
     fitted_params = minimize(total_jy_normal_func, fitparams, args=(lband, rtray, bp, .5), method='least_squares')
     return fitted_params.params['n_th0'].value
 
