@@ -843,7 +843,7 @@ def surfacePlot(sub_path,bp_grid:dict,action,var_params,geo_grid_names,intent_gr
     father_type = var_params[0]  # WE CHOSE 0, ALPHA_TEMP
     father_value = bp_grid[father_type][0]
     astroPloting.surfacePlot(X,Y,Z,ax,R"$\alpha_T$",
-                             "Observation Frequency (GHz)","Mean I0 Radii for Optically Thin Assumption",
+                             "Observation Frequency (GHz)","I0 Radii Optically Thin Assumption",
                              father_type,father_value)
     figname = sub_path["3d"] + "3dTest"
     plt.savefig(figname, bbox_inches='tight')
