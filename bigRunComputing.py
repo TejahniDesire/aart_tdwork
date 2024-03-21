@@ -842,8 +842,9 @@ def surfacePlot(sub_path,bp_grid:dict,action,var_params,geo_grid_names,intent_gr
     fig, ax = plt.subplots(figsize=[10, 10], subplot_kw={"projection": "3d"})
     father_type = var_params[0]  # WE CHOSE 0, ALPHA_TEMP
     father_value = bp_grid[father_type][0]
-    astroPloting.surfacePlot(X,Y,Z,ax,R"$\alpha_T$","Observation Frequency (GHz)",father_type,father_value)
-
+    astroPloting.surfacePlot(X,Y,Z,ax,R"$\alpha_T$",
+                             "Observation Frequency (GHz)","Mean I0 Radii for Optically Thin Assumption",
+                             father_type,father_value)
     figname = sub_path["3d"] + "3dTest"
     plt.savefig(figname, bbox_inches='tight')
     print("Image '{}' Created".format(figname))
