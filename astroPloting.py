@@ -49,7 +49,8 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
 
     ax.plot(xaxis, mean_radii_Thin[:, 0], '-', label='n=0', color='tab:red', linewidth=3)
     ax.plot(xaxis, mean_radii_Thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
-    ax.plot(xaxis, mean_radii_Thin[:, 2], '-.', label='n=2', color='tab:blue', linewidth=3)
+    ax.plot(xaxis, mean_radii_Thin[:, 2], '--', label='n=2', color='tab:blue', linewidth=3)
+    ax.plot(xaxis, mean_radii_Thin[:, 3], '-.', label='Cumulative', color='tab:purple', linewidth=3)
 
 
     # Labels
