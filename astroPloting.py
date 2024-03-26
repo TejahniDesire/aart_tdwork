@@ -238,7 +238,7 @@ def histogram(ax,data,xlabel,ylabel):
 
 def bar(ax,xdata,ydata,xlabel,ylabel,xbarlabel):
     ax.bar(xdata,ydata)
-    plt.xticks(xdata, labels=xbarlabel)
+    plt.xticks(xdata, labels=xbarlabel, rotation=90)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
 

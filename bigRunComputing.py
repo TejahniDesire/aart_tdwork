@@ -690,11 +690,14 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
     # histograms
     print(line)
     print("Creating Histograms")
-    """Flux Peaks_____________________________________________________________________"""
     peak_hist_thin_path = sub_path["peakHistThin"]
     peak_hist_thick_path = sub_path["peakHistThick"]
     conv_hist_path = sub_path["convHist"]
     total_flux_path = sub_path["totalFlux"]
+
+    bar_xaxis = np.arange(len(all_full_model_names))
+    """Flux Peaks_____________________________________________________________________"""
+
 
     # Thin_________________
 
@@ -718,12 +721,47 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
     print("Image '{}' Created".format(figname))
     plt.close()
 
+    # Thin Bar__________________
+    fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+
+    astroPloting.bar(ax,bar_xaxis,hist_flux_peaks_thins,"Optical Thin Assumption Peak Flux per model",
+                     "Observation Frequency (GHz)",all_full_model_names)
+
+    figname = peak_hist_thin_path + "FluxPeakPerThinModel.jpeg"
+    plt.savefig(figname, bbox_inches='tight')
+    print("Image '{}' Created".format(figname))
+    plt.close()
+
+    # Thick Bar_______________
+
+    fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+
+    astroPloting.bar(ax,bar_xaxis,hist_flux_peaks_thicks,"Optical Thin Assumption Peak Flux per model",
+                     "Observation Frequency (GHz)",all_full_model_names)
+
+    figname = peak_hist_thick_path + "FluxPeakPerThickModel.jpeg"
+    plt.savefig(figname, bbox_inches='tight')
+    print("Image '{}' Created".format(figname))
+    plt.close()
+    # Thick Bar
+
     """Conv_____________________________________________________________________"""
+    # Hist Bar______________________
     fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
     astroPloting.histogram(ax, hist_convs, "Flux Peak", "Full Solution Frequency")
 
     figname = conv_hist_path + "convHist.jpeg"
+    plt.savefig(figname, bbox_inches='tight')
+    print("Image '{}' Created".format(figname))
+    plt.close()
+
+    # Conv Bar______________________
+    fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+
+    astroPloting.bar(ax,bar_xaxis,hist_convs,"Convergence for cumulative on I2",
+                     "Observation Frequency (GHz)",all_full_model_names)
+    figname = conv_hist_path + "convHistPerModel.jpeg"
     plt.savefig(figname, bbox_inches='tight')
     print("Image '{}' Created".format(figname))
     plt.close()
