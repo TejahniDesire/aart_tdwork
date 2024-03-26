@@ -697,13 +697,11 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
     bar_xaxis = np.arange(len(all_full_model_names))
     """Flux Peaks_____________________________________________________________________"""
-
-
     # Thin_________________
 
     fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-    astroPloting.histogram(ax,hist_flux_peaks_thins,"Flux Peak","Optically Thin Assumption Frequency")
+    astroPloting.histogram(ax,hist_flux_peaks_thins,"Flux Peak location (GHz)","Optically Thin Assumption Frequency")
 
     figname = peak_hist_thin_path + "FluxPeakThin.jpeg"
     plt.savefig(figname, bbox_inches='tight')
@@ -714,7 +712,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
     fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-    astroPloting.histogram(ax, hist_flux_peaks_thicks, "Flux Peak", "Full Solution Frequency")
+    astroPloting.histogram(ax, hist_flux_peaks_thicks, "Flux Peak location (GHz)", "Full Solution Frequency")
 
     figname = peak_hist_thick_path + "FluxPeakThick.jpeg"
     plt.savefig(figname, bbox_inches='tight')
@@ -746,12 +744,12 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
     # Thick Bar
 
     """Conv_____________________________________________________________________"""
-    # Hist Bar______________________
+    # Conv Hist ______________________
     fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-    astroPloting.histogram(ax, hist_convs, "Flux Peak", "Full Solution Frequency")
+    astroPloting.histogram(ax, hist_convs, "Flux Peak location (GHz)", "Full Solution Frequency")
 
-    figname = conv_hist_path + "convHist.jpeg"
+    figname = conv_hist_path + "convHistFreqPerObservationFreq.jpeg"
     plt.savefig(figname, bbox_inches='tight')
     print("Image '{}' Created".format(figname))
     plt.close()
