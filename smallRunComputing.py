@@ -166,7 +166,7 @@ def playModel(sub_path,save_path, run,action, model:str, intent_grid_type=2):
         plt.close()
 
         '''PLOTING3333________________________________________________________________'''
-        fig, dum = plt.subplots(2, 2, figsize=dim, dpi=400)
+        fig, dum = plt.subplots(1, 2, figsize=dim, dpi=400)
         ax0 = plt.subplot(1, 2, 1)
         ax1 = plt.subplot(1, 2, 2)
 
