@@ -342,6 +342,7 @@ def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax):
     ring_colors = ['tab:blue', 'tab:green', 'tab:red','tab:purple']
 
     model = ["for Thin Assumption", "for Full Solution"]
+    nrings = ['0','1','2','Cumulative']
     for J in range(len(peaks)):
         # if J == 0:
         #     axes_0[J].get_xaxis().set_ticks([])
@@ -349,7 +350,7 @@ def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax):
         x = np.linspace(0, rmax - 1, rsize) * params.dx0
         parg = image_tools.rad_to_arg(ptheta)
         ax0.plot(x, interps[J][parg], linewidth=2, color=ring_colors[J],
-                 label=R"$n= $" + str(J) + R", $\varphi = $" + f"{ptheta:.2f}")
+                 label=R"$n= $" + nrings[J] + R", $\varphi = $" + f"{ptheta:.2f}")
         ax0.axvline(peaks[J][parg], color=ring_colors[J])
 
     ax0.set_xlim([2, 6])
@@ -465,10 +466,11 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
     thick_beta_full = thick_radii[3] * np.sin(theta)
 
     vmax0 = np.nanmax(thin_intensity[3]) * 1.2
-
+    vmax = 10e11
+    vmin = 10e8
     # Optically Thin
 
-    im0 = ax0.imshow(thin_intensity[3], vmax=vmax0, origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+    im0 = ax0.imshow(np.log10(thin_intensity[3]),vmin=vmin, vmax=vmax, origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
 
     ax0.set_xlim(-10, 10)  # units of M
     ax0.set_ylim(-10, 10)
@@ -479,7 +481,7 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
 
     # Optically thick
 
-    im1 = ax1.imshow(thick_intensity[3], origin="lower", cmap="afmhot",  extent=[-limit, limit, -limit, limit])
+    im1 = ax1.imshow(np.log10(thick_intensity[3]),vmin=vmin, vmax=vmax, origin="lower", cmap="afmhot",  extent=[-limit, limit, -limit, limit])
 
     #
     ax1.set_xlim(-10, 10)  # units of M
@@ -490,22 +492,22 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
     ax1.title.set_text('Full Solution')
 
     colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
-        vmax0 * .8,
-        vmax0 * .6,
-        vmax0 * .4,
-        vmax0 * .2,
-        vmax0 * .05
+        vmax * .8,
+        vmax * .6,
+        vmax * .4,
+        vmax * .2,
+        vmax * .05
     ],
                              ax=ax0
                              )
     colorbar1 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
-        vmax0 * .8,
-        vmax0 * .6,
-        vmax0 * .4,
-        vmax0 * .2,
-        vmax0 * .05
+        vmax * .8,
+        vmax * .6,
+        vmax * .4,
+        vmax * .2,
+        vmax * .05
     ],
-                             label="Brightnes Temperature (1e9 K)",
+                             label=R"$Log_{10}(Brightness Temperature) (1e9 K)$",
                              ax=ax1
                              )
 
