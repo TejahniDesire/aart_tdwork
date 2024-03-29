@@ -612,7 +612,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
             vmax0 = np.nanmax(I0 + I1 + I2) * 1.2
             fig, (ax0, ax1) = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
 
-            astroPloting.fullImage(fig,ax0,ax1,lim0,thin_intensity, thick_intensity, thin_radii, thick_radii)
+            astroPloting.fullImage(fig,ax0,ax1,lim0,thin_intensity, thick_intensity, thin_radii, thick_radii,theta)
             # Optically Thin
             #
             # im0 = ax0.imshow(I0 + I1 + I2, vmax=vmax0, origin="lower", cmap="afmhot", extent=[-lim0, lim0, -lim0, lim0])
