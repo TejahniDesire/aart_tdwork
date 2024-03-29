@@ -426,7 +426,7 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity):
 
     # Radii Calc
     for i in range(len(peaks)):
-        ax1.plot(alphas[i], betas[i],linwidth=linewidths[i], color=colors[i], linestyle=linestyles[i])
+        ax1.plot(alphas[i], betas[i],linewidth=linewidths[i], color=colors[i], linestyle=linestyles[i])
 
     vmax = np.nanmax(thin_intensity[3]) * 1.2
     colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format='%.1e', ticks=[

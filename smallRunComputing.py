@@ -104,31 +104,9 @@ def playModel(sub_path,save_path, run,action, model:str, intent_grid_type=2):
         brightparams["nu0"] = k
         print("Full image production for intensity frame: ", i)
         print(R"Observation frequency $\nu=$", k)
-        # optically thin radii
-
-        thin_alpha0 = radii_I0_Thin[i, :] * np.cos(theta)
-        thin_beta0 = radii_I0_Thin[i, :] * np.sin(theta)
-        thin_alpha1 = radii_I1_Thin[i, :] * np.cos(theta)
-        thin_beta1 = radii_I1_Thin[i, :] * np.sin(theta)
-        thin_alpha2 = radii_I2_Thin[i, :] * np.cos(theta)
-        thin_beta2 = radii_I2_Thin[i, :] * np.sin(theta)
-        thin_alpha_full = radii_Full_Thin[i, :] * np.cos(theta)
-        thin_beta_full = radii_Full_Thin[i, :] * np.sin(theta)
-
-        # full solution radii
-        thick_alpha0 = radii_I0_Thick[i, :] * np.cos(theta)
-        thick_beta0 = radii_I0_Thick[i, :] * np.sin(theta)
-        thick_alpha1 = radii_I1_Thick[i, :] * np.cos(theta)
-        thick_beta1 = radii_I1_Thick[i, :] * np.sin(theta)
-        thick_alpha2 = radii_I2_Thick[i, :] * np.cos(theta)
-        thick_beta2 = radii_I2_Thick[i, :] * np.sin(theta)
-        thick_alpha_full = radii_FullAbsorption_Thick[i, :] * np.cos(theta)
-        thick_beta_full = radii_FullAbsorption_Thick[i, :] * np.sin(theta)
 
         current_intensity_file = (sub_path["intensityPath"] + model + "/" + action["var"]
                                   + "_" + "{:.5e}".format(brightparams[action["var"]]))
-
-        lim0 = 25
 
         print("Reading file: ", current_intensity_file)
 
