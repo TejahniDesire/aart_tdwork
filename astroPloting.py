@@ -257,7 +257,7 @@ def IntensityVSRadii(ax0,ax1,thin_intensity, thick_intensity,rmax):
 
     model = ["for Thin Assumption", "for Full Solution"]
     for J in range(2):
-        x = np.linspace(0, rmax - 1, rsize)
+        x = np.linspace(0, rmax - 1, rsize) * params.dx0
         ptheta = [0, np.pi / 2, np.pi]
         colors = ['tab:blue', 'tab:green', 'tab:red']
         parg = []
