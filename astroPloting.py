@@ -441,7 +441,7 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity):
                              )
 
     for i in range(len(peak3)):
-        if peak3 == peak0:
+        if peak3[i] == peak0[i]:
             print("Varphi (Rads) of equal point: ",theta3[i])
 
 
