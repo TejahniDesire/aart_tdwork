@@ -266,7 +266,7 @@ def IntensityVSRadiiType1(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intens
             axes_0[J].get_xaxis().set_ticks([])
             axes_1[J].get_xaxis().set_ticks([])
         x = np.linspace(0, rmax - 1, rsize) * params.dx0
-        ptheta = [0, 6.09374253, 1.01036146] # for frame 30
+        ptheta = [1.51554218, 1.4208208, 1.57868978]  # for frame 33
         colors = ['tab:blue', 'tab:green', 'tab:red']
         parg = []
         for L in range(len(ptheta)):
@@ -340,7 +340,7 @@ def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax):
     vmax = np.nanmax(thin_intensity[3]) * 1.2
 
     # ptheta = [0, np.pi / 2, np.pi]
-    ptheta = 6.09374253  # For frame 30
+    ptheta = 4.29403619  # for frame 33
     colors = ['tab:blue', 'tab:green', 'tab:red','tab:purple']
     ring_colors = ['tab:blue', 'tab:green', 'tab:red','tab:purple']
 
