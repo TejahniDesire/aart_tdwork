@@ -440,6 +440,10 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity):
                              ax=ax1
                              )
 
+    for i in range(len(peak3)):
+        if peak3 == peak0:
+            print("Varphi (Rads) of equal point: ",theta3[i])
+
 
 def histogram(ax,data,xlabel,ylabel):
     ax.hist(data)

@@ -630,7 +630,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
             ax1.set_xlim(-10, 10)  # units of M
             ax1.set_ylim(-10, 10)
 
-            ax1.set_xlabel(r"$\alpha$" + " " + r"($\mu as$)")
+            ax1.set_xlabel(r"$\alpha$" + " " + r"($M$)")
 
             ax1.title.set_text('Full Solution')
 
