@@ -328,9 +328,9 @@ def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax):
     rsize = image_tools.rsize
 
     # peak012, interp012 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
-    peak0, interp0 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
-    peak1, interp1 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
-    peak2, interp2 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+    peak0, interp0 = image_tools.radii_of_thetaV2_data(thin_intensity[0])
+    peak1, interp1 = image_tools.radii_of_thetaV2_data(thin_intensity[1])
+    peak2, interp2 = image_tools.radii_of_thetaV2_data(thin_intensity[2])
     # peakAbsorb, interpAbsorb = image_tools.radii_of_thetaV2_data(thick_intensity[3])
 
     peaks = [peak0,peak1,peak2]
