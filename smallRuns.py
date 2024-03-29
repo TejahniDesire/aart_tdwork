@@ -61,7 +61,8 @@ save_paths = {
     'intVRad2': '/scratch/gpfs/td6241/aart/bigRuns/' + current_run + '/Images/inensityVRadiiTESTTWO/'
 }
 
-fileloading.creatSubDirectory(save_paths['intVRad'])
+for path in list(save_paths):
+    fileloading.creatSubDirectory(save_paths[path])
 
 '''_______________________________________________________________________'''
 sub_paths, all_intensity_models, total_models_count, run_type, variable_param_ranges, constant_params =\
