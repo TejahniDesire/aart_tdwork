@@ -157,6 +157,7 @@ def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
     [l.set_visible(False) for (i, l) in enumerate(ax.xaxis.get_minorticklabels()) if i % n != 0]
     ax.tick_params('both', length=10, width=1, which='major')
     ax.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
+    ax.set_ylim(10e-4, 10e2)
     # ax.legend(loc='lower left')
 
     # Optically Thick
