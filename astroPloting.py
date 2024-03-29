@@ -1,6 +1,7 @@
 import subprocess
 
 import kgeo
+import matplotlib.colors
 from matplotlib import ticker
 
 
@@ -473,7 +474,8 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
 
     im0im = np.log10(thin_intensity[3])
     im0im[im0im==-np.Infinity] = 0
-    im0 = ax0.imshow(im0im,vmin=vmin,vmax=vmax, origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+    im0 = ax0.imshow(im0im, origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit],
+                     norm=matplotlib.colors.LogNorm(vmin,vmax))
 
     ax0.set_xlim(-10, 10)  # units of M
     ax0.set_ylim(-10, 10)
@@ -485,7 +487,8 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
     # Optically thick
     im1im = np.log10(thick_intensity[3])
     im1im[im1im==-np.Infinity] = 0
-    im1 = ax1.imshow(im1im,vmin=vmin,vmax=vmax, origin="lower", cmap="afmhot",  extent=[-limit, limit, -limit, limit])
+    im1 = ax1.imshow(im1im, origin="lower", cmap="afmhot",  extent=[-limit, limit, -limit, limit],
+                     norm=matplotlib.colors.LogNorm(vmin,vmax))
 
     #
     ax1.set_xlim(-10, 10)  # units of M
