@@ -556,147 +556,59 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         plt.close()
 
         '''Full Images----------------------------------'''
-        k = action["start"]
-        print("Constructing Full images for " + model)
-        for i in range(num_of_intensity_points):
-            brightparams = all_brightparams[j]
-            brightparams["nu0"] = k
-            print("Full image production for intensity frame: ", i)
-            print(R"Observation frequency $\nu=$",k)
-            # optically thin radii
-
-            # thin_alpha0 = radii_I0_Thin[i,:] * np.cos(theta)
-            # thin_beta0 = radii_I0_Thin[i,:] * np.sin(theta)
-            # thin_alpha1 = radii_I1_Thin[i,:] * np.cos(theta)
-            # thin_beta1 = radii_I1_Thin[i,:] * np.sin(theta)
-            # thin_alpha2 = radii_I2_Thin[i,:] * np.cos(theta)
-            # thin_beta2 = radii_I2_Thin[i,:] * np.sin(theta)
-            # thin_alpha_full = radii_Full_Thin[i,:] * np.cos(theta)
-            # thin_beta_full = radii_Full_Thin[i,:] * np.sin(theta)
-            #
-            # # full solution radii
-            # thick_alpha0 = radii_I0_Thick[i,:] * np.cos(theta)
-            # thick_beta0 = radii_I0_Thick[i,:] * np.sin(theta)
-            # thick_alpha1 = radii_I1_Thick[i,:] * np.cos(theta)
-            # thick_beta1 = radii_I1_Thick[i,:] * np.sin(theta)
-            # thick_alpha2 = radii_I2_Thick[i,:] * np.cos(theta)
-            # thick_beta2 = radii_I2_Thick[i,:] * np.sin(theta)
-            # thick_alpha_full = radii_FullAbsorption_Thick[i,:] * np.cos(theta)
-            # thick_beta_full = radii_FullAbsorption_Thick[i,:] * np.sin(theta)
-
-            current_intensity_file = (sub_path["intensityPath"] + model + "/" + action["var"]
-                                      + "_" + "{:.5e}".format(brightparams[action["var"]]))
-
-            lim0 = 25
-
-            print("Reading file: ", current_intensity_file)
-
-            h5f = h5py.File(current_intensity_file, 'r')
-
-            I0 = h5f['bghts0'][:]  # This implies I0 is 1 pass
-            I1 = h5f['bghts1'][:]
-            I2 = h5f['bghts2'][:]
-
-            I2_Absorb = h5f['bghts2_absorbtion'][:]
-            I1_Absorb = h5f['bghts1_absorbtion'][:]
-            I0_Absorb = h5f['bghts0_absorbtion'][:]
-            Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
-
-            h5f.close()
-
-            thin_intensity = [I0,I1,I2,I0 + I1 + I2]
-            thick_intensity = [I0_Absorb, I1_Absorb,I2_Absorb, Absorbtion_Image]
-            thin_radii = [radii_I0_Thin[i,:],radii_I1_Thin[i,:],radii_I2_Thin[i,:],radii_Full_Thin[i,:]]
-            thick_radii = [radii_I0_Thick[i, :], radii_I1_Thick[i, :], radii_I2_Thick[i, :], radii_FullAbsorption_Thick[i, :]]
-
-            vmax0 = np.nanmax(I0 + I1 + I2) * 1.2
-            fig, (ax0, ax1) = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
-
-            astroPloting.fullImage(fig,ax0,ax1,lim0,thin_intensity, thick_intensity, thin_radii, thick_radii,theta)
-            # Optically Thin
-            #
-            # im0 = ax0.imshow(I0 + I1 + I2, vmax=vmax0, origin="lower", cmap="afmhot", extent=[-lim0, lim0, -lim0, lim0])
-            #
-            # ax0.set_xlim(-10, 10)  # units of M
-            # ax0.set_ylim(-10, 10)
-            #
-            # ax0.text(-9, 8.5, astroModels.var_label[action["var"]]
-            #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-            #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="w")
-            #
-            # ax0.set_xlabel(r"$\alpha$" + " " + r"($\mu as$)")
-            # ax0.set_ylabel(r"$\beta$" + " " + r"($\mu as$)")
-            # ax0.title.set_text('Optically Thin Assumption')
-            #
-            # # Optically thick
-            #
-            # im1 = ax1.imshow(Absorbtion_Image, origin="lower", cmap="afmhot", extent=[-lim0, lim0, -lim0, lim0])
-            #
-            # #
-            # ax1.set_xlim(-10, 10)  # units of M
-            # ax1.set_ylim(-10, 10)
-            #
-            # ax1.set_xlabel(r"$\alpha$" + " " + r"($M$)")
-            #
-            # ax1.title.set_text('Full Solution')
-            #
-            # colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
-            #     vmax0 * .8,
-            #     vmax0 * .6,
-            #     vmax0 * .4,
-            #     vmax0 * .2,
-            #     vmax0 * .05
-            # ],
-            #                          ax=ax0
-            #                          )
-            # colorbar1 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
-            #     vmax0 * .8,
-            #     vmax0 * .6,
-            #     vmax0 * .4,
-            #     vmax0 * .2,
-            #     vmax0 * .05
-            # ],
-            #                          label="Brightnes Temperature (1e9 K)",
-            #                          ax=ax1
-            #                          )
-            #
-            #
-            # '''Radii Calc______________________'''
-            # # Thin
-            # lineCum_thickness = 4
-            # line0_thickness = 3
-            # line1_thickness = 2
-            # line2_thickness = 1
-            #
-            # ax0.plot(thin_alpha_full, thin_beta_full, color='tab:purple', linestyle='--', linewidth=lineCum_thickness)
-            # ax0.plot(thin_alpha0, thin_beta0, color='tab:red', linestyle='-', linewidth=line0_thickness)
-            # ax0.plot(thin_alpha1, thin_beta1, color='tab:orange', linestyle=':', linewidth=line1_thickness)
-            # ax0.plot(thin_alpha2, thin_beta2, color='tab:blue', linestyle='--', linewidth=line2_thickness)
-            #
-            # # Thick
-            # ax1.plot(thick_alpha_full, thick_beta_full, color='tab:purple', linestyle='--', linewidth=lineCum_thickness, label='Cumulative')
-            # ax1.plot(thick_alpha0, thick_beta0, color='tab:red', linestyle='-', linewidth=line0_thickness, label=R'n=0')
-            # ax1.plot(thick_alpha1, thick_beta1, color='tab:orange', linestyle=':', linewidth=line1_thickness, label=R'n=1')
-            # ax1.plot(thick_alpha2, thick_beta2, color='tab:blue', linestyle='--', linewidth=line2_thickness, label=R'n=2')
-            # ax1.legend()
-            #
-            # plt.subplots_adjust(wspace=.3)
-            #
-
-            ax0.text(-9, 8.5, astroModels.var_label[action["var"]]
-                     + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-                     + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="w")
-
-            pltname = (image_path + 'FullImage_' + str(i) + "_Nu_"
-                       + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
-            plt.savefig(pltname, bbox_inches='tight')
-            print("Jpeg Created:  " + pltname)
-            plt.close()
-
-            # Get total jansky
-
-
-            k += action['step']
+        # k = action["start"]
+        # print("Constructing Full images for " + model)
+        # for i in range(num_of_intensity_points):
+        #     brightparams = all_brightparams[j]
+        #     brightparams["nu0"] = k
+        #     print("Full image production for intensity frame: ", i)
+        #     print(R"Observation frequency $\nu=$",k)
+        #
+        #
+        #     current_intensity_file = (sub_path["intensityPath"] + model + "/" + action["var"]
+        #                               + "_" + "{:.5e}".format(brightparams[action["var"]]))
+        #
+        #     lim0 = 25
+        #
+        #     print("Reading file: ", current_intensity_file)
+        #
+        #     h5f = h5py.File(current_intensity_file, 'r')
+        #
+        #     I0 = h5f['bghts0'][:]  # This implies I0 is 1 pass
+        #     I1 = h5f['bghts1'][:]
+        #     I2 = h5f['bghts2'][:]
+        #
+        #     I2_Absorb = h5f['bghts2_absorbtion'][:]
+        #     I1_Absorb = h5f['bghts1_absorbtion'][:]
+        #     I0_Absorb = h5f['bghts0_absorbtion'][:]
+        #     Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+        #
+        #     h5f.close()
+        #
+        #     thin_intensity = [I0,I1,I2,I0 + I1 + I2]
+        #     thick_intensity = [I0_Absorb, I1_Absorb,I2_Absorb, Absorbtion_Image]
+        #     thin_radii = [radii_I0_Thin[i,:],radii_I1_Thin[i,:],radii_I2_Thin[i,:],radii_Full_Thin[i,:]]
+        #     thick_radii = [radii_I0_Thick[i, :], radii_I1_Thick[i, :], radii_I2_Thick[i, :], radii_FullAbsorption_Thick[i, :]]
+        #
+        #     vmax0 = np.nanmax(I0 + I1 + I2) * 1.2
+        #     fig, (ax0, ax1) = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
+        #
+        #     astroPloting.fullImage(fig,ax0,ax1,lim0,thin_intensity, thick_intensity, thin_radii, thick_radii,theta)
+        #
+        #     ax0.text(-9, 8.5, astroModels.var_label[action["var"]]
+        #              + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
+        #              + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="w")
+        #
+        #     pltname = (image_path + 'FullImage_' + str(i) + "_Nu_"
+        #                + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+        #     plt.savefig(pltname, bbox_inches='tight')
+        #     print("Jpeg Created:  " + pltname)
+        #     plt.close()
+        #
+        #     # Get total jansky
+        #
+        #
+        #     k += action['step']
         j += 1  # marker for which brightparams to use
     # histograms
     print(line)
