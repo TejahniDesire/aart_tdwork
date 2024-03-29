@@ -28,9 +28,9 @@ def numOfModel(model:str,all_full_model_names):
     j = 0
     for i in range(all_full_model_names):
         if all_full_model_names[i] == model:
+            print(all_full_model_names[i] + " Identified as " + model + " for number " + str(j))
             return j
         j += 1
-
 
 
 def playModel(sub_path,save_path, run,action, model:str, intent_grid_type=2):
