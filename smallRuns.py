@@ -58,7 +58,8 @@ current_model = 'ModelB13'
 
 save_paths = {
     'intVRad': '/scratch/gpfs/td6241/aart/bigRuns/' + current_run + '/Images/inensityVRadiiTEST/',
-    'intVRad2': '/scratch/gpfs/td6241/aart/bigRuns/' + current_run + '/Images/inensityVRadiiTESTTWO/'
+    'intVRad2': '/scratch/gpfs/td6241/aart/bigRuns/' + current_run + '/Images/inensityVRadiiTESTTWO/',
+    'radVVarphi':'/scratch/gpfs/td6241/aart/bigRuns/' + current_run + '/radVVarphi/'
 }
 
 for path in list(save_paths):

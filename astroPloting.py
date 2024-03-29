@@ -210,7 +210,6 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
     ax.plot(xaxis, mean_optical_depth[1], ':', label='n=1', color='tab:orange', linewidth=3)
     ax.plot(xaxis, mean_optical_depth[2], '-.', label='n=2', color='tab:blue', linewidth=3)
 
-
     ax.set_xscale('log')
     ax.xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.0f'))
     ax.xaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
@@ -253,7 +252,6 @@ def IntensityVSRadiiType1(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intens
     # peak1, interp1 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
     # peak2, interp2 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
     peakAbsorb, interpAbsorb = image_tools.radii_of_thetaV2_data(thick_intensity[3])
-
     peaks = [peak012, peakAbsorb]
     interps = [interp012, interpAbsorb]
     vmax = [np.nanmax(thin_intensity[3])*1.2,np.nanmax(thick_intensity[3])*1.2]
@@ -335,7 +333,7 @@ def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax):
 
     peaks = [peak0,peak1,peak2]
     interps = [interp0,interp1,interp2]
-    vmax = np.nanmax(thin_intensity[3])
+    vmax = np.nanmax(thin_intensity[3]) * 1.2
 
     # ptheta = [0, np.pi / 2, np.pi]
     ptheta = 0
@@ -343,7 +341,7 @@ def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax):
     ring_colors = ['tab:blue', 'tab:green', 'tab:red']
 
     model = ["for Thin Assumption", "for Full Solution"]
-    for J in range(3):
+    for J in range(len(peaks)):
         # if J == 0:
         #     axes_0[J].get_xaxis().set_ticks([])
         #     axes_1[J].get_xaxis().set_ticks([])
@@ -380,6 +378,57 @@ def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax):
 
     ax1.plot(alpha, beta, color='red', linestyle='--')
 
+    colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format='%.1e', ticks=[
+        vmax * .8,
+        vmax * .6,
+        vmax * .4,
+        vmax * .2,
+        vmax * .05
+    ],
+                             label="Brightnes Temperature (K)",
+                             ax=ax1
+                             )
+
+
+def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity):
+    peak0, theta0 = image_tools.radii_of_thetaV2(thin_intensity[0])
+    peak1, theta1 = image_tools.radii_of_thetaV2(thin_intensity[1])
+    peak2, theta2 = image_tools.radii_of_thetaV2(thin_intensity[2])
+    peak3, theta3 = image_tools.radii_of_thetaV2(thin_intensity[3])
+
+    peaks = [peak0,peak1,peak2,peak3]
+    thetas = [theta0,theta1,theta2,theta3]
+    colors = ['tab:red','tab:orange','tab:blue','tab:purple']
+    labels = [R"$n= 0$",R"$n= 1$",R"$n= 2$",R"$Cumulative$"]
+    linewidths = [3,2,1,4]
+    linestyles = ['-',':','--','-.']
+    alphas = []
+    betas = []
+    for i in range(len(peaks)):
+        # if J == 0:
+        #     axes_0[J].get_xaxis().set_ticks([])
+        #     axes_1[J].get_xaxis().set_ticks([])
+        ax0.plot(thetas[i], peaks[i], linewidth=2, color=colors[i],label=labels[i],linestyle=linestyles[i])
+        alphas += [peaks[i] * np.cos(thetas[i])]
+        betas += [peaks[i] * np.sin(thetas[i])]
+
+    ax0.set_xlabel(R"$\varphi$")
+    ax0.set_ylabel(R"$R_g$")
+    ax0.legend()
+
+    im1 = ax1.imshow(thin_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+
+    ax1.set_xlim(-10, 10)  # units of M
+    ax1.set_ylim(-10, 10)
+
+    ax1.set_xlabel(r"$\alpha$" + " " + r"($M$)")
+    ax1.set_ylabel(r"$\beta$" + " " + r"($M$)")
+
+    # Radii Calc
+    for i in range(len(peaks)):
+        ax1.plot(alphas[i], betas[i],linwidth=linewidths[i], color=colors[i], linestyle=linestyles[i])
+
+    vmax = np.nanmax(thin_intensity[3]) * 1.2
     colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format='%.1e', ticks=[
         vmax * .8,
         vmax * .6,

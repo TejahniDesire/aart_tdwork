@@ -150,7 +150,7 @@ def playModel(sub_path,save_path, run,action, model:str, intent_grid_type=2):
         rmax = I0.shape[0] * .4
 
         dim = [15, 7]
-        '''PLOTING________________________________________________________________'''
+        '''IntensityVSRadiiType1________________________________________________________________'''
         fig, dum = plt.subplots(2, 2, figsize=dim, dpi=400)
         ax0 = plt.subplot(2, 2, 1)
         ax1 = plt.subplot(2, 2, 2)
@@ -165,7 +165,7 @@ def playModel(sub_path,save_path, run,action, model:str, intent_grid_type=2):
         print("Image '{}' Created".format(pltname))
         plt.close()
 
-        '''PLOTING3333________________________________________________________________'''
+        '''IntensityVSRadiiType2________________________________________________________________'''
         fig, dum = plt.subplots(1, 2, figsize=dim, dpi=400)
         ax0 = plt.subplot(1, 2, 1)
         ax1 = plt.subplot(1, 2, 2)
@@ -173,6 +173,19 @@ def playModel(sub_path,save_path, run,action, model:str, intent_grid_type=2):
         astroPloting.IntensityVSRadiiType2(fig, ax0, ax1,params.limits,thin_intensity,rmax)
 
         pltname = (save_path['intVRad2'] + 'IntVRad_' + str(i) + "_Nu_"
+                   + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+        plt.savefig(pltname, bbox_inches='tight')
+        print("Image '{}' Created".format(pltname))
+        plt.close()
+
+        '''RadVSVarphiType2________________________________________________________________'''
+        fig, dum = plt.subplots(1, 2, figsize=dim, dpi=400)
+        ax0 = plt.subplot(1, 2, 1)
+        ax1 = plt.subplot(1, 2, 2)
+
+        astroPloting.radiiVSVarphi(fig, ax0, ax1,params.limits,thin_intensity)
+
+        pltname = (save_path['radVVarphi'] + 'radVVarphu_' + str(i) + "_Nu_"
                    + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
         plt.savefig(pltname, bbox_inches='tight')
         print("Image '{}' Created".format(pltname))
