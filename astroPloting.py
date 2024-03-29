@@ -347,8 +347,7 @@ def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax):
         #     axes_1[J].get_xaxis().set_ticks([])
         x = np.linspace(0, rmax - 1, rsize) * params.dx0
         parg = image_tools.rad_to_arg(ptheta)
-        (ax0.plot(x, interps[J][parg], linewidth=2, color=ring_colors[J],label=R"$n= $" + str(J)) +
-         ", $\varphi = $" + f"{ptheta:.2f}")
+        ax0.plot(x, interps[J][parg], linewidth=2, color=ring_colors[J],label=R"$n= $" + str(J)) + ", $\varphi = $" + f"{ptheta:.2f}"
         ax0.axvline(peaks[J][parg], color=ring_colors[J])
 
     ax0.set_xlim([2, 6])
