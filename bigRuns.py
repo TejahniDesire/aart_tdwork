@@ -25,31 +25,31 @@ import fileloading
 
 
 # Test Run
-# current_run = "testRun1"
-# current_bp = astroModels.bp_testRun1
-# current_var_params = ["p_temp","p_mag"]
-# current_geo_grid_names = ["ModelA", "ModelB"]
-# current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
-# action = {
-#     "var": "nu0",
-#     "start": 3.00e+10,
-#     "stop": 6.00e+10,
-#     "step": 1.00e+10
-# }
-
-
-# Full Run
-current_run = "run1"
-current_bp = astroModels.bp_run1
-current_var_params = ["p_temp", "p_mag"]
+current_run = "testRun1"
+current_bp = astroModels.bp_testRun1
+current_var_params = ["p_temp","p_mag"]
 current_geo_grid_names = ["ModelA", "ModelB"]
 current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
 action = {
     "var": "nu0",
-    "start": 10e9,
-    "stop": 700e9,
-    "step": 20e9
+    "start": 3.00e+10,
+    "stop": 6.00e+10,
+    "step": 1.00e+10
 }
+
+
+# Full Run
+# current_run = "run1"
+# current_bp = astroModels.bp_run1
+# current_var_params = ["p_temp", "p_mag"]
+# current_geo_grid_names = ["ModelA", "ModelB"]
+# current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
+# action = {
+#     "var": "nu0",
+#     "start": 10e9,
+#     "stop": 700e9,
+#     "step": 20e9
+# }
 
 
 sub_paths, all_intensity_models, total_models_count, run_type, variable_param_ranges, constant_params =\
@@ -60,4 +60,7 @@ sub_paths, all_intensity_models, total_models_count, run_type, variable_param_ra
 #                                    total_models_count,action)
 bigRunComputing.graphCreation(sub_paths,current_run,action,2)
 # bigRunComputing.surfacePlot(sub_paths,current_bp,action,current_var_params,current_geo_grid_names)
+
+
+
 

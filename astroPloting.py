@@ -230,6 +230,49 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
     ax.legend()
 
 
+def IntensityVSRadii(ax0,ax1,thin_intensity, thick_intensity,rmax):
+    """
+
+    Args:
+        thin_intensity: [I0,I1,I2,I0 + I1 + I2]
+        thick_intensity:
+        rmax:
+
+    Returns:
+
+    """
+    rsize = image_tools.rsize
+    # rmax = I0.shape[0] * .4
+
+    axes_0 = [ax0, ax1]
+
+    peak012, interp012 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+    # peak0, interp0  = tls.radii_of_theta_data(I0)
+    # peak1, interp1  = tls.radii_of_theta_data(I1)
+    # peak2, interp2  = tls.radii_of_theta_data(I2)
+    peakAbsorb, interpAbsorb = image_tools.radii_of_thetaV2_data(thick_intensity[3])
+
+    peaks = [peak012, peakAbsorb]
+    interps = [interp012, interpAbsorb]
+
+    model = ["for Thin Assumption", "for Full Solution"]
+    for J in range(2):
+        x = np.linspace(0, rmax - 1, rsize)
+        ptheta = [0, np.pi / 2, np.pi]
+        colors = ['tab:blue', 'tab:green', 'tab:red']
+        parg = []
+        for L in range(len(ptheta)):
+            parg += [image_tools.rad_to_arg(ptheta[L])]
+            axes_0[J].plot(x, interps[J][parg[L]], linewidth=2, color=colors[L],
+                           label=R"$\theta= $" + f"{ptheta[L]:.2f}")
+            axes_0[J].axvline(peaks[J][parg[L]], color=colors[L])
+
+        axes_0[J].set_xlim([0, 10])
+        axes_0[J].legend()
+        axes_0[J].set_xlabel(R"$R_g$")
+        axes_0[J].set_ylabel(R"Flux Value " + model[J])
+
+
 def histogram(ax,data,xlabel,ylabel):
     ax.hist(data)
     ax.set_xlabel(xlabel)
