@@ -161,5 +161,7 @@ def playModel(sub_path,save_path, run,action, model:str, intent_grid_type=2):
         print("Image '{}' Created".format(pltname))
         plt.close()
 
+        k += action['step']
+
 
 
