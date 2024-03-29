@@ -230,7 +230,7 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
     ax.legend()
 
 
-def IntensityVSRadii(ax0,ax1,thin_intensity, thick_intensity,rmax):
+def IntensityVSRadii(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intensity,rmax):
     """
 
     Args:
@@ -244,7 +244,9 @@ def IntensityVSRadii(ax0,ax1,thin_intensity, thick_intensity,rmax):
     rsize = image_tools.rsize
     # rmax = I0.shape[0] * .4
 
-    axes_0 = [ax0, ax1]
+    axes_0 = [ax0, ax2]
+    axes_1 = [ax1, ax3]
+    images = [thin_intensity[3], thick_intensity[3]]
 
     peak012, interp012 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
     # peak0, interp0  = tls.radii_of_theta_data(I0)
@@ -254,6 +256,7 @@ def IntensityVSRadii(ax0,ax1,thin_intensity, thick_intensity,rmax):
 
     peaks = [peak012, peakAbsorb]
     interps = [interp012, interpAbsorb]
+    vmax = [np.nanmax(thin_intensity[3])*1.2,np.nanmax(thick_intensity[3])*1.2]
 
     model = ["for Thin Assumption", "for Full Solution"]
     for J in range(2):
@@ -271,6 +274,41 @@ def IntensityVSRadii(ax0,ax1,thin_intensity, thick_intensity,rmax):
         axes_0[J].legend()
         axes_0[J].set_xlabel(R"$R_g$")
         axes_0[J].set_ylabel(R"Flux Value " + model[J])
+
+    im1 = axes_1[J].imshow(images[J], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+
+    axes_1[J].set_xlim(-10, 10)  # units of M
+    axes_1[J].set_ylim(-10, 10)
+
+    axes_1[J].set_xlabel(r"$\alpha$" + " " + r"($M$)")
+    axes_1[J].set_ylabel(r"$\beta$" + " " + r"($M$)")
+
+    # Plot lines
+    rline1 = np.array([0, 10])
+    theta1 = np.array([0, 0])
+
+    alpha1 = rline1 * np.cos(theta1)
+    beta1 = rline1 * np.sin(theta1)
+
+    for L in range(len(ptheta)):
+        rline = np.array([0, 10])
+        theta = np.array([ptheta[L], ptheta[L]])
+
+        alpha = rline * np.cos(theta)
+        beta = rline * np.sin(theta)
+
+        axes_1[J].plot(alpha, beta, color=colors[L], linestyle='--')
+
+    colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format='%.1e', ticks=[
+        vmax[J] * .8,
+        vmax[J] * .6,
+        vmax[J] * .4,
+        vmax[J] * .2,
+        vmax[J] * .05
+    ],
+                             label="Brightnes Temperature (K)",
+                             ax=axes_1[J]
+                             )
 
 
 def histogram(ax,data,xlabel,ylabel):
