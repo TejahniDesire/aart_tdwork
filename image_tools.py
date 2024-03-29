@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from astropy import units as u
 from aart_func import *
 from params import *
+import params
 from astropy import constants as const
 from astropy import units as u
 from lmfit import Parameters, minimize, fit_report
@@ -83,7 +84,7 @@ def radii_of_thetaV2(I0, dx=None):
     return (peaks * dx), np.ravel(theta)  # units of Rg
 
 
-def radii_of_thetaV2_data(I0, dx):
+def radii_of_thetaV2_data(I0, dx=None):
     x = np.arange(I0.shape[0])  # number of pixels
     y = x
     interp = RegularGridInterpolator((x, y), I0.T)
@@ -111,6 +112,9 @@ def radii_of_thetaV2_data(I0, dx):
     peak = np.argmax(interp(coords), 1)
 
     peaks = np.ravel(r[peak])  # value of r at that argument
+
+    if dx is None:
+        dx = (params.limits * 2) / I0.shape[0]
 
     return (peaks * dx), interp(coords)
 
