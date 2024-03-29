@@ -70,6 +70,7 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
 
     ax.legend(frameon=False)
     ax.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
+    ax.set_ylim([3,8])
 
     new_ticks = [xaxis[0], 230, xaxis[xaxis.size - 1]]
     ax.set_xticks(new_ticks)
@@ -105,8 +106,8 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
 
     ax1.xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.0f'))
     ax1.xaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
-    ax1.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.0f'))
-    ax1.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
+    ax1.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
+    ax1.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
 
     new_ticks = [xaxis[0], 230, poi["conv_1"], poi["flux_peak_thick"], xaxis[xaxis.size - 1]]
     ax1.set_xticks(new_ticks)
@@ -262,7 +263,7 @@ def IntensityVSRadiiType1(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intens
             axes_0[J].get_xaxis().set_ticks([])
             axes_1[J].get_xaxis().set_ticks([])
         x = np.linspace(0, rmax - 1, rsize) * params.dx0
-        ptheta = [0, 5.967447352044934, 1.1682304339982146]
+        ptheta = [0, 6.09374253, 1.01036146] # for frame 30
         colors = ['tab:blue', 'tab:green', 'tab:red']
         parg = []
         for L in range(len(ptheta)):
@@ -325,20 +326,20 @@ def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax):
     """
     rsize = image_tools.rsize
 
-    # peak012, interp012 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+    peak012, interp012 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
     peak0, interp0 = image_tools.radii_of_thetaV2_data(thin_intensity[0])
     peak1, interp1 = image_tools.radii_of_thetaV2_data(thin_intensity[1])
     peak2, interp2 = image_tools.radii_of_thetaV2_data(thin_intensity[2])
     # peakAbsorb, interpAbsorb = image_tools.radii_of_thetaV2_data(thick_intensity[3])
 
-    peaks = [peak0,peak1,peak2]
-    interps = [interp0,interp1,interp2]
+    peaks = [peak0,peak1,peak2,peak012]
+    interps = [interp0,interp1,interp2,interp012]
     vmax = np.nanmax(thin_intensity[3]) * 1.2
 
     # ptheta = [0, np.pi / 2, np.pi]
-    ptheta = 1.1682304339982146
-    colors = ['tab:blue', 'tab:green', 'tab:red']
-    ring_colors = ['tab:blue', 'tab:green', 'tab:red']
+    ptheta = 6.09374253  # For frame 30
+    colors = ['tab:blue', 'tab:green', 'tab:red','tab:purple']
+    ring_colors = ['tab:blue', 'tab:green', 'tab:red','tab:purple']
 
     model = ["for Thin Assumption", "for Full Solution"]
     for J in range(len(peaks)):
