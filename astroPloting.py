@@ -262,7 +262,7 @@ def IntensityVSRadiiType1(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intens
             axes_0[J].get_xaxis().set_ticks([])
             axes_1[J].get_xaxis().set_ticks([])
         x = np.linspace(0, rmax - 1, rsize) * params.dx0
-        ptheta = [0, np.pi / 2, np.pi]
+        ptheta = [0, 1.1366566384847494, 1.6102635711867281]
         colors = ['tab:blue', 'tab:green', 'tab:red']
         parg = []
         for L in range(len(ptheta)):
