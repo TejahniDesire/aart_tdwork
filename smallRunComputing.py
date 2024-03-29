@@ -24,6 +24,15 @@ from astropy import units as u
 import re
 
 
+def numOfModel(model:str,all_full_model_names):
+    j = 0
+    for i in range(all_full_model_names):
+        if all_full_model_names[i] == model:
+            return j
+        j += 1
+
+
+
 def playModel(sub_path,save_path, run,action, model:str, intent_grid_type=2):
 
     print("Running " + model)
@@ -34,6 +43,8 @@ def playModel(sub_path,save_path, run,action, model:str, intent_grid_type=2):
     all_brightparams = np.load(sub_path["meta"] + "AllBrightParamsList.npy", allow_pickle=True)
     thin_total_flux = np.load(sub_path["meta"] + "thin_total_flux.npy")
     thick_total_flux = np.load(sub_path["meta"] + "thick_total_flux.npy")
+
+    j = numOfModel(model,all_full_model_names)
 
     current_geo_model = model[0:len(model) - intent_grid_type]
     fileloading.loadGeoModel(current_geo_model, run)
