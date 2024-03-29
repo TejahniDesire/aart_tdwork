@@ -230,7 +230,7 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
     ax.legend()
 
 
-def IntensityVSRadii(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intensity,rmax):
+def IntensityVSRadiiType1(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intensity,rmax):
     """
 
     Args:
@@ -249,9 +249,9 @@ def IntensityVSRadii(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intensity,r
     images = [thin_intensity[3], thick_intensity[3]]
 
     peak012, interp012 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
-    # peak0, interp0  = tls.radii_of_theta_data(I0)
-    # peak1, interp1  = tls.radii_of_theta_data(I1)
-    # peak2, interp2  = tls.radii_of_theta_data(I2)
+    # peak0, interp0 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+    # peak1, interp1 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+    # peak2, interp2 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
     peakAbsorb, interpAbsorb = image_tools.radii_of_thetaV2_data(thick_intensity[3])
 
     peaks = [peak012, peakAbsorb]
@@ -260,6 +260,9 @@ def IntensityVSRadii(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intensity,r
 
     model = ["for Thin Assumption", "for Full Solution"]
     for J in range(2):
+        if J == 0:
+            axes_0[J].get_xaxis().set_ticks([])
+            axes_1[J].get_xaxis().set_ticks([])
         x = np.linspace(0, rmax - 1, rsize) * params.dx0
         ptheta = [0, np.pi / 2, np.pi]
         colors = ['tab:blue', 'tab:green', 'tab:red']
@@ -270,7 +273,7 @@ def IntensityVSRadii(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intensity,r
                            label=R"$\theta= $" + f"{ptheta[L]:.2f}")
             axes_0[J].axvline(peaks[J][parg[L]], color=colors[L])
 
-        axes_0[J].set_xlim([0, 10])
+        axes_0[J].set_xlim([2, 6])
         axes_0[J].legend()
         axes_0[J].set_xlabel(R"$R_g$")
         axes_0[J].set_ylabel(R"Flux Value " + model[J])
@@ -309,6 +312,84 @@ def IntensityVSRadii(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intensity,r
                                  label="Brightnes Temperature (K)",
                                  ax=axes_1[J]
                                  )
+
+
+def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax):
+    """
+
+    Args:
+        thin_intensity: [I0,I1,I2,I0 + I1 + I2]
+        thick_intensity:
+        rmax:
+
+    Returns:
+
+    """
+    rsize = image_tools.rsize
+
+    # peak012, interp012 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+    peak0, interp0 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+    peak1, interp1 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+    peak2, interp2 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+    # peakAbsorb, interpAbsorb = image_tools.radii_of_thetaV2_data(thick_intensity[3])
+
+    peaks = [peak0,peak1,peak2]
+    interps = [interp0,interp1,interp2]
+    vmax = np.nanmax(thin_intensity[3])
+
+    # ptheta = [0, np.pi / 2, np.pi]
+    ptheta = 0
+    colors = ['tab:blue', 'tab:green', 'tab:red']
+    ring_colors = ['tab:blue', 'tab:green', 'tab:red']
+
+    model = ["for Thin Assumption", "for Full Solution"]
+    for J in range(3):
+        # if J == 0:
+        #     axes_0[J].get_xaxis().set_ticks([])
+        #     axes_1[J].get_xaxis().set_ticks([])
+        x = np.linspace(0, rmax - 1, rsize) * params.dx0
+        parg = image_tools.rad_to_arg(ptheta)
+        ax0.plot(x, interps[J][parg], linewidth=2, color=ring_colors[J],label=R"$n= $" + str(J))
+        ax0.axvline(peaks[J][parg], color=ring_colors[J])
+
+    ax0.set_xlim([2, 6])
+    ax0.legend()
+    ax0.set_xlabel(R"$R_g$")
+    ax0.set_ylabel(R"Flux Value")
+
+    im1 = ax1.imshow(thin_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+
+    ax1.set_xlim(-10, 10)  # units of M
+    ax1.set_ylim(-10, 10)
+
+    ax1.set_xlabel(r"$\alpha$" + " " + r"($M$)")
+    ax1.set_ylabel(r"$\beta$" + " " + r"($M$)")
+
+    # Plot lines
+    rline1 = np.array([0, 10])
+    theta1 = np.array([0, 0])
+
+    alpha1 = rline1 * np.cos(theta1)
+    beta1 = rline1 * np.sin(theta1)
+
+    rline = np.array([0, 10])
+    theta = np.array([ptheta, ptheta])
+
+    alpha = rline * np.cos(theta)
+    beta = rline * np.sin(theta)
+
+    ax1.plot(alpha, beta, color='red', linestyle='--')
+
+    colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format='%.1e', ticks=[
+        vmax * .8,
+        vmax * .6,
+        vmax * .4,
+        vmax * .2,
+        vmax * .05
+    ],
+                             label="Brightnes Temperature (K)",
+                             ax=ax1
+                             )
 
 
 def histogram(ax,data,xlabel,ylabel):
