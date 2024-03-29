@@ -136,10 +136,10 @@ def playModel(sub_path,save_path, run,action, model:str, intent_grid_type=2):
         ax3 = plt.subplot(2, 2, 4)
 
         astroPloting.IntensityVSRadiiType1(fig, ax0, ax1,ax2,ax3,params.limits,thin_intensity,thick_intensity,rmax)
-
-        ax1.text(2, 1.01, astroModels.var_label[action["var"]]
-                 + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-                 + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
+        #
+        # ax1.text(2, 1.01, astroModels.var_label[action["var"]]
+        #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
+        #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
 
         pltname = (save_path['intVRad'] + 'IntVRad_' + str(i) + "_Nu_"
                    + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
@@ -154,9 +154,9 @@ def playModel(sub_path,save_path, run,action, model:str, intent_grid_type=2):
 
         astroPloting.IntensityVSRadiiType2(fig, ax0, ax1,params.limits,thin_intensity,rmax)
 
-        ax0.text(2, 1.01, astroModels.var_label[action["var"]]
-                 + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-                 + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
+        # ax0.text(2, 1.01, astroModels.var_label[action["var"]]
+        #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
+        #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
 
         pltname = (save_path['intVRad2'] + 'IntVRad_' + str(i) + "_Nu_"
                    + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
@@ -171,9 +171,9 @@ def playModel(sub_path,save_path, run,action, model:str, intent_grid_type=2):
 
         astroPloting.radiiVSVarphi(fig, ax0, ax1,params.limits,thin_intensity)
 
-        ax0.text(2, 1.01, astroModels.var_label[action["var"]]
-                 + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-                 + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
+        # ax0.text(2, 1.01, astroModels.var_label[action["var"]]
+        #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
+        #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
 
         pltname = (save_path['radVVarphi'] + 'radVVarphu_' + str(i) + "_Nu_"
                    + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
