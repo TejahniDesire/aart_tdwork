@@ -444,6 +444,97 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity):
 
     print("Varphi (Rads) of equal point: ", theta3[peak3 == peak0])
 
+def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_radii):
+    thin_alpha0 = thin_radii[0] * np.cos(theta)
+    thin_beta0 = thin_radii[0] * np.sin(theta)
+    thin_alpha1 = thin_radii[1] * np.cos(theta)
+    thin_beta1 = thin_radii[1] * np.sin(theta)
+    thin_alpha2 = thin_radii[2] * np.cos(theta)
+    thin_beta2 = thin_radii[2] * np.sin(theta)
+    thin_alpha_full = thin_radii[3] * np.cos(theta)
+    thin_beta_full = thin_radii[3] * np.sin(theta)
+
+    # full solution radii
+    thick_alpha0 = thick_radii[0] * np.cos(theta)
+    thick_beta0 = thick_radii[0] * np.sin(theta)
+    thick_alpha1 = thick_radii[1] * np.cos(theta)
+    thick_beta1 = thick_radii[1] * np.sin(theta)
+    thick_alpha2 = thick_radii[2] * np.cos(theta)
+    thick_beta2 = thick_radii[2] * np.sin(theta)
+    thick_alpha_full = thick_radii[3] * np.cos(theta)
+    thick_beta_full = thick_radii[3] * np.sin(theta)
+
+    vmax0 = np.nanmax(thin_intensity[3]) * 1.2
+
+    # Optically Thin
+
+    im0 = ax0.imshow(thin_intensity[3], vmax=vmax0, origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+
+    ax0.set_xlim(-10, 10)  # units of M
+    ax0.set_ylim(-10, 10)
+
+    ax0.set_xlabel(r"$\alpha$" + " " + r"($M$)")
+    ax0.set_ylabel(r"$\beta$" + " " + r"($M$)")
+    ax0.title.set_text('Optically Thin Assumption')
+
+    # Optically thick
+
+    im1 = ax1.imshow(thick_intensity[3], origin="lower", cmap="afmhot",  extent=[-limit, limit, -limit, limit])
+
+    #
+    ax1.set_xlim(-10, 10)  # units of M
+    ax1.set_ylim(-10, 10)
+
+    ax1.set_xlabel(r"$\alpha$" + " " + r"($M$)")
+
+    ax1.title.set_text('Full Solution')
+
+    colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
+        vmax0 * .8,
+        vmax0 * .6,
+        vmax0 * .4,
+        vmax0 * .2,
+        vmax0 * .05
+    ],
+                             ax=ax0
+                             )
+    colorbar1 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
+        vmax0 * .8,
+        vmax0 * .6,
+        vmax0 * .4,
+        vmax0 * .2,
+        vmax0 * .05
+    ],
+                             label="Brightnes Temperature (1e9 K)",
+                             ax=ax1
+                             )
+
+    '''Radii Calc______________________'''
+    # Thin
+    lineCum_thickness = 4
+    line0_thickness = 3
+    line1_thickness = 2
+    line2_thickness = 1
+
+    ax0.plot(thin_alpha_full, thin_beta_full, color='tab:purple', linestyle='--', linewidth=lineCum_thickness)
+    ax0.plot(thin_alpha0, thin_beta0, color='tab:red', linestyle='-', linewidth=line0_thickness)
+    ax0.plot(thin_alpha1, thin_beta1, color='tab:orange', linestyle=':', linewidth=line1_thickness)
+    ax0.plot(thin_alpha2, thin_beta2, color='tab:blue', linestyle='--', linewidth=line2_thickness)
+
+    # Thick
+    ax1.plot(thick_alpha_full, thick_beta_full, color='tab:purple', linestyle='--', linewidth=lineCum_thickness,
+             label='Cumulative')
+    ax1.plot(thick_alpha0, thick_beta0, color='tab:red', linestyle='-', linewidth=line0_thickness, label=R'n=0')
+    ax1.plot(thick_alpha1, thick_beta1, color='tab:orange', linestyle=':', linewidth=line1_thickness, label=R'n=1')
+    ax1.plot(thick_alpha2, thick_beta2, color='tab:blue', linestyle='--', linewidth=line2_thickness, label=R'n=2')
+    ax1.legend()
+
+
+def fmt(x, pos):
+    x = x / 1e9
+    return '{:.2f}'.format(x)
+
+
 def histogram(ax,data,xlabel,ylabel):
     ax.hist(data)
     ax.set_xlabel(xlabel)
