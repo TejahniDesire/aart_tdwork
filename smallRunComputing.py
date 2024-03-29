@@ -26,7 +26,7 @@ import re
 
 def numOfModel(model:str,all_full_model_names):
     j = 0
-    for i in range(all_full_model_names):
+    for i in range(len(all_full_model_names)):
         if all_full_model_names[i] == model:
             print(all_full_model_names[i] + " Identified as " + model + " for number " + str(j))
             return j
