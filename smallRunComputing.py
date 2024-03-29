@@ -153,9 +153,9 @@ def playModel(sub_path,save_path, run,action, model:str, intent_grid_type=2):
         '''PLOTING________________________________________________________________'''
         fig, dum = plt.subplots(2, 2, figsize=dim, dpi=400)
         ax0 = plt.subplot(2, 2, 1)
-        ax1 = plt.subplot(2, 2, 2)
+        ax1 = plt.subplot(2, 3, 3)
         ax2 = plt.subplot(2, 2, 3)
-        ax3 = plt.subplot(2, 2, 4)
+        ax3 = plt.subplot(2, 3, 6)
 
         astroPloting.IntensityVSRadii(fig, ax0, ax1,ax2,ax3,params.limits,thin_intensity,thick_intensity,rmax)
 
