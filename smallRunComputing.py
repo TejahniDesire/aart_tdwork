@@ -149,15 +149,13 @@ def playModel(sub_path,save_path, run,action, model:str, intent_grid_type=2):
         thick_intensity = [I0_Absorb, I1_Absorb, I2_Absorb, Absorbtion_Image]
         rmax = I0.shape[0] * .4
 
-        dim = [10, 8]
+        dim = [15, 7]
         '''PLOTING________________________________________________________________'''
         fig, dum = plt.subplots(2, 2, figsize=dim, dpi=400)
         ax0 = plt.subplot(2, 2, 1)
-        ax1 = plt.subplot(2, 3, 3)
+        ax1 = plt.subplot(2, 2, 2)
         ax2 = plt.subplot(2, 2, 3)
-        ax3 = plt.subplot(2, 3, 6)
-        hideAxis(ax1)
-        hideAxis(ax3)
+        ax3 = plt.subplot(2, 2, 4)
 
         astroPloting.IntensityVSRadii(fig, ax0, ax1,ax2,ax3,params.limits,thin_intensity,thick_intensity,rmax)
 
@@ -171,10 +169,3 @@ def playModel(sub_path,save_path, run,action, model:str, intent_grid_type=2):
 
 
 
-def hideAxis(ax):
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.spines['bottom'].set_visible(False)
-    ax.spines['left'].set_visible(False)
-    ax.get_xaxis().set_ticks([])
-    ax.get_yaxis().set_ticks([])
