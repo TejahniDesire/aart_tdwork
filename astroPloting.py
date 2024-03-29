@@ -267,7 +267,7 @@ def IntensityVSRadii(ax0,ax1,thin_intensity, thick_intensity,rmax):
                            label=R"$\theta= $" + f"{ptheta[L]:.2f}")
             axes_0[J].axvline(peaks[J][parg[L]], color=colors[L])
 
-        axes_0[J].set_xlim([0, 10])
+        # axes_0[J].set_xlim([0, 10])
         axes_0[J].legend()
         axes_0[J].set_xlabel(R"$R_g$")
         axes_0[J].set_ylabel(R"Flux Value " + model[J])

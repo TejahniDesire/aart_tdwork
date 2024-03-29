@@ -57,7 +57,7 @@ current_model = 'ModelA11'
 
 
 save_paths = {
-    'intVRad': '/scratch/gpfs/td6241/aart/bigRuns/testRun1/Images/inensityVRadiiTEST'
+    'intVRad': '/scratch/gpfs/td6241/aart/bigRuns/' + current_run + '/Images/inensityVRadiiTEST/'
 }
 
 fileloading.creatSubDirectory(save_paths['intVRad'])
