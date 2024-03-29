@@ -157,7 +157,7 @@ def playModel(sub_path,save_path, run,action, model:str, intent_grid_type=2):
         ax2 = plt.subplot(2, 2, 3)
         ax3 = plt.subplot(2, 2, 4)
 
-        astroPloting.IntensityVSRadii(fig, ax0, ax1,ax2, ax3,params.limits,thin_intensity,thick_intensity,rmax)
+        astroPloting.IntensityVSRadii(fig, ax0, ax1,ax2,ax3,params.limits,thin_intensity,thick_intensity,rmax)
 
         pltname = (save_path['intVRad'] + 'IntVRad_' + str(i) + "_Nu_"
                    + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")

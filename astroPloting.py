@@ -270,45 +270,45 @@ def IntensityVSRadii(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intensity,r
                            label=R"$\theta= $" + f"{ptheta[L]:.2f}")
             axes_0[J].axvline(peaks[J][parg[L]], color=colors[L])
 
-        # axes_0[J].set_xlim([0, 10])
+        axes_0[J].set_xlim([0, 10])
         axes_0[J].legend()
         axes_0[J].set_xlabel(R"$R_g$")
         axes_0[J].set_ylabel(R"Flux Value " + model[J])
 
-    im1 = axes_1[J].imshow(images[J], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+        im1 = axes_1[J].imshow(images[J], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
 
-    axes_1[J].set_xlim(-10, 10)  # units of M
-    axes_1[J].set_ylim(-10, 10)
+        axes_1[J].set_xlim(-10, 10)  # units of M
+        axes_1[J].set_ylim(-10, 10)
 
-    axes_1[J].set_xlabel(r"$\alpha$" + " " + r"($M$)")
-    axes_1[J].set_ylabel(r"$\beta$" + " " + r"($M$)")
+        axes_1[J].set_xlabel(r"$\alpha$" + " " + r"($M$)")
+        axes_1[J].set_ylabel(r"$\beta$" + " " + r"($M$)")
 
-    # Plot lines
-    rline1 = np.array([0, 10])
-    theta1 = np.array([0, 0])
+        # Plot lines
+        rline1 = np.array([0, 10])
+        theta1 = np.array([0, 0])
 
-    alpha1 = rline1 * np.cos(theta1)
-    beta1 = rline1 * np.sin(theta1)
+        alpha1 = rline1 * np.cos(theta1)
+        beta1 = rline1 * np.sin(theta1)
 
-    for L in range(len(ptheta)):
-        rline = np.array([0, 10])
-        theta = np.array([ptheta[L], ptheta[L]])
+        for L in range(len(ptheta)):
+            rline = np.array([0, 10])
+            theta = np.array([ptheta[L], ptheta[L]])
 
-        alpha = rline * np.cos(theta)
-        beta = rline * np.sin(theta)
+            alpha = rline * np.cos(theta)
+            beta = rline * np.sin(theta)
 
-        axes_1[J].plot(alpha, beta, color=colors[L], linestyle='--')
+            axes_1[J].plot(alpha, beta, color=colors[L], linestyle='--')
 
-    colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format='%.1e', ticks=[
-        vmax[J] * .8,
-        vmax[J] * .6,
-        vmax[J] * .4,
-        vmax[J] * .2,
-        vmax[J] * .05
-    ],
-                             label="Brightnes Temperature (K)",
-                             ax=axes_1[J]
-                             )
+        colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format='%.1e', ticks=[
+            vmax[J] * .8,
+            vmax[J] * .6,
+            vmax[J] * .4,
+            vmax[J] * .2,
+            vmax[J] * .05
+        ],
+                                 label="Brightnes Temperature (K)",
+                                 ax=axes_1[J]
+                                 )
 
 
 def histogram(ax,data,xlabel,ylabel):
