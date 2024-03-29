@@ -498,25 +498,28 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
 
     ax1.title.set_text('Full Solution')
 
-    colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
-        vmax * .8,
-        vmax * .6,
-        vmax * .4,
-        vmax * .2,
-        vmax * .05
-    ],
-                             ax=ax0
-                             )
-    colorbar1 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
-        vmax * .8,
-        vmax * .6,
-        vmax * .4,
-        vmax * .2,
-        vmax * .05
-    ],
-                             label=R"$Log_{10}(Brightness Temperature) (1e9 K)$",
-                             ax=ax1
-                             )
+    # colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
+    #     vmax * .8,
+    #     vmax * .6,
+    #     vmax * .4,
+    #     vmax * .2,
+    #     vmax * .05
+    # ],
+    #                          ax=ax0
+    #                          )
+    # colorbar1 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
+    #     vmax * .8,
+    #     vmax * .6,
+    #     vmax * .4,
+    #     vmax * .2,
+    #     vmax * .05
+    # ],
+    #                          label=R"$Log_{10}(Brightness Temperature) (1e9 K)$",
+    #                          ax=ax1
+    #                          )
+    colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt),ax=ax0)
+    colorbar1 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt),
+                             label=R"$Log_{10}(Brightness Temperature) (1e9 K)$",ax=ax1)
 
     '''Radii Calc______________________'''
     # Thin
