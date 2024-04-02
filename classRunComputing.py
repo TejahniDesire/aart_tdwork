@@ -422,7 +422,12 @@ class BigRuns:
             print(line)
             print("Running " + model)
 
-            current_geo_model = model[0:len(model) - self.run_type]
+            if self.run_type == 0:
+                amount_to_subtract = 1
+            else:
+                amount_to_subtract = self.run_type
+
+            current_geo_model = model[0:len(model) - amount_to_subtract]
             fileloading.loadGeoModel(current_geo_model, self.run)
             lband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
             rtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
