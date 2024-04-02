@@ -83,7 +83,7 @@ action = {
 
 bigRun = classRunComputing.BigRuns(current_run,current_bp,current_var_params,
                                    current_geo_grid_values,current_geo_grid_names)
-bigRun.createGeoGrid()
+# bigRun.createGeoGrid()
 bigRun.creatIntensityGrid(action)
 bigRun.graphCreation(action)
 

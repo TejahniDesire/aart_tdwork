@@ -324,7 +324,7 @@ class BigRuns:
                 print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"]) + "\n")
                 all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
                 all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
-                self.all_models_count += 1
+                self.total_models_count += 1
                 k += 1
 
         # Make Docstring_____________________________________________
