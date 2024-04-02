@@ -49,7 +49,7 @@ bp_testRun1 = {
 
 
 bp_soloRun1 = {
-    "p_mag": [-1],
+    "p_mag": [-2,-1],
     "p_temp": [-1.2],
     "p_dens": [-.7],
     "n_th0": [1.9e4],
