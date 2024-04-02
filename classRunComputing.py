@@ -167,7 +167,7 @@ class BigRuns:
         for key in list(self.constant_params):
             current_model_brightparams[key] = self.constant_params[key]
 
-        return current_model_name, current_model_brightparams
+        return [current_model_name], [current_model_brightparams]
 
     def printIntensityModels(self):
         print(self.intensityTupleToString)
