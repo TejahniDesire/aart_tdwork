@@ -48,7 +48,7 @@ bp_testRun1 = {
 }
 
 
-bp_testRun2 = {
+bp_soloRun1 = {
     "p_mag": [-1],
     "p_temp": [-1.2],
     "p_dens": [-.7],
