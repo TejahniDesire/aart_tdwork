@@ -1,6 +1,7 @@
 import os.path
 import sys
 import EZPaths
+import classRunComputing
 import smallRunComputing
 
 sys.path.append(EZPaths.aartPath)
@@ -86,3 +87,10 @@ sub_paths, all_intensity_models, total_models_count, run_type, variable_param_ra
 
 
 smallRunComputing .playModel(sub_paths,save_paths, current_run,action, current_model, intent_grid_type=2)
+
+
+bigRun = classRunComputing.BigRuns(current_run,current_bp,current_var_params,
+                                   current_geo_grid_values,current_geo_grid_names)
+
+smallRunComputing.playModel(bigRun.sub_paths,save_paths, current_run,action, current_model, intent_grid_type=1)
+
