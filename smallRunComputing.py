@@ -185,26 +185,26 @@ def playModel(sub_path,save_path, run,action, models:list[str], intent_grid_type
             k += action['step']
 
 
-
-
-def playModelV2(bigRun:classRunComputing.BigRuns,models:list[str],action):
+def playModelV2(bigRun:classRunComputing.BigRuns, save_path, action,models):
     for model in models:
         print("Running " + model)
         print(bigRunComputing.line)
         print(bigRunComputing.line)
         print("Initializing Graph Creation")
-        all_full_model_names = np.load(bigRun.sub_paths["meta"] + "AllModelsList.npy")
-        all_brightparams = np.load(bigRun.sub_paths["meta"] + "AllBrightParamsList.npy", allow_pickle=True)
-        thin_total_flux = np.load(bigRun.sub_paths["meta"] + "thin_total_flux.npy")
-        thick_total_flux = np.load(bigRun.sub_paths["meta"] + "thick_total_flux.npy")
+        sub_path = bigRun.sub_paths
+        intent_grid_type = bigRun.run_type
+        run = bigRun.run
+        all_full_model_names = np.load(sub_path["meta"] + "AllModelsList.npy")
+        all_brightparams = np.load(sub_path["meta"] + "AllBrightParamsList.npy", allow_pickle=True)
+        thin_total_flux = np.load(sub_path["meta"] + "thin_total_flux.npy")
+        thick_total_flux = np.load(sub_path["meta"] + "thick_total_flux.npy")
 
-        j = numOfModel(model,all_full_model_names)
+        j = numOfModel(model, all_full_model_names)
 
-        #TODO  FIX
-        current_geo_model = model[0:len(model) - bigRun.run_type + 1]
-        fileloading.loadGeoModel(current_geo_model, bigRun.runs)
-        lband = bigRun.sub_paths["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
-        rtray = bigRun.sub_paths["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
+        current_geo_model = fileloading.totalModelNametoGridModel(model,bigRun.run_type)
+        fileloading.loadGeoModel(current_geo_model, run)
+        lband = sub_path["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
+        rtray = sub_path["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
 
         # Construct Shadows___________________________________________________________________
 
@@ -227,9 +227,8 @@ def playModelV2(bigRun:classRunComputing.BigRuns,models:list[str],action):
         r_outer = image_tools.curve_params(varphis, rhos_outer)
         # ___________________________________________________________________
 
-
         '''Data Readind----------------------------------'''
-        data_path = bigRun.sub_paths["intensityPath"] + model + "/" + "numpy/"
+        data_path = sub_path["intensityPath"] + model + "/" + "numpy/"
 
         x_variable = np.load(data_path + "x_variable.npy")
         janksys_thick = np.load(data_path + "janksys_thick.npy")
@@ -260,7 +259,7 @@ def playModelV2(bigRun:classRunComputing.BigRuns,models:list[str],action):
             print("Full image production for intensity frame: ", i)
             print(R"Observation frequency $\nu=$", k)
 
-            current_intensity_file = (bigRun.sub_paths["intensityPath"] + model + "/" + action["var"]
+            current_intensity_file = (sub_path["intensityPath"] + model + "/" + action["var"]
                                       + "_" + "{:.5e}".format(brightparams[action["var"]]))
 
             print("Reading file: ", current_intensity_file)
@@ -290,13 +289,14 @@ def playModelV2(bigRun:classRunComputing.BigRuns,models:list[str],action):
             ax2 = plt.subplot(2, 2, 3)
             ax3 = plt.subplot(2, 2, 4)
 
-            astroPloting.IntensityVSRadiiType1(fig, ax0, ax1,ax2,ax3,params.limits,thin_intensity,thick_intensity,rmax)
+            astroPloting.IntensityVSRadiiType1(fig, ax0, ax1, ax2, ax3, params.limits, thin_intensity, thick_intensity,
+                                               rmax)
             #
             # ax1.text(2, 1.01, astroModels.var_label[action["var"]]
             #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
             #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
 
-            pltname = (bigRun.save_paths['intVRad'] + 'IntVRad_' + str(i) + "_Nu_"
+            pltname = (save_path['intVRad'] + 'IntVRad_' + str(i) + "_Nu_"
                        + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
             plt.savefig(pltname, bbox_inches='tight')
             print("Image '{}' Created".format(pltname))
@@ -307,7 +307,7 @@ def playModelV2(bigRun:classRunComputing.BigRuns,models:list[str],action):
             ax0 = plt.subplot(1, 2, 1)
             ax1 = plt.subplot(1, 2, 2)
 
-            astroPloting.IntensityVSRadiiType2(fig, ax0, ax1,params.limits,thin_intensity,rmax)
+            astroPloting.IntensityVSRadiiType2(fig, ax0, ax1, params.limits, thin_intensity, rmax)
 
             # ax0.text(2, 1.01, astroModels.var_label[action["var"]]
             #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
@@ -324,7 +324,7 @@ def playModelV2(bigRun:classRunComputing.BigRuns,models:list[str],action):
             ax0 = plt.subplot(1, 2, 1)
             ax1 = plt.subplot(1, 2, 2)
 
-            astroPloting.radiiVSVarphi(fig, ax0, ax1,params.limits,thin_intensity)
+            astroPloting.radiiVSVarphi(fig, ax0, ax1, params.limits, thin_intensity)
 
             # ax0.text(2, 1.01, astroModels.var_label[action["var"]]
             #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
@@ -337,7 +337,6 @@ def playModelV2(bigRun:classRunComputing.BigRuns,models:list[str],action):
             plt.close()
 
             k += action['step']
-
 
 
 def parameterLaws(sub_path, save_path, run, action, models: list[str], intent_grid_type=2):

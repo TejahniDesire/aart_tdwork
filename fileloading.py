@@ -282,5 +282,12 @@ def tupleToString(all_models:list[tuple], var_params, constant_params, total_mod
     return string + line + line + line
 
 
+def totalModelNametoGridModel(model,run_type):
+    if run_type == 0:
+        subtract_amount = 1
+    else:
+        subtract_amount = run_type
+    return model[0:len(model) - subtract_amount]
+
 
 
