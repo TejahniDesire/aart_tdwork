@@ -112,6 +112,7 @@ class BigRuns:
             else:
                 self.constant_params[key] = self.intensity_grid_params[key][0]
 
+        print("Final Grid Type: ",self.run_type)
         # Create astro ParamGrid________________________________________________________________________________________
         grid_types = {
             0: self.type0grid,

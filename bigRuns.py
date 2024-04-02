@@ -57,9 +57,9 @@ import fileloading
 # Solo Run
 current_run = "soloRun1"
 current_bp = astroModels.bp_soloRun1
-current_var_params = []
-current_geo_grid_names = ["ModelB"]
-current_geo_grid_values = [(["a"], [str(.9)])]
+current_var_params = ["p_mag"]
+current_geo_grid_names = ["ModelA","ModelB"]
+current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
 action = {
     "var": "nu0",
     "start": 10e9,
