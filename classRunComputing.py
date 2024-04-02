@@ -316,8 +316,12 @@ class BigRuns:
                 print("Creating Intensity Movie for Model ", current_total_name)
                 print(long_line)
 
+                if self.run_type == 0:
+                    run_type_arg = 1
+                else:
+                    run_type_arg = self.run_type
                 intermodel_data = movieMakerIntensity.intensity_movie(
-                    action, self.sub_paths, current_total_name, self.run_type, current_bp)
+                    action, self.sub_paths, current_total_name, run_type_arg, current_bp)
 
                 print(
                     "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(intermodel_data["thin_total_flux"]))
