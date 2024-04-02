@@ -470,8 +470,6 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
         # Points of Interest
 
-
-
         conv_1 = action["start"] + action["step"] * ilp.ring_convergance(mean_radii_Thick[:, 2], mean_radii_Thick[:, 3],
                                                                          3)
         conv_1 = conv_1 / astroModels.scale_label[action['var']]
@@ -556,59 +554,58 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
         plt.close()
 
         '''Full Images----------------------------------'''
-        # k = action["start"]
-        # print("Constructing Full images for " + model)
-        # for i in range(num_of_intensity_points):
-        #     brightparams = all_brightparams[j]
-        #     brightparams["nu0"] = k
-        #     print("Full image production for intensity frame: ", i)
-        #     print(R"Observation frequency $\nu=$",k)
-        #
-        #
-        #     current_intensity_file = (sub_path["intensityPath"] + model + "/" + action["var"]
-        #                               + "_" + "{:.5e}".format(brightparams[action["var"]]))
-        #
-        #     lim0 = 25
-        #
-        #     print("Reading file: ", current_intensity_file)
-        #
-        #     h5f = h5py.File(current_intensity_file, 'r')
-        #
-        #     I0 = h5f['bghts0'][:]  # This implies I0 is 1 pass
-        #     I1 = h5f['bghts1'][:]
-        #     I2 = h5f['bghts2'][:]
-        #
-        #     I2_Absorb = h5f['bghts2_absorbtion'][:]
-        #     I1_Absorb = h5f['bghts1_absorbtion'][:]
-        #     I0_Absorb = h5f['bghts0_absorbtion'][:]
-        #     Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
-        #
-        #     h5f.close()
-        #
-        #     thin_intensity = [I0,I1,I2,I0 + I1 + I2]
-        #     thick_intensity = [I0_Absorb, I1_Absorb,I2_Absorb, Absorbtion_Image]
-        #     thin_radii = [radii_I0_Thin[i,:],radii_I1_Thin[i,:],radii_I2_Thin[i,:],radii_Full_Thin[i,:]]
-        #     thick_radii = [radii_I0_Thick[i, :], radii_I1_Thick[i, :], radii_I2_Thick[i, :], radii_FullAbsorption_Thick[i, :]]
-        #
-        #     vmax0 = np.nanmax(I0 + I1 + I2) * 1.2
-        #     fig, (ax0, ax1) = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
-        #
-        #     astroPloting.fullImage(fig,ax0,ax1,lim0,thin_intensity, thick_intensity, thin_radii, thick_radii,theta)
-        #
-        #     ax0.text(-9, 8.5, astroModels.var_label[action["var"]]
-        #              + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-        #              + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="w")
-        #
-        #     pltname = (image_path + 'FullImage_' + str(i) + "_Nu_"
-        #                + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
-        #     plt.savefig(pltname, bbox_inches='tight')
-        #     print("Jpeg Created:  " + pltname)
-        #     plt.close()
-        #
-        #     # Get total jansky
-        #
-        #
-        #     k += action['step']
+        if action["images"]:
+            k = action["start"]
+            print("Constructing Full images for " + model)
+            for i in range(num_of_intensity_points):
+                brightparams = all_brightparams[j]
+                brightparams["nu0"] = k
+                print("Full image production for intensity frame: ", i)
+                print(R"Observation frequency $\nu=$",k)
+
+                current_intensity_file = (sub_path["intensityPath"] + model + "/" + action["var"]
+                                          + "_" + "{:.5e}".format(brightparams[action["var"]]))
+
+                lim0 = 25
+
+                print("Reading file: ", current_intensity_file)
+
+                h5f = h5py.File(current_intensity_file, 'r')
+
+                I0 = h5f['bghts0'][:]  # This implies I0 is 1 pass
+                I1 = h5f['bghts1'][:]
+                I2 = h5f['bghts2'][:]
+
+                I2_Absorb = h5f['bghts2_absorbtion'][:]
+                I1_Absorb = h5f['bghts1_absorbtion'][:]
+                I0_Absorb = h5f['bghts0_absorbtion'][:]
+                Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+
+                h5f.close()
+
+                thin_intensity = [I0,I1,I2,I0 + I1 + I2]
+                thick_intensity = [I0_Absorb, I1_Absorb,I2_Absorb, Absorbtion_Image]
+                thin_radii = [radii_I0_Thin[i,:],radii_I1_Thin[i,:],radii_I2_Thin[i,:],radii_Full_Thin[i,:]]
+                thick_radii = [radii_I0_Thick[i, :], radii_I1_Thick[i, :], radii_I2_Thick[i, :], radii_FullAbsorption_Thick[i, :]]
+
+                vmax0 = np.nanmax(I0 + I1 + I2) * 1.2
+                fig, (ax0, ax1) = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
+
+                astroPloting.fullImage(fig,ax0,ax1,lim0,thin_intensity, thick_intensity, thin_radii, thick_radii,theta)
+
+                ax0.text(-9, 8.5, astroModels.var_label[action["var"]]
+                         + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
+                         + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="w")
+
+                pltname = (image_path + 'FullImage_' + str(i) + "_Nu_"
+                           + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+                plt.savefig(pltname, bbox_inches='tight')
+                print("Jpeg Created:  " + pltname)
+                plt.close()
+
+                # Get total jansky
+
+                k += action['step']
         j += 1  # marker for which brightparams to use
     # histograms
     print(line)
@@ -709,6 +706,7 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
     print("Image '{}' Created".format(figname))
     plt.close()
 
+
 def fmt(x, pos):
     x = x / 1e9
     return '{:.2f}'.format(x)
@@ -808,8 +806,6 @@ def surfacePlot(sub_path,bp_grid:dict,action,var_params,geo_grid_names,intent_gr
     plt.savefig(figname, bbox_inches='tight')
     print("Image '{}' Created".format(figname))
     plt.close()
-
-
 
 
 def regexSearch(query, searchList):
