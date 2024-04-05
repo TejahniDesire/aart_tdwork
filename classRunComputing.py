@@ -241,6 +241,7 @@ class BigRuns:
 
     def creatAllModelNames(self):
         k = 1
+        print("Creating all total model names")
         for j in range(len(self.geo_grid_names)):
             current_geo_model = self.geo_grid_names[j]
             fileloading.loadGeoModel(current_geo_model, self.run)
@@ -252,12 +253,12 @@ class BigRuns:
 
             for i in range(len(self.all_inensity_model_brightparams)):
                 print(line)
-                print(line)
                 print("Model number: " + str(k + 1))
 
                 # String Names
                 current_intent_name = self.all_intensity_model_names[i]
                 self.all_model_names += [current_geo_model + current_intent_name.replace("Model", "")]
+                k += 1
 
     def creatIntensityGrid(self,action):
 
