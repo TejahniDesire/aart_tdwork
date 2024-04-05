@@ -172,8 +172,6 @@ class BigRuns:
             all_brightparams += [current_model_brightparams]
             all_model_names += [current_model_name]
 
-
-        print(len(all_model_names),len(all_brightparams))
         return all_model_names,all_brightparams
 
     def type0grid(self):
@@ -844,7 +842,7 @@ class BigRuns:
             mean_optical_depth_I1 = np.load(data_path + "mean_optical_depth_I1.npy")
             mean_optical_depth_I2 = np.load(data_path + "mean_optical_depth_I2.npy")
 
-            num_of_intensity_points = janksys_thin[:, 0].shape[0]
+            num_of_intensity_points = int((action["stop"] - action["start"]) / action["step"])
             print("Number of Intensity Points: ", num_of_intensity_points)
 
             print("Constructing Full images for " + model)
@@ -895,7 +893,7 @@ class BigRuns:
                     #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
 
                     pltname = (save_path['intVRad'] + 'IntVRad_' + str(i) + "_Nu_"
-                               + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+                               + str(round(k / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
                     plt.savefig(pltname, bbox_inches='tight')
                     print("Image '{}' Created".format(pltname))
                     plt.close()
@@ -912,7 +910,7 @@ class BigRuns:
                     #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
 
                     pltname = (save_path['intVRad2'] + 'IntVRad_' + str(i) + "_Nu_"
-                               + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+                               + str(round(k / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
                     plt.savefig(pltname, bbox_inches='tight')
                     print("Image '{}' Created".format(pltname))
                     plt.close()
@@ -929,7 +927,7 @@ class BigRuns:
                     #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
 
                     pltname = (save_path['radVVarphi'] + 'radVVarphu_' + str(i) + "_Nu_"
-                               + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+                               + str(round(k / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
                     plt.savefig(pltname, bbox_inches='tight')
                     print("Image '{}' Created".format(pltname))
                     plt.close()
