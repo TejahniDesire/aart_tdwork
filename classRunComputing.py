@@ -259,13 +259,9 @@ class BigRuns:
                 print("Model number: " + str(k + 1))
 
                 # String Names
-                print(self.all_intensity_model_names)
-                print(i)
-                print(self.all_intensity_model_names[i])
-                t = self.all_intensity_model_names[i]
-                print(t)
                 current_intent_name = self.all_intensity_model_names[i]
                 self.all_model_names += [current_geo_model + current_intent_name.replace("Model", "")]
+                self.all_model_brightparams += [self.all_inensity_model_brightparams[i]]
                 k += 1
 
     def creatIntensityGrid(self,action):
@@ -307,7 +303,6 @@ class BigRuns:
                 current_total_name = self.all_model_names[k]
                 print("     " + current_total_name)
                 # ________________________________
-                self.all_model_brightparams += [self.all_inensity_model_brightparams[i]]
                 current_bp = self.all_model_brightparams[k]
 
                 print("\n" + "Normalizing " + current_total_name + "\n")
