@@ -254,6 +254,7 @@ class BigRuns:
                 current_intent_name = self.all_intensity_model_names[i]
                 self.all_model_names += [current_geo_model + current_intent_name.replace("Model", "")]
                 self.all_model_brightparams += [self.all_inensity_model_brightparams[i]]
+                self.total_models_count += 1
                 k += 1
 
     def creatIntensityGrid(self,action):
@@ -305,7 +306,6 @@ class BigRuns:
                 print("\n" + current_total_name + " normalized with a value of n_th0="
                       + str(current_bp["n_th0"]) + "\n")
 
-
                 print("Creating Intensity Movie for Model ", current_total_name)
                 print(long_line)
 
@@ -321,7 +321,6 @@ class BigRuns:
                 print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"]) + "\n")
                 all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
                 all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
-                self.total_models_count += 1
                 k += 1
         # Numpy saving________________________________________________
 
