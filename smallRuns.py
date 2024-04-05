@@ -57,20 +57,33 @@ import fileloading
 # current_model = 'ModelB13'
 
 # Solo Run
-current_run = "soloRun1"
-current_bp = astroModels.bp_soloRun1
+# current_run = "soloRun1"
+# current_bp = astroModels.bp_soloRun1
+# current_var_params = []
+# current_geo_grid_names = ["ModelB"]
+# current_geo_grid_values = [(["a"], [str(.9)])]
+# action = {
+#     "var": "nu0",
+#     "start": 10e9,
+#     "stop": 700e9,
+#     "step": 20e9,
+#     "images": True
+# }
+# current_model = ['ModelB1']
+current_run = "soloRun2"
+current_bp = astroModels.bp_soloRun2
 current_var_params = []
 current_geo_grid_names = ["ModelB"]
 current_geo_grid_values = [(["a"], [str(.9)])]
 action = {
     "var": "nu0",
-    "start": 10e9,
+    "start": 670e9,
     "stop": 700e9,
     "step": 20e9,
     "images": True
 }
-current_model = ['ModelB1']
 
+current_models = ['ModelB1']
 
 save_paths = {
     'intVRad': '/scratch/gpfs/td6241/aart/bigRuns/' + current_run + '/Images/inensityVRadiiTEST/',
@@ -92,5 +105,5 @@ for path in list(save_paths):
 bigRun = classRunComputing.BigRuns(current_run,current_bp,current_var_params,
                                    current_geo_grid_values,current_geo_grid_names)
 
-smallRunComputing.playModel(bigRun.sub_paths,save_paths, current_run,action, current_model, intent_grid_type=1)
+bigRun.smallModelRun(current_models,action,save_paths)
 

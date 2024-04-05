@@ -83,6 +83,15 @@ def loadGeoModel(current_model:str, run:str):
     importlib.reload(params)
 
 
+def numOfModel(model:str,all_full_model_names):
+    j = 0
+    for i in range(len(all_full_model_names)):
+        if all_full_model_names[i] == model:
+            print(all_full_model_names[i] + " Identified as " + model + " for number " + str(j))
+            return j
+        j += 1
+
+
 def creatSubDirectory(path_chosen,purpose:str = '',kill_policy=False):
     isDir = os.path.exists(path_chosen)
     if kill_policy:
