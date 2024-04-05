@@ -245,13 +245,7 @@ class BigRuns:
         for j in range(len(self.geo_grid_names)):
             current_geo_model = self.geo_grid_names[j]
             fileloading.loadGeoModel(current_geo_model, self.run)
-            lband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
-            rtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
 
-            normlband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "_Normalizing" + "Lensing" + ".h5"
-            normrtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "_Normalizing" + "RayTracing" + ".h5"
-
-            print(str(len(self.all_inensity_model_brightparams)) + " MODEL NAMES " + str(len(self.all_intensity_model_names)))
             for i in range(len(self.all_inensity_model_brightparams)):
                 print(line)
                 print("Model number: " + str(k + 1))
