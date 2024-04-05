@@ -28,8 +28,6 @@ long_line = "\n_________________________________________________________________
 line_small = "________________________________ \n"
 
 
-
-
 class BigRuns:
 
     def __init__(self, run: str, intensity_grid_params: dict, var_inensity_grid_names, geo_grid_params, geo_grid_names):
@@ -138,7 +136,6 @@ class BigRuns:
 
         fileloading.writeDocString(self.sub_paths["meta"] + "AllModelsGuide.txt",
                                    self.totalModelDocString())
-
 
     def type2Grid(self):
         all_brightparams = []  # list[tuple (name, bright parameters)]
