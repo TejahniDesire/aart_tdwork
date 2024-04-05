@@ -28,6 +28,8 @@ long_line = "\n_________________________________________________________________
 line_small = "________________________________ \n"
 
 
+
+
 class BigRuns:
 
     def __init__(self, run: str, intensity_grid_params: dict, var_inensity_grid_names, geo_grid_params, geo_grid_names):
@@ -106,6 +108,9 @@ class BigRuns:
                 raise ValueError("More than one parameter put in for static parameter")
 
             if self.var_inensity_grid_names.count(key) == 1:
+                if param_range <= 1:
+                    raise ValueError("Static parameter listed as variable parameter")
+
                 self.run_type += 1
                 self.variable_param_ranges[key] = param_range
                 self.total_intensity_models_count = self.total_intensity_models_count * param_range
@@ -124,6 +129,9 @@ class BigRuns:
         self.all_model_names = []
         self.all_model_brightparams = []
         self.total_models_count = 0
+
+        fileloading.writeDocString(self.sub_paths["meta"] + "IntensityModelsGuide.txt",
+                                   self.intensityModelDocString())
 
     def type2Grid(self):
         all_brightparams = []  # list[tuple (name, bright parameters)]
@@ -169,25 +177,6 @@ class BigRuns:
             current_model_brightparams[key] = self.constant_params[key]
 
         return [current_model_name], [current_model_brightparams]
-
-    def printIntensityModels(self):
-        print(self.intensityTupleToString)
-
-    def intensityTupleToString(self):
-        string = line + line + line + "Total Number of Models: " + str(
-            self.total_intensity_models_count) + '\n' + "Constant Params: " + '\n'
-        for key in list(self.constant_params):
-            string += breaker + key + ": " + str(self.constant_params[key]) + '\n'
-
-        string += line
-        for i in range(len(self.all_intensity_model_names)):
-            string += line + self.all_intensity_model_names[i] + '\n'
-            current_model = self.all_inensity_model_brightparams[i]
-            for k in range(len(self.var_inensity_grid_names)):
-                string += (breaker + self.var_inensity_grid_names[k] + ": "
-                           + str(current_model[self.var_inensity_grid_names[k]]) + '\n')
-
-        return string + line + line + line
 
     def createGeoGrid(self):
         for i in range(len(self.geo_grid_names)):
@@ -247,23 +236,6 @@ class BigRuns:
             subprocess.run(["mv " + fnrays1 + ' ' + new_rtray], shell=True)
 
     def creatIntensityGrid(self,action):
-        """
-
-        Args:
-            total_models_count:
-            constant_params: parameters that will remain constant for all models
-            var_params: list of key names to be varable parameters in the current run,
-                        correspond to more than 1 entry in list for grid params
-            sub_path: dictionary for all file paths
-            input_geo_grid_names: list of the params files
-            run: run name
-            intensity_models: list[tuple(model_name,brightparams)]
-            geo_grid_list: list[tuple(geo parameter, value)]
-            action:
-
-        Returns:
-
-        """
 
         funckeys = {
             "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
@@ -333,22 +305,10 @@ class BigRuns:
                 k += 1
 
         # Make Docstring_____________________________________________
+        fileloading.writeDocString(self.sub_paths["meta"] + "AllModelsGuide.txt",
+                                   self.totalModelDocString())
 
-        doc_string_file = self.sub_paths["meta"] + "AllModels.txt"
-        cmd = "touch " + doc_string_file
-        subprocess.run([cmd], shell=True)
-
-        # Astrophysical part
-        full_string = self.intensityModelsDocString()
-
-        # Geometrical Part
-        geo_string = self.geoModelDocString()
-
-        # writing
-        doc_string_file = open(doc_string_file, 'w')
-        # doc_string_file.write(full_string + geo_models_string)
-        doc_string_file.write(full_string + geo_string)
-        doc_string_file.close()
+        # Numpy saving________________________________________________
 
         brightparams_numpy_name = self.sub_paths["meta"] + "AllBrightParamsList"
         all_full_names_numpy_name = self.sub_paths["meta"] + "AllModelsList"
@@ -360,7 +320,43 @@ class BigRuns:
         np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
         np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
 
-    def geoModelDocString(self):
+    def intensityModelDocString(self):
+        string = line + line + line + "Total Number of Intensity Models: " + str(
+            self.total_intensity_models_count) + '\n' + "Constant Params: " + '\n'
+        for key in list(self.constant_params):
+            string += breaker + key + ": " + str(self.constant_params[key]) + '\n'
+
+        string += line
+        for i in range(len(self.all_intensity_model_names)):
+            string += line + self.all_intensity_model_names[i] + '\n'
+            current_model = self.all_inensity_model_brightparams[i]
+            for k in range(len(self.var_inensity_grid_names)):
+                string += (breaker + self.var_inensity_grid_names[k] + ": "
+                           + str(current_model[self.var_inensity_grid_names[k]]) + '\n')
+
+        return string + line + line + line
+
+    def totalModelDocString(self):
+
+        intensity_model_string = line_small + line_small + line_small + "Total Number of Models: " + str(
+            self.total_models_count) + '\n' + "Constant Params: " + '\n'
+        for key in list(self.constant_params):
+            if key != "n_th0":
+                intensity_model_string += breaker + key + ": " + str(self.constant_params[key]) + '\n'
+
+        intensity_model_string += line_small
+        for i in range(len(self.all_model_names)):
+            current_name = self.all_model_names[i]
+            current_model = self.all_model_brightparams[i]
+            intensity_model_string += line_small + current_name + '\n'
+
+            for k in range(len(self.var_inensity_grid_names)):
+                intensity_model_string += (breaker + self.var_inensity_grid_names[k] + ": "
+                           + str(current_model[self.var_inensity_grid_names[k]]) + '\n')
+            intensity_model_string += breaker + "n_th0: " + str(current_model["n_th0"]) + '\n'
+
+        intensity_model_string += line_small + line_small + line_small
+
         geo_models_string = "\nGEOMODELS\n"
         for i in range(len(self.geo_grid_names)):
             geo_models_string += self.geo_grid_names[i] + "| "
@@ -368,43 +364,16 @@ class BigRuns:
                 geo_models_string += '\n    ' + self.geo_grid_params[i][0][j] + ": " + self.geo_grid_params[i][1][j]
             geo_models_string += '\n'
 
-        return geo_models_string
-
-    def intensityModelsDocString(self,):
-
-        string = line_small + line_small + line_small + "Total Number of Models: " + str(
-            self.total_models_count) + '\n' + "Constant Params: " + '\n'
-        for key in list(self.constant_params):
-            if key != "n_th0":
-                string += breaker + key + ": " + str(self.constant_params[key]) + '\n'
-
-        string += line_small
-        for i in range(len(self.all_model_names)):
-            current_name = self.all_model_names[i]
-            current_model = self.all_model_brightparams[i]
-            string += line_small + current_name + '\n'
-
-            for k in range(len(self.var_inensity_grid_names)):
-                string += (breaker + self.var_inensity_grid_names[k] + ": "
-                           + str(current_model[self.var_inensity_grid_names[k]]) + '\n')
-            string += breaker + "n_th0: " + str(current_model["n_th0"]) + '\n'
-
-        return string + line_small + line_small + line_small
+        return intensity_model_string + geo_models_string
 
     def graphCreation(self,action):
         """
-            sub_paths = {
-            "GeoDoth5Path"
-            "intensityPath"
-            "fluxPath"
-            "radPath"
-            "imagePath"
 
-             action = {
-             "var":
-             "start":
-             "stop":
-             "step":
+        Args:
+            action: = {"var":str, "start":float, "stop":float, "step":float}
+
+        Returns:
+
         """
         print(line)
         print(line)
@@ -678,7 +647,6 @@ class BigRuns:
                     thick_radii = [radii_I0_Thick[i, :], radii_I1_Thick[i, :],
                                    radii_I2_Thick[i, :], radii_FullAbsorption_Thick[i, :]]
 
-                    vmax0 = np.nanmax(I0 + I1 + I2) * 1.2
                     fig, (ax0, ax1) = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
 
                     astroPloting.fullImage(fig,ax0,ax1,lim0,thin_intensity, thick_intensity,

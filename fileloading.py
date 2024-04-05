@@ -290,4 +290,18 @@ def totalModelNametoGridModel(model,run_type):
     return model[0:len(model) - subtract_amount]
 
 
+def writeDocString(filename:str, text:str):
+    doc_string_file = filename
+    cmd = "touch " + doc_string_file
+    print("File ({}) Created".format(filename))
+    subprocess.run([cmd], shell=True)
+
+    # writing
+    doc_string_file = open(doc_string_file, 'w')
+    # doc_string_file.write(full_string + geo_models_string)
+    doc_string_file.write(text)
+    doc_string_file.close()
+
+
+
 
