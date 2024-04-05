@@ -240,7 +240,7 @@ class BigRuns:
             subprocess.run(["mv " + fnrays1 + ' ' + new_rtray], shell=True)
 
     def creatAllModelNames(self):
-        k = 1
+        k = 0
         print("Creating all total model names")
         for j in range(len(self.geo_grid_names)):
             current_geo_model = self.geo_grid_names[j]
