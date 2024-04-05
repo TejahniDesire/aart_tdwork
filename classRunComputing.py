@@ -172,7 +172,7 @@ class BigRuns:
             all_brightparams += [current_model_brightparams]
             all_model_names += [current_model_name]
 
-        print(len(all_model_names),print(len(all_brightparams)))
+        print(len(all_model_names),len(all_brightparams))
         return all_model_names,all_brightparams
 
     def type0grid(self):
