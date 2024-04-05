@@ -55,14 +55,27 @@ import fileloading
 # }
 
 # Solo Run
-current_run = "soloRun1"
-current_bp = astroModels.bp_soloRun1
+# current_run = "soloRun1"
+# current_bp = astroModels.bp_soloRun1
+# current_var_params = ["p_mag"]
+# current_geo_grid_names = ["ModelA","ModelB"]
+# current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
+# action = {
+#     "var": "nu0",
+#     "start": 10e9,
+#     "stop": 700e9,
+#     "step": 20e9,
+#     "images": True
+# }
+
+current_run = "soloRun2"
+current_bp = astroModels.bp_soloRun2
 current_var_params = ["p_mag"]
-current_geo_grid_names = ["ModelA","ModelB"]
-current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
+current_geo_grid_names = ["ModelB"]
+current_geo_grid_values = [(["a"], [str(.9)])]
 action = {
     "var": "nu0",
-    "start": 10e9,
+    "start": 670e9,
     "stop": 700e9,
     "step": 20e9,
     "images": True
