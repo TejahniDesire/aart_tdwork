@@ -259,6 +259,7 @@ class BigRuns:
                 print("Model number: " + str(k + 1))
 
                 # String Names
+                print(self.all_intensity_model_names)
                 current_intent_name = self.all_intensity_model_names[i]
                 self.all_model_names += [current_geo_model + current_intent_name.replace("Model", "")]
                 k += 1
