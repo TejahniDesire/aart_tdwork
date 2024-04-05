@@ -253,6 +253,7 @@ class BigRuns:
             normlband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "_Normalizing" + "Lensing" + ".h5"
             normrtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "_Normalizing" + "RayTracing" + ".h5"
 
+            print(str(len(self.all_inensity_model_brightparams)) + " MODEL NAMES " + str(len(self.all_intensity_model_names)))
             for i in range(len(self.all_inensity_model_brightparams)):
                 print(line)
                 print("Model number: " + str(k + 1))
