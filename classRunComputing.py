@@ -133,6 +133,13 @@ class BigRuns:
         fileloading.writeDocString(self.sub_paths["meta"] + "IntensityModelsGuide.txt",
                                    self.intensityModelDocString())
 
+        # All model names
+        self.creatAllModelNames()
+
+        fileloading.writeDocString(self.sub_paths["meta"] + "AllModelsGuide.txt",
+                                   self.totalModelDocString())
+
+
     def type2Grid(self):
         all_brightparams = []  # list[tuple (name, bright parameters)]
         all_model_names = []
@@ -235,6 +242,26 @@ class BigRuns:
             subprocess.run(["mv " + fnbands + ' ' + new_lband], shell=True)
             subprocess.run(["mv " + fnrays1 + ' ' + new_rtray], shell=True)
 
+    def creatAllModelNames(self):
+        k = 1
+        for j in range(len(self.geo_grid_names)):
+            current_geo_model = self.geo_grid_names[j]
+            fileloading.loadGeoModel(current_geo_model, self.run)
+            lband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
+            rtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
+
+            normlband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "_Normalizing" + "Lensing" + ".h5"
+            normrtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "_Normalizing" + "RayTracing" + ".h5"
+
+            for i in range(len(self.all_inensity_model_brightparams)):
+                print(line)
+                print(line)
+                print("Model number: " + str(k + 1))
+
+                # String Names
+                current_intent_name = self.all_intensity_model_names[i]
+                self.all_model_names += [current_geo_model + current_intent_name.replace("Model", "")]
+
     def creatIntensityGrid(self,action):
 
         funckeys = {
@@ -269,8 +296,8 @@ class BigRuns:
                 print("Model number: " + str(k + 1))
 
                 # String Names
-                current_intent_name = self.all_intensity_model_names[i]
-                self.all_model_names += [current_geo_model + current_intent_name.replace("Model", "")]
+                # current_intent_name = self.all_intensity_model_names[i]
+                # self.all_model_names += [current_geo_model + current_intent_name.replace("Model", "")]
                 current_total_name = self.all_model_names[k]
                 print("     " + current_total_name)
                 # ________________________________
@@ -303,11 +330,6 @@ class BigRuns:
                 all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
                 self.total_models_count += 1
                 k += 1
-
-        # Make Docstring_____________________________________________
-        fileloading.writeDocString(self.sub_paths["meta"] + "AllModelsGuide.txt",
-                                   self.totalModelDocString())
-
         # Numpy saving________________________________________________
 
         brightparams_numpy_name = self.sub_paths["meta"] + "AllBrightParamsList"
