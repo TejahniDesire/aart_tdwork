@@ -828,6 +828,7 @@ class BigRuns:
             if action["images"]:
                 k = action["start"]
                 for i in range(num_of_intensity_points):
+                    print(self.all_model_names)
                     brightparams = self.all_model_brightparams[self.all_model_names.index(model)]
                     brightparams["nu0"] = k
                     print("Full image production for intensity frame: ", i)
