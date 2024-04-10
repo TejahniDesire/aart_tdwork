@@ -821,14 +821,14 @@ class BigRuns:
 
             # Points of Interest
 
-            conv_1 = action["start"] + action["step"] * ilp.ring_convergance(mean_radii_Thick[:, 2], mean_radii_Thick[:, 3],
+            conv_1 = action["start"] + action["step"] * ilp.ring_convergance(mean_radii_Thick[:, 0], mean_radii_Thick[:, 0],
                                                                              3)
             conv_1 = conv_1 / astroModels.scale_label[action['var']]
 
-            flux_peak_thin = action["start"] + action["step"] * np.argmax(janksys_thin[:, 3])
+            flux_peak_thin = action["start"] + action["step"] * np.argmax(janksys_thin[:, 0])
             flux_peak_thin = flux_peak_thin / astroModels.scale_label[action['var']]
 
-            flux_peak_thick = action["start"] + action["step"] * np.argmax(janksys_thick[:, 3])
+            flux_peak_thick = action["start"] + action["step"] * np.argmax(janksys_thick[:, 0])
             flux_peak_thick = flux_peak_thick / astroModels.scale_label[action['var']]
 
             hist_flux_peaks_thins += [flux_peak_thin]
