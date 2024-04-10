@@ -112,7 +112,7 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type,brightparams,bl
             # ______________________________________
 
             dx = params.dx0
-            one_M = ilp.rg_func(brightparams[1] * u.g).to(u.m)
+            one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
             M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
             muas_blurr = 20
             rg_blurr = muas_blurr / M2uas
