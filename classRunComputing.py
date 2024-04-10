@@ -815,16 +815,8 @@ class BigRuns:
             image_path += "Blurr_"
             Optical_depth_path += "Blurr_"
 
-
             for i in range(len(file_creation)):
-                if not os.path.isdir(file_creation[i]):
-                    subprocess.run(["mkdir " + file_creation[i]], shell=True)
-
-                else:
-                    subprocess.run(["rm -r " + file_creation[i]], shell=True)
-                    subprocess.run(["mkdir " + file_creation[i]], shell=True)
-
-                print("Subdirectory '{}' created".format(file_creation[i]))
+                fileloading.creatSubDirectory(file_creation[i],kill_policy=False)
 
             # Points of Interest
 
