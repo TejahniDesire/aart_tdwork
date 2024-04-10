@@ -44,34 +44,63 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
     geo_model = model[0:len(model)-intent_grid_type] # remove numbers from model
     lband = sub_path["GeoDoth5Path"] + geo_model + "Lensing" + ".h5"
     rtray = sub_path["GeoDoth5Path"] + geo_model + "RayTracing" + ".h5"
-    # '''Reading of the lensing bands----------------------------------'''
-    # fnbands = lband
-    #
-    # '''Reading Analytical Ray-tracing----------------------------------'''
-    # fnrays = rtray
-
-
-    # '''Computing images----------------------------------'''
-
-    brightparams_label = dict(brightparams)
-    # brightparam_items = brightparams.items()
-    # brightparams_init = np.array(list(brightparam_items))[:,1]  # Convert object to a list
 
     # File paths-------------------------
     current_model_file = sub_path["intensityPath"] + model + "/"
 
-    if not os.path.isdir(current_model_file):
-        subprocess.run(["mkdir " + current_model_file], shell=True)
-    else:
-        subprocess.run(["rm -r " + current_model_file], shell=True)
-        print("Subfolder {} already exist, deleting".format(current_model_file))
-        subprocess.run(["mkdir " + current_model_file], shell=True)
+    fileloading.creatSubDirectory(current_model_file,
+                                  "for {} intensities".format(model),kill_policy=True)
 
-    print("Subfolder for {} intensities created ({})".format(model,current_model_file))
+    # total jy at 230GHz
+
+    thin_total_flux, thick_total_flux = normalizingBrightparams.totalIntensity230Point(lband,rtray,brightparams,False)
+
+    intermodel_data = {
+        "thin_total_flux": thin_total_flux,
+        "thick_total_flux": thick_total_flux
+    }
 
     # ----------------------------------------------------------------------------------------------------------------------
     # size = 1000  # array size for radii calcs
     # size = 500  # array size for radii calcs
+    num_iterations = int((action["stop"] - action["start"]) / action["step"])
+
+    """GRAPHS________________________________________________________________________________________________________"""
+    x_variable = np.zeros(num_iterations)  # counter for independant variable
+
+    # # Intensity images
+    # I_thins = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
+    # I_thicks = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
+    # #
+    for i in range(num_iterations):
+        print(line)
+        print(line)
+        print('Creating intensity.h5 for Model ' + model + ' number: ' + str(i))
+
+
+        current_int_file = sub_path["intensityPath"]
+
+        # create current intensity folder
+        # Update varing parameter
+        brightparams[action["var"]] = action["start"] + i * action["step"]
+        x_variable[i] = brightparams[action["var"]]
+
+        args = bigRunComputing.createIntensityArgs(brightparams)
+        args += "--lband " + lband + " --rtray " + rtray
+
+        subprocess.run(['python3 ' + EZPaths.aartPath + '/radialintensity.py' + args], shell=True)
+
+        # Read created file
+
+        fnrays = fileloading.intensityNameNoUnits(brightparams, astroModels.funckeys)
+        new_intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
+        subprocess.run(["mv " + fnrays + ' ' + new_intensity_path], shell=True)
+
+    return intermodel_data
+
+
+def imageAnalysis(action,sub_path, model:str, intent_grid_type, brightparams):
+    current_model_file = sub_path["intensityPath"] + model + "/"
     size = image_tools.size  # array size for radii calcs
     num_iterations = int((action["stop"] - action["start"]) / action["step"])
 
@@ -102,44 +131,14 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
     mean_optical_depth_I1 = np.zeros(num_iterations)
     mean_optical_depth_I2 = np.zeros(num_iterations)
 
-    # total jy at 230GHz
-
-    thin_total_flux, thick_total_flux = normalizingBrightparams.totalIntensity230Point(lband,rtray,brightparams,False)
-
-    intermodel_data = {
-        "thin_total_flux": thin_total_flux,
-        "thick_total_flux": thick_total_flux
-    }
-
-    # # Intensity images
-    # I_thins = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
-    # I_thicks = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
-    # #
     for i in range(num_iterations):
         print(line)
         print(line)
         print('Creating intensity.h5 for Model ' + model + ' number: ' + str(i))
 
+        intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
 
-        current_int_file = sub_path["intensityPath"]
-
-        # create current intensity folder
-        # Update varing parameter
-        brightparams[action["var"]] = action["start"] + i * action["step"]
-        x_variable[i] = brightparams[action["var"]]
-
-        args = bigRunComputing.createIntensityArgs(brightparams)
-        args += "--lband " + lband + " --rtray " + rtray
-
-        subprocess.run(['python3 ' + EZPaths.aartPath + '/radialintensity.py' + args], shell=True)
-
-        # Read created file
-
-        fnrays = fileloading.intensityNameNoUnits(brightparams, astroModels.funckeys)
-        new_intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
-        subprocess.run(["mv " + fnrays + ' ' + new_intensity_path], shell=True)
-
-        h5f = h5py.File(new_intensity_path, 'r')
+        h5f = h5py.File(intensity_path, 'r')
 
         I0 = h5f['bghts0'][:]
         I1 = h5f['bghts1'][:]
@@ -158,13 +157,14 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
         # full_profiles2 = h5f['full_profiles2'][:]
         # full_profiles_unit = h5f['full_profiles_unit'][:]
 
-
         # Thin Radii Calcs----------------------------------------------------------------------------------------------
 
         radii_I0_Thin_i, theta = tls.radii_of_thetaV2(I0, params.dx0)
         radii_I1_Thin_i, theta = tls.radii_of_thetaV2(I1, params.dx0)
         radii_I2_Thin_i, theta = tls.radii_of_thetaV2(I2, params.dx0)
         radii_Full_Thick_i, theta = tls.radii_of_thetaV2(I0 + I1 + I2, params.dx0)
+
+        # profs = scipy.ndimage.convolve1d(profs, np.ones(navg_ang), axis=0) / navg_ang
 
         r0_thin = tls.curve_params(theta, radii_I0_Thin_i)
         r1_thin = tls.curve_params(theta, radii_I1_Thin_i)
@@ -213,7 +213,6 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
         janksys_thick[i, 2] = ilp.total_jy(I2_Absorb, brightparams["nu0"], brightparams["mass"]).value
         janksys_thick[i, 3] = ilp.total_jy(Absorbtion_Image, brightparams["nu0"], brightparams["mass"]).value
 
-
         # Optical Depth-------------------------------------------------------------------------------------------------
 
         mean_optical_depth_I0[i] = np.sum(tau0 * I0) / np.sum(I0)
@@ -223,12 +222,9 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
 
         h5f.close()
 
-
-
     final_data_path = current_model_file + "numpy/"
 
-    if not os.path.isdir(final_data_path):
-        subprocess.run(["mkdir " + final_data_path], shell=True)
+    fileloading.creatSubDirectory(final_data_path,"final image path for {}".format(model), kill_policy=True)
 
     # Remove Row of Zeros
     radii_Full_Thin = np.delete(radii_Full_Thin, 0, 0)
@@ -260,7 +256,7 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
     np.save(final_data_path + "mean_optical_depth_I1", mean_optical_depth_I1)
     np.save(final_data_path + "mean_optical_depth_I2", mean_optical_depth_I2)
 
-    return intermodel_data
+
 
 
 

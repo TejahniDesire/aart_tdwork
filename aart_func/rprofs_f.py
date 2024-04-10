@@ -139,7 +139,6 @@ def b_simple_func(params, r, y):
     return y_fit - y
 
 
-# TODO Check if least_squares assumes squares
 def b_best_fit(mass=kw_mass, beta=kw_beta, rb_0=kw_rb_0, n_th0=kw_n_th0, p_dens=kw_p_dens):
     # Create r and y data
     r = np.array([2, 15, 50])

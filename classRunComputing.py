@@ -316,6 +316,10 @@ class BigRuns:
                 intermodel_data = movieMakerIntensity.intensity_movie(
                     action, self.sub_paths, current_total_name, run_type_arg, current_bp)
 
+                movieMakerIntensity.imageAnalysis(
+                    action, self.sub_paths, current_total_name, run_type_arg, current_bp
+                )
+
                 print(
                     "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(intermodel_data["thin_total_flux"]))
                 print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"]) + "\n")
