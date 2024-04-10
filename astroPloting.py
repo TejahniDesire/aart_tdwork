@@ -21,7 +21,7 @@ from astropy import units as u
 
 
 def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
-                   poi, conv_1_style, r_outer_style,flux_peak_style, action):
+                   poi, conv_1_style, r_outer_style,flux_peak_style, action,blurr_policy=False):
     '''
     poi = {
         r_outer,
@@ -49,9 +49,10 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
                linestyle=r_outer_style["linestyle"], linewidth=r_outer_style["linewidth"])  # , label='Blackhole Outer Shadow'
 
     ax.plot(xaxis, mean_radii_Thin[:, 0], '-', label='n=0', color='tab:red', linewidth=3)
-    ax.plot(xaxis, mean_radii_Thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
-    ax.plot(xaxis, mean_radii_Thin[:, 2], '--', label='n=2', color='tab:blue', linewidth=3)
-    ax.plot(xaxis, mean_radii_Thin[:, 3], '-.', label='Cumulative', color='tab:purple', linewidth=3)
+    if not blurr_policy:
+        ax.plot(xaxis, mean_radii_Thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
+        ax.plot(xaxis, mean_radii_Thin[:, 2], '--', label='n=2', color='tab:blue', linewidth=3)
+        ax.plot(xaxis, mean_radii_Thin[:, 3], '-.', label='Cumulative', color='tab:purple', linewidth=3)
 
 
     # Labels
@@ -94,9 +95,10 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
                 linestyle=r_outer_style["linestyle"], linewidth=r_outer_style["linewidth"])  # , label='Blackhole Outer Shadow'
 
     ax1.plot(xaxis, mean_radii_Thick[:, 0], '-', label=R'n=0', color='tab:red', linewidth=3)
-    ax1.plot(xaxis, mean_radii_Thick[:, 1], ':', label=R'n=1', color='tab:orange', linewidth=3)
-    ax1.plot(xaxis, mean_radii_Thick[:, 2], '--', label=R'n=2', color='tab:blue', linewidth=3)
-    ax1.plot(xaxis, mean_radii_Thick[:, 3], '-.', label='Cumulative', color='tab:purple', linewidth=3)
+    if not blurr_policy:
+        ax1.plot(xaxis, mean_radii_Thick[:, 1], ':', label=R'n=1', color='tab:orange', linewidth=3)
+        ax1.plot(xaxis, mean_radii_Thick[:, 2], '--', label=R'n=2', color='tab:blue', linewidth=3)
+        ax1.plot(xaxis, mean_radii_Thick[:, 3], '-.', label='Cumulative', color='tab:purple', linewidth=3)
 
     # Labels
     ax1.set_xlabel(astroModels.var_label[action["var"]].replace('=', '')
@@ -128,11 +130,12 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
 
 
 def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
-                  poi, conv_1_style, r_outer_style,flux_peak_style, action):
+                  poi, conv_1_style, r_outer_style,flux_peak_style, action,blurr_policy=False):
     ax.plot(xaxis, janksys_thin[:, 0], '-', label='n=0', color='tab:red', linewidth=3)
-    ax.plot(xaxis, janksys_thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
-    ax.plot(xaxis, janksys_thin[:, 2], '--', label='n=2', color='tab:blue', linewidth=3)
-    ax.plot(xaxis, janksys_thin[:, 3], '-.', label='Total', color='tab:purple', linewidth=3)
+    if not blurr_policy:
+        ax.plot(xaxis, janksys_thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
+        ax.plot(xaxis, janksys_thin[:, 2], '--', label='n=2', color='tab:blue', linewidth=3)
+        ax.plot(xaxis, janksys_thin[:, 3], '-.', label='Total', color='tab:purple', linewidth=3)
 
     # TODO SHOULD I MARK THE PEAK?
 
@@ -172,9 +175,10 @@ def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
                 linestyle=flux_peak_style["linestyle"], linewidth=flux_peak_style["linewidth"])
 
     ax1.plot(xaxis, janksys_thick[:, 0], '-', label=R'$n=0$', color='tab:red', linewidth=3)
-    ax1.plot(xaxis, janksys_thick[:, 1], ':', label=R'$n=1$', color='tab:orange', linewidth=3)
-    ax1.plot(xaxis, janksys_thick[:, 2], '--', label=R'$n=2$', color='tab:blue', linewidth=3)
-    ax1.plot(xaxis, janksys_thick[:, 3], '-.', label='Cumulative', color='tab:purple', linewidth=3)
+    if not blurr_policy:
+        ax1.plot(xaxis, janksys_thick[:, 1], ':', label=R'$n=1$', color='tab:orange', linewidth=3)
+        ax1.plot(xaxis, janksys_thick[:, 2], '--', label=R'$n=2$', color='tab:blue', linewidth=3)
+        ax1.plot(xaxis, janksys_thick[:, 3], '-.', label='Cumulative', color='tab:purple', linewidth=3)
 
     # Labels
     ax1.set_ylabel("Total Flux ({})".format(R'$J_y$'))
@@ -233,7 +237,7 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
     ax.legend()
 
 
-def IntensityVSRadiiType1(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intensity,rmax):
+def IntensityVSRadiiType1(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intensity,rmax,blurr_policy=False):
     """
 
     Args:
@@ -249,16 +253,27 @@ def IntensityVSRadiiType1(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intens
 
     axes_0 = [ax0, ax2]
     axes_1 = [ax1, ax3]
-    images = [thin_intensity[3], thick_intensity[3]]
+    if not blurr_policy:
+        images = [thin_intensity[3], thick_intensity[3]]
+    else:
+        images = [thin_intensity[0], thick_intensity[0]]
 
-    peak012, interp012 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
-    # peak0, interp0 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
-    # peak1, interp1 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
-    # peak2, interp2 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
-    peakAbsorb, interpAbsorb = image_tools.radii_of_thetaV2_data(thick_intensity[3])
+    if not blurr_policy:
+        peak012, interp012 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+        # peak0, interp0 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+        # peak1, interp1 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+        # peak2, interp2 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+        peakAbsorb, interpAbsorb = image_tools.radii_of_thetaV2_data(thick_intensity[3])
+        vmax = [np.nanmax(thin_intensity[3])*1.2,np.nanmax(thick_intensity[3])*1.2]
+    else:
+        peak012, interp012 = image_tools.radii_of_thetaV2_data(thin_intensity[0])
+        # peak0, interp0 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+        # peak1, interp1 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+        # peak2, interp2 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+        peakAbsorb, interpAbsorb = image_tools.radii_of_thetaV2_data(thick_intensity[0])
+        vmax = [np.nanmax(thin_intensity[3])*1.2,np.nanmax(thick_intensity[0])*1.2]
     peaks = [peak012, peakAbsorb]
     interps = [interp012, interpAbsorb]
-    vmax = [np.nanmax(thin_intensity[3])*1.2,np.nanmax(thick_intensity[3])*1.2]
 
     model = ["for Thin Assumption", "for Full Solution"]
     for J in range(2):
@@ -316,7 +331,7 @@ def IntensityVSRadiiType1(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intens
                                  )
 
 
-def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax):
+def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax,blurr_policy=False):
     """
 
     Args:
@@ -337,7 +352,8 @@ def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax):
 
     peaks = [peak0,peak1,peak2,peak012]
     interps = [interp0,interp1,interp2,interp012]
-    vmax = np.nanmax(thin_intensity[3]) * 1.2
+
+
 
     # ptheta = [0, np.pi / 2, np.pi]
     ptheta = 4.29403619  # for frame 33
@@ -360,8 +376,12 @@ def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax):
     ax0.legend()
     ax0.set_xlabel(R"$R_g$")
     ax0.set_ylabel(R"Flux Value")
-
-    im1 = ax1.imshow(thin_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+    if not blurr_policy:
+        vmax = np.nanmax(thin_intensity[3]) * 1.2
+        im1 = ax1.imshow(thin_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+    else:
+        vmax = np.nanmax(thin_intensity[0]) * 1.2
+        im1 = ax1.imshow(thin_intensity[0], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
 
     ax1.set_xlim(-10, 10)  # units of M
     ax1.set_ylim(-10, 10)
@@ -396,7 +416,7 @@ def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax):
                              )
 
 
-def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity):
+def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False):
     peak0, theta0 = image_tools.radii_of_thetaV2(thin_intensity[0])
     peak1, theta1 = image_tools.radii_of_thetaV2(thin_intensity[1])
     peak2, theta2 = image_tools.radii_of_thetaV2(thin_intensity[2])
@@ -422,7 +442,12 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity):
     ax0.set_ylabel(R"$R_g$")
     ax0.legend()
 
-    im1 = ax1.imshow(thin_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+    if not blurr_policy:
+        vmax = np.nanmax(thin_intensity[3]) * 1.2
+        im1 = ax1.imshow(thin_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+    else:
+        vmax = np.nanmax(thin_intensity[0]) * 1.2
+        im1 = ax1.imshow(thin_intensity[0], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
 
     ax1.set_xlim(-10, 10)  # units of M
     ax1.set_ylim(-10, 10)
@@ -434,7 +459,6 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity):
     for i in range(len(peaks)):
         ax1.plot(alphas[i], betas[i],linewidth=linewidths[i], color=colors[i], linestyle=linestyles[i])
 
-    vmax = np.nanmax(thin_intensity[3]) * 1.2
     colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format='%.1e', ticks=[
         vmax * .8,
         vmax * .6,
@@ -449,35 +473,50 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity):
     print("Varphi (Rads) of equal point: ", theta3[peak3 == peak0])
 
 
-def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_radii,theta):
+def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_radii,theta,blurr_policy=False):
     thin_alpha0 = thin_radii[0] * np.cos(theta)
     thin_beta0 = thin_radii[0] * np.sin(theta)
-    thin_alpha1 = thin_radii[1] * np.cos(theta)
-    thin_beta1 = thin_radii[1] * np.sin(theta)
-    thin_alpha2 = thin_radii[2] * np.cos(theta)
-    thin_beta2 = thin_radii[2] * np.sin(theta)
-    thin_alpha_full = thin_radii[3] * np.cos(theta)
-    thin_beta_full = thin_radii[3] * np.sin(theta)
+
+    if not blurr_policy:
+        thin_alpha1 = thin_radii[1] * np.cos(theta)
+        thin_beta1 = thin_radii[1] * np.sin(theta)
+        thin_alpha2 = thin_radii[2] * np.cos(theta)
+        thin_beta2 = thin_radii[2] * np.sin(theta)
+        thin_alpha_full = thin_radii[3] * np.cos(theta)
+        thin_beta_full = thin_radii[3] * np.sin(theta)
 
     # full solution radii
     thick_alpha0 = thick_radii[0] * np.cos(theta)
     thick_beta0 = thick_radii[0] * np.sin(theta)
-    thick_alpha1 = thick_radii[1] * np.cos(theta)
-    thick_beta1 = thick_radii[1] * np.sin(theta)
-    thick_alpha2 = thick_radii[2] * np.cos(theta)
-    thick_beta2 = thick_radii[2] * np.sin(theta)
-    thick_alpha_full = thick_radii[3] * np.cos(theta)
-    thick_beta_full = thick_radii[3] * np.sin(theta)
+    if not blurr_policy:
+        thick_alpha1 = thick_radii[1] * np.cos(theta)
+        thick_beta1 = thick_radii[1] * np.sin(theta)
+        thick_alpha2 = thick_radii[2] * np.cos(theta)
+        thick_beta2 = thick_radii[2] * np.sin(theta)
+        thick_alpha_full = thick_radii[3] * np.cos(theta)
+        thick_beta_full = thick_radii[3] * np.sin(theta)
+
 
     vmax0 = np.nanmax(thin_intensity[3]) * 1.2
     vmax = 10e11
     vmin = 10e8
     # Optically Thin
+    if not blurr_policy:
+        # im0im = np.log10(thin_intensity[3])
+        # im0im[im0im == -np.Infinity] = 0
+        im0 = ax0.imshow(thin_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit],
+                         norm=matplotlib.colors.LogNorm(vmin, vmax))
+    else:
+        # im0im = np.log10(thin_intensity[0])
+        # im0im[im0im == -np.Infinity] = 0
+        im0 = ax0.imshow(thin_intensity[0], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit],
+                         norm=matplotlib.colors.LogNorm(vmin, vmax))
 
-    im0im = np.log10(thin_intensity[3])
-    im0im[im0im==-np.Infinity] = 0
-    im0 = ax0.imshow(im0im, origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit],
-                     norm=matplotlib.colors.LogNorm(vmin,vmax))
+
+    # im0 = ax0.imshow(im0im, origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit],
+    #                  norm=matplotlib.colors.LogNorm(vmin,vmax))
+
+
 
     ax0.set_xlim(-10, 10)  # units of M
     ax0.set_ylim(-10, 10)
@@ -491,6 +530,17 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
     im1im[im1im==-np.Infinity] = 0
     im1 = ax1.imshow(im1im, origin="lower", cmap="afmhot",  extent=[-limit, limit, -limit, limit],
                      norm=matplotlib.colors.LogNorm(vmin,vmax))
+
+    if not blurr_policy:
+        # im0im = np.log10(thick_intensity[3])
+        # im0im[im0im == -np.Infinity] = 0
+        im0 = ax0.imshow(thick_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit],
+                         norm=matplotlib.colors.LogNorm(vmin, vmax))
+    else:
+        # im0im = np.log10(thick_intensity[0])
+        # im0im[im0im == -np.Infinity] = 0
+        im0 = ax0.imshow(thick_intensity[0], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit],
+                         norm=matplotlib.colors.LogNorm(vmin, vmax))
 
     #
     ax1.set_xlim(-10, 10)  # units of M
@@ -530,17 +580,21 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
     line1_thickness = 2
     line2_thickness = 1
 
-    ax0.plot(thin_alpha_full, thin_beta_full, color='tab:purple', linestyle='--', linewidth=lineCum_thickness)
+    if not blurr_policy:
+        ax0.plot(thin_alpha_full, thin_beta_full, color='tab:purple', linestyle='--', linewidth=lineCum_thickness)
+        ax0.plot(thin_alpha1, thin_beta1, color='tab:orange', linestyle=':', linewidth=line1_thickness)
+        ax0.plot(thin_alpha2, thin_beta2, color='tab:blue', linestyle='--', linewidth=line2_thickness)
+
     ax0.plot(thin_alpha0, thin_beta0, color='tab:red', linestyle='-', linewidth=line0_thickness)
-    ax0.plot(thin_alpha1, thin_beta1, color='tab:orange', linestyle=':', linewidth=line1_thickness)
-    ax0.plot(thin_alpha2, thin_beta2, color='tab:blue', linestyle='--', linewidth=line2_thickness)
 
     # Thick
-    ax1.plot(thick_alpha_full, thick_beta_full, color='tab:purple', linestyle='--', linewidth=lineCum_thickness,
-             label='Cumulative')
+    if not blurr_policy:
+        ax1.plot(thick_alpha_full, thick_beta_full, color='tab:purple', linestyle='--', linewidth=lineCum_thickness,
+                 label='Cumulative')
+        ax1.plot(thick_alpha1, thick_beta1, color='tab:orange', linestyle=':', linewidth=line1_thickness, label=R'n=1')
+        ax1.plot(thick_alpha2, thick_beta2, color='tab:blue', linestyle='--', linewidth=line2_thickness, label=R'n=2')
+
     ax1.plot(thick_alpha0, thick_beta0, color='tab:red', linestyle='-', linewidth=line0_thickness, label=R'n=0')
-    ax1.plot(thick_alpha1, thick_beta1, color='tab:orange', linestyle=':', linewidth=line1_thickness, label=R'n=1')
-    ax1.plot(thick_alpha2, thick_beta2, color='tab:blue', linestyle='--', linewidth=line2_thickness, label=R'n=2')
     ax1.legend()
 
 #
