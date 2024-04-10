@@ -448,6 +448,7 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity):
 
     print("Varphi (Rads) of equal point: ", theta3[peak3 == peak0])
 
+
 def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_radii,theta):
     thin_alpha0 = thin_radii[0] * np.cos(theta)
     thin_beta0 = thin_radii[0] * np.sin(theta)

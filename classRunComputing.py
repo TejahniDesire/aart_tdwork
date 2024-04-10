@@ -257,7 +257,7 @@ class BigRuns:
                 self.total_models_count += 1
                 k += 1
 
-    def creatIntensityGrid(self,action):
+    def creatIntensityGrid(self,action,isNormalized=False,blurr_policy=False):
 
         funckeys = {
             "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
@@ -298,13 +298,14 @@ class BigRuns:
                 # ________________________________
                 current_bp = self.all_model_brightparams[k]
 
-                print("\n" + "Normalizing " + current_total_name + "\n")
-                print(long_line)
+                if not isNormalized:
+                    print("\n" + "Normalizing " + current_total_name + "\n")
+                    print(long_line)
 
-                current_bp["n_th0"] = normalizingBrightparams.normalize(normlband, normrtray, current_bp)
+                    current_bp["n_th0"] = normalizingBrightparams.normalize(normlband, normrtray, current_bp)
 
-                print("\n" + current_total_name + " normalized with a value of n_th0="
-                      + str(current_bp["n_th0"]) + "\n")
+                    print("\n" + current_total_name + " normalized with a value of n_th0="
+                          + str(current_bp["n_th0"]) + "\n")
 
                 print("Creating Intensity Movie for Model ", current_total_name)
                 print(long_line)
@@ -314,11 +315,16 @@ class BigRuns:
                 else:
                     run_type_arg = self.run_type
                 intermodel_data = movieMakerIntensity.intensity_movie(
-                    action, self.sub_paths, current_total_name, run_type_arg, current_bp)
+                    action, self.sub_paths, current_total_name, run_type_arg, current_bp,blurr_policy=blurr_policy)
 
                 movieMakerIntensity.imageAnalysis(
                     action, self.sub_paths, current_total_name, current_bp
                 )
+
+                if blurr_policy:
+                    movieMakerIntensity.blurrImageAnalysis(
+                        action, self.sub_paths, current_total_name, current_bp
+                    )
 
                 print(
                     "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(intermodel_data["thin_total_flux"]))

@@ -60,6 +60,8 @@ action = {
     "step": 20e9,
     "images": True
 }
+isNormalized = True
+blurr_policy = True
 
 # Solo Run
 # current_run = "soloRun1"
@@ -118,7 +120,7 @@ action = {
 bigRun = classRunComputing.BigRuns(current_run,current_bp,current_var_params,
                                    current_geo_grid_values,current_geo_grid_names)
 # bigRun.createGeoGrid()
-bigRun.creatIntensityGrid(action)
+bigRun.creatIntensityGrid(action,isNormalized,blurr_policy)
 # bigRun.graphCreation(action)
 
 
