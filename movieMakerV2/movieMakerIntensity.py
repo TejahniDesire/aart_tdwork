@@ -118,15 +118,17 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type,brightparams,bl
             rg_blurr = muas_blurr / M2uas
 
             sig = rg_blurr / (dx * (2 * np.sqrt(
-                2 * np.log(2))))  ## We have 20 uas FWHM resolution. dx = uas/pixels. so 20/dx is FWHM in pixel units.
+                2 * np.log(2))))  # We have 20 uas FWHM resolution. dx = uas/pixels. so 20/dx is FWHM in pixel units.
             thin_blurr_image = ndimage.gaussian_filter(thin_image, sigma=(sig, sig))
             thick_blurr_image = ndimage.gaussian_filter(Absorbtion_Image, sigma=(sig, sig))
 
-            h5f = h5py.File(new_intensity_path, 'w')
-
+            blurr_intensity_path = (current_model_file +
+                                    action["var"] + "_blurr_" + "{:.5e}".format(brightparams[action["var"]]))
+            h5f = h5py.File(blurr_intensity_path, 'w')
             h5f.create_dataset('thin_blurr_image', data=thin_blurr_image)
             h5f.create_dataset("thick_blurr_image",data=thick_blurr_image)
             h5f.close()
+            print("File ",blurr_intensity_path, " created.")
 
     return intermodel_data
 
@@ -314,7 +316,7 @@ def blurrImageAnalysis(action,sub_path, model:str, brightparams):
         print(line)
         print('Reading intensity.h5 for Model ' + model + ' number: ' + str(i))
 
-        intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
+        intensity_path = current_model_file +action["var"] + "_blurr_" + "{:.5e}".format(brightparams[action["var"]])
 
         h5f = h5py.File(intensity_path, 'r')
 
