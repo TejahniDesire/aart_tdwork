@@ -317,7 +317,7 @@ class BigRuns:
                     action, self.sub_paths, current_total_name, run_type_arg, current_bp)
 
                 movieMakerIntensity.imageAnalysis(
-                    action, self.sub_paths, current_total_name, run_type_arg, current_bp
+                    action, self.sub_paths, current_total_name, current_bp
                 )
 
                 print(

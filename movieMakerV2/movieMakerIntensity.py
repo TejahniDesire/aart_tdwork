@@ -6,7 +6,7 @@ import bigRunComputing
 import fileloading
 import image_tools
 import normalizingBrightparams
-
+import scipy.ndimage as ndimage
 sys.path.append(EZPaths.aartPath)
 import subprocess
 import scipy
@@ -25,7 +25,7 @@ speed = 8
 line = "\n__________________________________________________\n"
 
 
-def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
+def intensity_movie(action,sub_path, model:str, intent_grid_type,brightparams,blurr_policy=False):
     """
         sub_paths = {
         "GeoDoth5Path"
@@ -96,10 +96,42 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type, brightparams):
         new_intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
         subprocess.run(["mv " + fnrays + ' ' + new_intensity_path], shell=True)
 
+        if blurr_policy:
+            # Read File
+            h5f = h5py.File(new_intensity_path, 'r')
+
+            I0 = h5f['bghts0'][:]
+            I1 = h5f['bghts1'][:]
+            I2 = h5f['bghts2'][:]
+
+            Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+
+            h5f.close()
+
+            thin_image = I0 + I1 + I2
+            # ______________________________________
+
+            dx = params.dx0
+            one_M = ilp.rg_func(brightparams[1] * u.g).to(u.m)
+            M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
+            muas_blurr = 20
+            rg_blurr = muas_blurr / M2uas
+
+            sig = rg_blurr / (dx * (2 * np.sqrt(
+                2 * np.log(2))))  ## We have 20 uas FWHM resolution. dx = uas/pixels. so 20/dx is FWHM in pixel units.
+            thin_blurr_image = ndimage.gaussian_filter(thin_image, sigma=(sig, sig))
+            thick_blurr_image = ndimage.gaussian_filter(Absorbtion_Image, sigma=(sig, sig))
+
+            h5f = h5py.File(new_intensity_path, 'w')
+
+            h5f.create_dataset('thin_blurr_image', data=thin_blurr_image)
+            h5f.create_dataset("thick_blurr_image",data=thick_blurr_image)
+            h5f.close()
+
     return intermodel_data
 
 
-def imageAnalysis(action,sub_path, model:str, intent_grid_type, brightparams):
+def imageAnalysis(action,sub_path, model:str, brightparams):
     current_model_file = sub_path["intensityPath"] + model + "/"
     size = image_tools.size  # array size for radii calcs
     num_iterations = int((action["stop"] - action["start"]) / action["step"])

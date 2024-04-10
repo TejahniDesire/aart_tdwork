@@ -1,3 +1,4 @@
+import shutil
 import subprocess
 import EZPaths
 import os
@@ -97,7 +98,15 @@ def creatSubDirectory(path_chosen,purpose:str = '',kill_policy=False):
     if kill_policy:
         if isDir:
             print("Subdirectory for " + purpose + " '{}' already exist, removing...".format(path_chosen))
-            os.rmdir(path_chosen)
+
+            existing_file = os.listdir(path)
+            if len(existing_file) == 0:
+                print("Empty directory, removing...")
+                os.rmdir(path_chosen)
+            else:
+                print("Not empty directory, removing...")
+                shutil.rmtree(path_chosen)
+
             os.makedirs(path_chosen)
             print("A Subdirectory for " + purpose + " '{}' was created".format(path_chosen))
         else:
