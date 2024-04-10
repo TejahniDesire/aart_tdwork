@@ -802,10 +802,10 @@ class BigRuns:
             # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
             # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
 
-            fluxVNu_path = self.sub_paths["fluxPath"] + model + "/"
-            radVNu_path = self.sub_paths["radPath"] + model + "/"
-            image_path = self.sub_paths["imagePath"] + model + "/"
-            Optical_depth_path = self.sub_paths["opticalDepth"] + model + "/"
+            fluxVNu_path = self.sub_paths["fluxPath"] + model + "/Blurr_"
+            radVNu_path = self.sub_paths["radPath"] + model + "/Blurr_"
+            image_path = self.sub_paths["imagePath"] + model + "/Blurr_"
+            Optical_depth_path = self.sub_paths["opticalDepth"] + model + "/Blurr_"
 
             file_creation = [fluxVNu_path, radVNu_path,image_path,Optical_depth_path]
 
@@ -868,7 +868,7 @@ class BigRuns:
             fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True)
 
             astroPloting.fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
-                                       poi, conv_1_style, r_outer_style, flux_peak_style, action)
+                                       poi, conv_1_style, r_outer_style, flux_peak_style, action,blurr_policy=True)
 
             figname = fluxVNu_path + model + "Flux.jpg"
             plt.savefig(figname, bbox_inches='tight')
@@ -882,7 +882,7 @@ class BigRuns:
             fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True)
 
             astroPloting.radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
-                                        poi, conv_1_style, r_outer_style, flux_peak_style, action)
+                                        poi, conv_1_style, r_outer_style, flux_peak_style, action,blurr_policy=True)
 
             figname = radVNu_path + model + "Radii.jpeg"
             plt.savefig(figname, bbox_inches='tight')
@@ -931,7 +931,7 @@ class BigRuns:
                     fig, (ax0, ax1) = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
 
                     astroPloting.fullImage(fig,ax0,ax1,lim0,thin_intensity, thick_intensity,
-                                           thin_radii, thick_radii, theta)
+                                           thin_radii, thick_radii, theta,blurr_policy=True)
 
                     ax0.text(-9, 8.5, astroModels.var_label[action["var"]]
                              + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
