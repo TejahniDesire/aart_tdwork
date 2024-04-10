@@ -802,12 +802,19 @@ class BigRuns:
             # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
             # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
 
-            fluxVNu_path = self.sub_paths["fluxPath"] + model + "/Blurr_"
-            radVNu_path = self.sub_paths["radPath"] + model + "/Blurr_"
-            image_path = self.sub_paths["imagePath"] + model + "/Blurr_"
-            Optical_depth_path = self.sub_paths["opticalDepth"] + model + "/Blurr_"
+            fluxVNu_path = self.sub_paths["fluxPath"] + model + "/"
+            radVNu_path = self.sub_paths["radPath"] + model + "/"
+            image_path = self.sub_paths["imagePath"] + model + "/"
+            Optical_depth_path = self.sub_paths["opticalDepth"] + model + "/"
+            "/Blurr_"
 
             file_creation = [fluxVNu_path, radVNu_path,image_path,Optical_depth_path]
+
+            fluxVNu_path += "Blurr_"
+            radVNu_path += "Blurr_"
+            image_path += "Blurr_"
+            Optical_depth_path += "Blurr_"
+
 
             for i in range(len(file_creation)):
                 if not os.path.isdir(file_creation[i]):
