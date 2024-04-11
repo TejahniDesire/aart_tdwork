@@ -529,11 +529,11 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
     if not blurr_policy:
         # im0im = np.log10(thick_intensity[3])
         # im0im[im0im == -np.Infinity] = 0
-        im0 = ax0.imshow(thick_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+        im0 = ax1.imshow(thick_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
     else:
         # im0im = np.log10(thick_intensity[0])
         # im0im[im0im == -np.Infinity] = 0
-        im0 = ax0.imshow(thick_intensity[0], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+        im0 = ax1.imshow(thick_intensity[0], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
 
     #
     ax1.set_xlim(-10, 10)  # units of M
