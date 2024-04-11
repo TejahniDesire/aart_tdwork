@@ -902,28 +902,22 @@ class BigRuns:
                     print("Full image production for intensity frame: ", i)
                     print(R"Observation frequency $\nu=$",k)
 
-                    current_intensity_file = (self.sub_paths["intensityPath"] + model + "/" + action["var"]
-                                              + "_" + "{:.5e}".format(brightparams[action["var"]]))
+                    blurr_intensity_path = (self.sub_paths["intensityPath"] + model + "/"  +
+                                            action["var"] + "_blurr_" + "{:.5e}".format(brightparams[action["var"]]))
 
                     lim0 = 25
 
-                    print("Reading file: ", current_intensity_file)
+                    print("Reading file: ", blurr_intensity_path)
 
-                    h5f = h5py.File(current_intensity_file, 'r')
+                    h5f = h5py.File(blurr_intensity_path, 'r')
 
-                    I0 = h5f['bghts0'][:]  # This implies I0 is 1 pass
-                    I1 = h5f['bghts1'][:]
-                    I2 = h5f['bghts2'][:]
-
-                    I2_Absorb = h5f['bghts2_absorbtion'][:]
-                    I1_Absorb = h5f['bghts1_absorbtion'][:]
-                    I0_Absorb = h5f['bghts0_absorbtion'][:]
-                    Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+                    thin_blurr_image = h5f['thin_blurr_image'][:]
+                    Absorbtion_Image = h5f["thick_blurr_image"][:]
 
                     h5f.close()
 
-                    thin_intensity = [I0,I1,I2,I0 + I1 + I2]
-                    thick_intensity = [I0_Absorb, I1_Absorb,I2_Absorb, Absorbtion_Image]
+                    thin_intensity = [thin_blurr_image]
+                    thick_intensity = [Absorbtion_Image]
                     thin_radii = [radii_I0_Thin[i,:]]
                     thick_radii = [radii_FullAbsorption_Thick[i, :]]
 
