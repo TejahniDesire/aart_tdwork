@@ -40,28 +40,28 @@ import fileloading
 #     "images": True
 # }
 
-# Test Run 2
-current_run = "testRun2"
-current_bp = astroModels.bp_testRun1
-current_var_params = ["p_temp","p_mag"]
-current_geo_grid_names = ["ModelA", "ModelB"]
-current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
+# # Test Run 2
+# current_run = "testRun2"
+# current_bp = astroModels.bp_testRun1
+# current_var_params = ["p_temp","p_mag"]
+# current_geo_grid_names = ["ModelA", "ModelB"]
+# current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
+# # action = {
+# #     "var": "nu0",
+# #     "start": 3.00e+10,
+# #     "stop": 6.00e+10,
+# #     "step": 1.00e+10,
+# #     "images": True
+# # }
 # action = {
 #     "var": "nu0",
-#     "start": 3.00e+10,
-#     "stop": 6.00e+10,
-#     "step": 1.00e+10,
+#     "start": 670e9,
+#     "stop": 700e9,
+#     "step": 20e9,
 #     "images": True
 # }
-action = {
-    "var": "nu0",
-    "start": 670e9,
-    "stop": 700e9,
-    "step": 20e9,
-    "images": True
-}
-isNormalized = True
-blurr_policy = True
+# isNormalized = True
+# blurr_policy = True
 
 # Solo Run
 # current_run = "soloRun1"
@@ -77,18 +77,20 @@ blurr_policy = True
 #     "images": True
 # }
 
-# current_run = "soloRun2"
-# current_bp = astroModels.bp_soloRun2
-# current_var_params = []
-# current_geo_grid_names = ["ModelB"]
-# current_geo_grid_values = [(["a"], [str(.9)])]
-# action = {
-#     "var": "nu0",
-#     "start": 670e9,
-#     "stop": 700e9,
-#     "step": 20e9,
-#     "images": True
-# }
+current_run = "soloRun2"
+current_bp = astroModels.bp_soloRun2
+current_var_params = []
+current_geo_grid_names = ["ModelB"]
+current_geo_grid_values = [(["a"], [str(.9)])]
+action = {
+    "var": "nu0",
+    "start": 670e9,
+    "stop": 700e9,
+    "step": 20e9,
+    "images": True
+}
+isNormalized = True
+blurr_policy = True
 
 
 #
@@ -120,7 +122,7 @@ blurr_policy = True
 bigRun = classRunComputing.BigRuns(current_run,current_bp,current_var_params,
                                    current_geo_grid_values,current_geo_grid_names)
 # bigRun.createGeoGrid()
-# bigRun.creatIntensityGrid(action,isNormalized,blurr_policy)
+bigRun.creatIntensityGrid(action,isNormalized,blurr_policy)
 bigRun.blurrGraphCreation(action)
 # bigRun.graphCreation(action)
 
