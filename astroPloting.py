@@ -416,13 +416,14 @@ def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax,blurr_policy=Fal
                              )
 
 
-def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False):
-    peak0, theta0 = image_tools.radii_of_thetaV2(thin_intensity[0])
-    peak1, theta1 = image_tools.radii_of_thetaV2(thin_intensity[1])
-    peak2, theta2 = image_tools.radii_of_thetaV2(thin_intensity[2])
-    peak3, theta3 = image_tools.radii_of_thetaV2(thin_intensity[3])
+def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False,plot_intensites=False):
+    peak0, theta0, intent_at_peaks0 = image_tools.radii_of_thetaV2(thin_intensity[0],give_intensities=True)
+    peak1, theta1, intent_at_peaks1 = image_tools.radii_of_thetaV2(thin_intensity[1],give_intensities=True)
+    peak2, theta2, intent_at_peaks2 = image_tools.radii_of_thetaV2(thin_intensity[2],give_intensities=True)
+    peak3, theta3, intent_at_peaks3 = image_tools.radii_of_thetaV2(thin_intensity[3],give_intensities=True)
 
     peaks = [peak0,peak1,peak2,peak3]
+    intent_at_peaks = [intent_at_peaks0,intent_at_peaks1,intent_at_peaks2,intent_at_peaks3]
     thetas = [theta0,theta1,theta2,theta3]
     colors = ['tab:red','tab:orange','tab:blue','tab:purple']
     labels = [R"$n= 0$",R"$n= 1$",R"$n= 2$",R"$Cumulative$"]
@@ -434,12 +435,20 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False):
         # if J == 0:
         #     axes_0[J].get_xaxis().set_ticks([])
         #     axes_1[J].get_xaxis().set_ticks([])
-        ax0.plot(thetas[i], peaks[i], linewidth=2, color=colors[i],label=labels[i],linestyle=linestyles[i])
-        alphas += [peaks[i] * np.cos(thetas[i])]
-        betas += [peaks[i] * np.sin(thetas[i])]
+        if not plot_intensites:
+            ax0.plot(thetas[i], peaks[i], linewidth=2, color=colors[i],label=labels[i],linestyle=linestyles[i])
+            alphas += [peaks[i] * np.cos(thetas[i])]
+            betas += [peaks[i] * np.sin(thetas[i])]
+            ax0.set_ylabel(R"$R_g$")
+            ax1.set_ylim(-10, 10)
+        else:
+            ax0.plot(thetas[i], intent_at_peaks[i], linewidth=2, color=colors[i],label=labels[i],linestyle=linestyles[i])
+            alphas += [intent_at_peaks[i] * np.cos(thetas[i])]
+            betas += [intent_at_peaks[i] * np.sin(thetas[i])]
+            ax0.set_ylabel(R"Brightness $(K)$")
 
     ax0.set_xlabel(R"$\varphi$")
-    ax0.set_ylabel(R"$R_g$")
+
     ax0.legend()
 
     if not blurr_policy:
@@ -450,7 +459,6 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False):
         im1 = ax1.imshow(thin_intensity[0], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
 
     ax1.set_xlim(-10, 10)  # units of M
-    ax1.set_ylim(-10, 10)
 
     ax1.set_xlabel(r"$\alpha$" + " " + r"($M$)")
     ax1.set_ylabel(r"$\beta$" + " " + r"($M$)")

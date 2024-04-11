@@ -1185,6 +1185,24 @@ class BigRuns:
                     print("Image '{}' Created".format(pltname))
                     plt.close()
 
+
+                    '''RadVSVarphiType2Intensities________________________________________________________________'''
+                    fig, dum = plt.subplots(1, 2, figsize=dim, dpi=400)
+                    ax0 = plt.subplot(1, 2, 1)
+                    ax1 = plt.subplot(1, 2, 2)
+
+                    astroPloting.radiiVSVarphi(fig, ax0, ax1, params.limits, thin_intensity,plot_intensites=True)
+
+                    # ax0.text(2, 1.01, astroModels.var_label[action["var"]]
+                    #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
+                    #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
+
+                    pltname = (save_path['radVVarphi'] + 'radVVarphuIntesities_' + str(i) + "_Nu_"
+                               + str(round(k / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+                    plt.savefig(pltname, bbox_inches='tight')
+                    print("Image '{}' Created".format(pltname))
+                    plt.close()
+
                     k += action['step']
 
 

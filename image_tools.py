@@ -38,7 +38,7 @@ size = 200
 rsize = 10000
 
 
-def radii_of_thetaV2(I0, dx=None):
+def radii_of_thetaV2(I0, dx=None,give_intensities=False):
     x = np.arange(I0.shape[0])  # number of pixels
     y = x
     rmax = I0.shape[0] * .4
@@ -78,6 +78,57 @@ def radii_of_thetaV2(I0, dx=None):
 
     if dx is None:
         dx = (limits * 2) / I0.shape[0]
+
+    peaks = np.ravel(r[peak])  # value of r at that argument
+    intent_at_peaks = interp(coords)[peak]
+
+    if give_intensities:
+        return (peaks * dx), np.ravel(theta),intent_at_peaks
+    else:
+        return (peaks * dx), np.ravel(theta)  # units of Rg
+
+def radii_of_thetaV2_radArg(I0, dx=None):
+    x = np.arange(I0.shape[0])  # number of pixels
+    y = x
+    rmax = I0.shape[0] * .4
+    interp = RegularGridInterpolator((x, y), I0.T)
+    theta = np.matrix(np.linspace(0, 2 * np.pi, size))  # 1 x size
+
+    # rmax = I0.shape[0] * .4
+    rmax = I0.shape[0] * .4
+
+    r = np.matrix(np.linspace(0, rmax, rsize)).T  # rsize x 1
+
+    onest = np.matrix(np.ones(r.shape[0])).T  # (rsize) x 1
+    onesr = np.matrix(np.ones(size))  # 1 x size
+
+    thetarray = onest @ theta  # (rsize) x size
+    rarray = r @ onesr  # (rsize) x size
+
+    xaart = np.multiply(rarray, np.cos(thetarray))
+    yaart = np.multiply(rarray, np.sin(thetarray))
+
+    # Convert to pixel coords from aart plot coords
+    xprime = xaart + I0.shape[0] / 2
+    yprime = yaart + I0.shape[0] / 2
+
+    coords = np.array([xprime, yprime]).T
+    peak = np.argmax(interp(coords), 1)
+
+    if not np.all((peak == 0) == False):
+        pass
+
+        # TODO What's the best way to remove the point
+        #  without changing the array size. Averaging around could include 0,
+        #  going to left or right can hit another zero
+        # zero_point = np.argmax(peak == 0)
+        # peak = np.delete(peak, zero_point)  # Remove any peak listed occuring at index 0
+        # theta = np.delete(theta,zero_point)
+
+    if dx is None:
+        dx = (limits * 2) / I0.shape[0]
+
+
 
     peaks = np.ravel(r[peak])  # value of r at that argument
 
