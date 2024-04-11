@@ -497,17 +497,19 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
         thick_beta_full = thick_radii[3] * np.sin(theta)
 
 
-    vmax0 = np.nanmax(thin_intensity[3]) * 1.2
+
     vmax = 10e11
     vmin = 10e8
     # Optically Thin
     if not blurr_policy:
         # im0im = np.log10(thin_intensity[3])
         # im0im[im0im == -np.Infinity] = 0
+        vmax0 = np.nanmax(thin_intensity[3]) * 1.2
         im0 = ax0.imshow(thin_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
     else:
         # im0im = np.log10(thin_intensity[0])
         # im0im[im0im == -np.Infinity] = 0
+        vmax0 = np.nanmax(thin_intensity[0]) * 1.2
         im0 = ax0.imshow(thin_intensity[0], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
 
 
