@@ -562,9 +562,9 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
     #                          label=R"$Log_{10}(Brightness Temperature) (1e9 K)$",
     #                          ax=ax1
     #                          )
-    colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt),ax=ax0)
-    colorbar1 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt),
-                             label=R"$Log_{10}(Brightness Temperature) (1e9 K)$",ax=ax1)
+    # colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt),ax=ax0)
+    # colorbar1 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt),
+    #                          label=R"$Log_{10}(Brightness Temperature) (1e9 K)$",ax=ax1)
 
     '''Radii Calc______________________'''
     # Thin
