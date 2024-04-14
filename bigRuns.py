@@ -125,7 +125,7 @@ blurr_policy = False
 bigRun = classRunComputing.BigRuns(current_run,current_bp,current_var_params,
                                    current_geo_grid_values,current_geo_grid_names)
 # bigRun.createGeoGrid()
-bigRun.creatIntensityGrid(action,isNormalized,blurr_policy)
+# bigRun.creatIntensityGrid(action,isNormalized,blurr_policy)
 # bigRun.blurrGraphCreation(action)
 bigRun.graphCreation(action)
 
