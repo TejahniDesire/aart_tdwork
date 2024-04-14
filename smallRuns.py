@@ -26,22 +26,22 @@ import params
 import astroModels
 import fileloading
 
-# Test run 2
-current_run = "testRun2"
-current_bp = astroModels.bp_testRun1
-current_var_params = ["p_temp","p_mag"]
-current_geo_grid_names = ["ModelA", "ModelB"]
-current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
-action = {
-    "var": "nu0",
-    "start": 3.00e+10,
-    "stop": 6.00e+10,
-    "step": 1.00e+10,
-    "images": True
-}
-isNormalized = True
-blurr_policy = False
-current_models = ["ModelA11"]
+# # Test run 2
+# current_run = "testRun2"
+# current_bp = astroModels.bp_testRun1
+# current_var_params = ["p_temp","p_mag"]
+# current_geo_grid_names = ["ModelA", "ModelB"]
+# current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
+# action = {
+#     "var": "nu0",
+#     "start": 3.00e+10,
+#     "stop": 6.00e+10,
+#     "step": 1.00e+10,
+#     "images": True
+# }
+# isNormalized = True
+# blurr_policy = False
+# current_models = ["ModelA11"]
 
 # Test Run
 # current_run = "testRun1"
@@ -59,17 +59,20 @@ current_models = ["ModelA11"]
 
 
 # Full Run
-# current_run = "run1"
-# current_bp = astroModels.bp_run1
-# current_var_params = ["p_temp", "p_mag"]
-# current_geo_grid_names = ["ModelA", "ModelB"]
-# current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
-# action = {
-#     "var": "nu0",
-#     "start": 10e9,
-#     "stop": 700e9,
-#     "step": 20e9
-# }
+current_run = "run1"
+current_bp = astroModels.bp_run1
+current_var_params = ["p_temp", "p_mag"]
+current_geo_grid_names = ["ModelA", "ModelB"]
+current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
+action = {
+    "var": "nu0",
+    "start": 10e9,
+    "stop": 700e9,
+    "step": 20e9
+}
+isNormalized = True
+blurr_policy = False
+current_models = ["ModelA11"]
 # current_model = 'ModelB13'
 
 # Solo Run 1
