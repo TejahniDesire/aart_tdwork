@@ -110,12 +110,12 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type,brightparams,bl
 
             thin_image = I0 + I1 + I2
             # ______________________________________
-
+            # from astropy import units as u
             dx = params.dx0
-            one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
-            M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
+            one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m) # one Mass length unit = 1 r_g
+            mass_to_uas = np.arctan(one_M.value / dBH) / muas_to_rad  # dBH is in units of meters
             muas_blurr = 20
-            rg_blurr = muas_blurr / M2uas
+            rg_blurr = muas_blurr / mass_to_uas
 
             sig = rg_blurr / (dx * (2 * np.sqrt(
                 2 * np.log(2))))  # We have 20 uas FWHM resolution. dx = uas/pixels. so 20/dx is FWHM in pixel units.
@@ -135,7 +135,7 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type,brightparams,bl
 
 def imageAnalysis(action,sub_path, model:str, brightparams):
     current_model_file = sub_path["intensityPath"] + model + "/"
-    size = image_tools.size  # array size for radii calcs
+    size = image_tools.num_of_theta_points  # array size for radii calcs
     num_iterations = int((action["stop"] - action["start"]) / action["step"])
 
     """GRAPHS________________________________________________________________________________________________________"""
@@ -292,7 +292,7 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
 
 def blurrImageAnalysis(action,sub_path, model:str, brightparams):
     current_model_file = sub_path["intensityPath"] + model + "/"
-    size = image_tools.size  # array size for radii calcs
+    size = image_tools.num_of_theta_points  # array size for radii calcs
     num_iterations = int((action["stop"] - action["start"]) / action["step"])
 
     """GRAPHS________________________________________________________________________________________________________"""

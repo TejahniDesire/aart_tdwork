@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 from astropy import units as u
+from scipy.ndimage import convolve1d
+
+
 from aart_func import *
 from params import *
 import params
@@ -34,27 +37,25 @@ def radii_of_theta(I0, size):
     return (peak * ((limits * 2) / I0.shape[0])), np.ravel(theta)  # units of Rg
 
 
-size = 200
-rsize = 10000
+num_of_theta_points = 200
+num_of_radial_points = 10000
 
 
-def radii_of_thetaV2(I0, dx=None,give_intensities=False):
+def radii_of_thetaV2(I0, dx=None,give_intensities=False,navg_ang=4):
     x = np.arange(I0.shape[0])  # number of pixels
     y = x
-    rmax = I0.shape[0] * .4
     interp = RegularGridInterpolator((x, y), I0.T)
-    theta = np.matrix(np.linspace(0, 2 * np.pi, size))  # 1 x size
+    theta = np.matrix(np.linspace(0, 2 * np.pi, num_of_theta_points))  # 1 x num_of_theta_points
 
-    # rmax = I0.shape[0] * .4
     rmax = I0.shape[0] * .4
 
-    r = np.matrix(np.linspace(0, rmax, rsize)).T  # rsize x 1
+    r = np.matrix(np.linspace(0, rmax, num_of_radial_points)).T  # num_of_radial_points x 1
 
-    onest = np.matrix(np.ones(r.shape[0])).T  # (rsize) x 1
-    onesr = np.matrix(np.ones(size))  # 1 x size
+    onest = np.matrix(np.ones(r.shape[0])).T  # (num_of_radial_points) x 1
+    onesr = np.matrix(np.ones(num_of_theta_points))  # 1 x num_of_theta_points
 
-    thetarray = onest @ theta  # (rsize) x size
-    rarray = r @ onesr  # (rsize) x size
+    thetarray = onest @ theta  # (num_of_radial_points) x num_of_theta_points
+    rarray = r @ onesr  # (num_of_radial_points) x num_of_theta_points
 
     xaart = np.multiply(rarray, np.cos(thetarray))
     yaart = np.multiply(rarray, np.sin(thetarray))
@@ -64,7 +65,9 @@ def radii_of_thetaV2(I0, dx=None,give_intensities=False):
     yprime = yaart + I0.shape[0] / 2
 
     coords = np.array([xprime, yprime]).T
-    peak = np.argmax(interp(coords), 1)
+    profile = interp(coords)
+    profile = convolve1d(profile, np.ones(navg_ang), axis=0)
+    peak = np.argmax(profile, 1)
 
     if not np.all((peak == 0) == False):
         pass
@@ -79,6 +82,8 @@ def radii_of_thetaV2(I0, dx=None,give_intensities=False):
     if dx is None:
         dx = (limits * 2) / I0.shape[0]
 
+
+
     peaks = np.ravel(r[peak])  # value of r at that argument
     intent_at_peaks = interp(coords)[peak]
 
@@ -92,15 +97,15 @@ def radii_of_thetaV2_radArg(I0, dx=None):
     y = x
     rmax = I0.shape[0] * .4
     interp = RegularGridInterpolator((x, y), I0.T)
-    theta = np.matrix(np.linspace(0, 2 * np.pi, size))  # 1 x size
+    theta = np.matrix(np.linspace(0, 2 * np.pi, num_of_theta_points))  # 1 x size
 
     # rmax = I0.shape[0] * .4
     rmax = I0.shape[0] * .4
 
-    r = np.matrix(np.linspace(0, rmax, rsize)).T  # rsize x 1
+    r = np.matrix(np.linspace(0, rmax, num_of_radial_points)).T  # rsize x 1
 
     onest = np.matrix(np.ones(r.shape[0])).T  # (rsize) x 1
-    onesr = np.matrix(np.ones(size))  # 1 x size
+    onesr = np.matrix(np.ones(num_of_theta_points))  # 1 x size
 
     thetarray = onest @ theta  # (rsize) x size
     rarray = r @ onesr  # (rsize) x size
@@ -139,15 +144,15 @@ def radii_of_thetaV2_data(I0, dx=None):
     x = np.arange(I0.shape[0])  # number of pixels
     y = x
     interp = RegularGridInterpolator((x, y), I0.T)
-    theta = np.matrix(np.linspace(0, 2 * np.pi, size))  # 1 x size
+    theta = np.matrix(np.linspace(0, 2 * np.pi, num_of_theta_points))  # 1 x size
 
     # rmax = I0.shape[0] * .4
     rmax = I0.shape[0] * .4
 
-    r = np.matrix(np.linspace(0, rmax, rsize)).T  # rsize x 1
+    r = np.matrix(np.linspace(0, rmax, num_of_radial_points)).T  # rsize x 1
 
     onest = np.matrix(np.ones(r.shape[0])).T  # (rsize) x 1
-    onesr = np.matrix(np.ones(size))  # 1 x size
+    onesr = np.matrix(np.ones(num_of_theta_points))  # 1 x size
 
     thetarray = onest @ theta  # (rsize) x size
     rarray = r @ onesr  # (rsize) x size
@@ -204,4 +209,4 @@ def curve_params(varphi, rho):
 
 
 def rad_to_arg(rad):
-    return int(rad/(2 *np.pi) *size)
+    return int(rad / (2 *np.pi) * num_of_theta_points)
