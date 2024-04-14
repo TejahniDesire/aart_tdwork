@@ -71,10 +71,10 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
     [l.set_visible(False) for (i, l) in enumerate(ax.xaxis.get_minorticklabels()) if i % n != 0]
 
     ax.legend(frameon=False)
-    ax.set_xlim(xaxis[0], xaxis[xaxis.num_of_theta_points - 1])
+    ax.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
     ax.set_ylim(3,8)
 
-    new_ticks = [xaxis[0], 230, xaxis[xaxis.num_of_theta_points - 1]]
+    new_ticks = [xaxis[0], 230, xaxis[xaxis.size - 1]]
     ax.set_xticks(new_ticks)
     ax.tick_params('x', length=20, width=1, which='major', labelrotation=90)
     ax.title.set_text('Optically Thin Assumption')
@@ -112,7 +112,7 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
     ax1.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
     ax1.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
 
-    new_ticks = [xaxis[0], 230, poi["conv_1"], poi["flux_peak_thick"], xaxis[xaxis.num_of_theta_points - 1]]
+    new_ticks = [xaxis[0], 230, poi["conv_1"], poi["flux_peak_thick"], xaxis[xaxis.size - 1]]
     ax1.set_xticks(new_ticks)
 
     # new_ticks = np.append(ax1.get_yticks(), r_outer)
@@ -122,7 +122,7 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
     n = 4  # Keeps every 4th label
     [l.set_visible(False) for (i, l) in enumerate(ax1.xaxis.get_minorticklabels()) if i % n != 0]
     ax1.legend(frameon=False)
-    ax1.set_xlim(xaxis[0], xaxis[xaxis.num_of_theta_points - 1])
+    ax1.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
     ax1.set_ylim(3, 8)
 
     ax1.tick_params('x', length=20, width=1, which='major', labelrotation=80)
@@ -161,7 +161,7 @@ def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
     n = 4  # Keeps every 4th label
     [l.set_visible(False) for (i, l) in enumerate(ax.xaxis.get_minorticklabels()) if i % n != 0]
     ax.tick_params('both', length=10, width=1, which='major')
-    ax.set_xlim(xaxis[0], xaxis[xaxis.num_of_theta_points - 1])
+    ax.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
     ax.set_ylim(10e-6, 10e2)
     # ax.legend(loc='lower left')
 
@@ -193,13 +193,13 @@ def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
     ax1.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0e"))
     ax1.title.set_text('Full Solution')
 
-    new_ticks = [xaxis[0], 230, poi["conv_1"], poi["flux_peak_thick"], xaxis[xaxis.num_of_theta_points - 1]]
+    new_ticks = [xaxis[0], 230, poi["conv_1"], poi["flux_peak_thick"], xaxis[xaxis.size - 1]]
     ax1.set_xticks(new_ticks)
 
     n = 4  # Keeps every 4th label
     [l.set_visible(False) for (i, l) in enumerate(ax1.xaxis.get_minorticklabels()) if i % n != 0]
     ax1.tick_params('both', length=10, width=1, which='major')
-    ax1.set_xlim(xaxis[0], xaxis[xaxis.num_of_theta_points - 1])
+    ax1.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
     ax1.set_ylim(10e-6, 10e2)
     ax1.legend(loc='lower left')
 
@@ -224,7 +224,7 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
     ax.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.2f'))
     ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.2f"))
 
-    new_ticks = [xaxis[0], 230, poi["conv_1"], poi["flux_peak_thick"], xaxis[xaxis.num_of_theta_points - 1]]
+    new_ticks = [xaxis[0], 230, poi["conv_1"], poi["flux_peak_thick"], xaxis[xaxis.size - 1]]
     ax.set_xticks(new_ticks)
 
     ax.set_xlabel(astroModels.var_label[action["var"]].replace('=', '')
@@ -232,7 +232,7 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
     n = 2
     [l.set_visible(False) for (i, l) in enumerate(ax.xaxis.get_minorticklabels()) if i % n != 0]
     ax.set_ylabel("Optical Depth")
-    ax.set_xlim(xaxis[0], xaxis[xaxis.num_of_theta_points - 1])
+    ax.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
 
     ax.legend()
 
