@@ -82,12 +82,10 @@ def radii_of_thetaV2(I0, dx=None,give_intensities=False,navg_ang=4):
     if dx is None:
         dx = (limits * 2) / I0.shape[0]
 
-
-
     peaks = np.ravel(r[peak])  # value of r at that argument
-    intent_at_peaks = interp(coords)[peak]
 
     if give_intensities:
+        intent_at_peaks = profile[peak]
         return (peaks * dx), np.ravel(theta),intent_at_peaks
     else:
         return (peaks * dx), np.ravel(theta)  # units of Rg
