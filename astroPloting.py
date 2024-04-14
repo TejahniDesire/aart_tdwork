@@ -418,13 +418,20 @@ def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax,blurr_policy=Fal
 
 
 def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False,plot_intensites=False):
-    peak0, theta0, intent_at_peaks0 = image_tools.radii_of_thetaV2(thin_intensity[0],give_intensities=True)
-    peak1, theta1, intent_at_peaks1 = image_tools.radii_of_thetaV2(thin_intensity[1],give_intensities=True)
-    peak2, theta2, intent_at_peaks2 = image_tools.radii_of_thetaV2(thin_intensity[2],give_intensities=True)
-    peak3, theta3, intent_at_peaks3 = image_tools.radii_of_thetaV2(thin_intensity[3],give_intensities=True)
+    if plot_intensites:
+        peak0, theta0, intent_at_peaks0 = image_tools.radii_of_thetaV2(thin_intensity[0],give_intensities=True)
+        peak1, theta1, intent_at_peaks1 = image_tools.radii_of_thetaV2(thin_intensity[1],give_intensities=True)
+        peak2, theta2, intent_at_peaks2 = image_tools.radii_of_thetaV2(thin_intensity[2],give_intensities=True)
+        peak3, theta3, intent_at_peaks3 = image_tools.radii_of_thetaV2(thin_intensity[3],give_intensities=True)
+        intent_at_peaks = [intent_at_peaks0, intent_at_peaks1, intent_at_peaks2, intent_at_peaks3]
+    else:
+        peak0, theta0 = image_tools.radii_of_thetaV2(thin_intensity[0])
+        peak1, theta1 = image_tools.radii_of_thetaV2(thin_intensity[1])
+        peak2, theta2 = image_tools.radii_of_thetaV2(thin_intensity[2])
+        peak3, theta3 = image_tools.radii_of_thetaV2(thin_intensity[3])
 
     peaks = [peak0,peak1,peak2,peak3]
-    intent_at_peaks = [intent_at_peaks0,intent_at_peaks1,intent_at_peaks2,intent_at_peaks3]
+
     thetas = [theta0,theta1,theta2,theta3]
     colors = ['tab:red','tab:orange','tab:blue','tab:purple']
     labels = [R"$n= 0$",R"$n= 1$",R"$n= 2$",R"$Cumulative$"]

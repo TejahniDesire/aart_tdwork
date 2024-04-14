@@ -90,6 +90,7 @@ def radii_of_thetaV2(I0, dx=None,give_intensities=False,navg_ang=4):
     else:
         return (peaks * dx), np.ravel(theta)  # units of Rg
 
+
 def radii_of_thetaV2_radArg(I0, dx=None):
     x = np.arange(I0.shape[0])  # number of pixels
     y = x
