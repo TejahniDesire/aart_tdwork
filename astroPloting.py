@@ -237,6 +237,7 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
     ax.legend()
 
 
+
 def IntensityVSRadiiType1(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intensity,rmax,blurr_policy=False):
     """
 
