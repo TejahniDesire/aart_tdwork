@@ -276,7 +276,6 @@ class BigRuns:
         print(line)
         print("Running Intensity Grid for " + self.run)
         print("All GeoGrid Names:  " + "\n" + str(self.geo_grid_names))
-        print("ACTION_____________________,",action)
         for j in range(len(self.geo_grid_names)):
             current_geo_model = self.geo_grid_names[j]
             fileloading.loadGeoModel(current_geo_model, self.run)
