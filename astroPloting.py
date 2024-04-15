@@ -132,6 +132,16 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
 def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
                   poi, conv_1_style, r_outer_style,flux_peak_style, action,blurr_policy=False):
     ax.plot(xaxis, janksys_thin[:, 0], '-', label='n=0', color='tab:red', linewidth=3)
+    janksky_line_style ={
+        "linestyle": ['-',':','--','-.'],
+        "label": ['n=0','n=1','n=2','total'],
+        "color": ['tab:red','tab:orange','tab:blue','tab:purple'],
+        "linewidth": [3,3,3,3]
+    }
+    amount_to_plot = 4
+    for i in range(amount_to_plot):
+        ax.plot(xaxis, janksys_thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
+
     if not blurr_policy:
         ax.plot(xaxis, janksys_thin[:, 1], ':', label='n=1', color='tab:orange', linewidth=3)
         ax.plot(xaxis, janksys_thin[:, 2], '--', label='n=2', color='tab:blue', linewidth=3)

@@ -276,6 +276,7 @@ class BigRuns:
         print(line)
         print("Running Intensity Grid for " + self.run)
         print("All GeoGrid Names:  " + "\n" + str(self.geo_grid_names))
+        print("ACTION_____________________,",action)
         for j in range(len(self.geo_grid_names)):
             current_geo_model = self.geo_grid_names[j]
             fileloading.loadGeoModel(current_geo_model, self.run)
@@ -806,17 +807,16 @@ class BigRuns:
             radVNu_path = self.sub_paths["radPath"] + model + "/"
             image_path = self.sub_paths["imagePath"] + model + "/"
             Optical_depth_path = self.sub_paths["opticalDepth"] + model + "/"
-            "/Blurr_"
 
             file_creation = [fluxVNu_path, radVNu_path,image_path,Optical_depth_path]
+
+            for i in range(len(file_creation)):
+                fileloading.creatSubDirectory(file_creation[i],kill_policy=False)
 
             fluxVNu_path += "Blurr_"
             radVNu_path += "Blurr_"
             image_path += "Blurr_"
             Optical_depth_path += "Blurr_"
-
-            for i in range(len(file_creation)):
-                fileloading.creatSubDirectory(file_creation[i],kill_policy=False)
 
             # Points of Interest
 

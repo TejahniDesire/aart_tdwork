@@ -104,20 +104,19 @@ current_var_params = ["p_temp", "p_mag"]
 current_geo_grid_names = ["ModelA", "ModelB"]
 current_geo_grid_values = [(["a"], [str(.3)]),(["a"], [str(.9)])]
 action = {
-#     "var": "nu0",
-#     "start": 10e9,
-#     "stop": 700e9,
-#     "step": 20e9,
-#     "images": True
-# }
     "var": "nu0",
-    "start": 670e9,
+    "start": 10e9,
     "stop": 700e9,
     "step": 20e9,
     "images": True
 }
+#     "var": "nu0",
+#     "start": 670e9,
+#     "stop": 700e9,
+#     "step": 20e9,
+#     "images": True
+# }
 isNormalized = True
-# GOD IM SO SCARED PLEASE DON"T HURT ME JAMES, AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 blurr_policy = False
 
 #

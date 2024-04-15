@@ -96,39 +96,39 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type,brightparams,bl
         new_intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
         subprocess.run(["mv " + fnrays + ' ' + new_intensity_path], shell=True)
 
-        if blurr_policy:
-            # Read File
-            h5f = h5py.File(new_intensity_path, 'r')
+        # bluring
+        # Read File
+        h5f = h5py.File(new_intensity_path, 'r')
 
-            I0 = h5f['bghts0'][:]
-            I1 = h5f['bghts1'][:]
-            I2 = h5f['bghts2'][:]
+        I0 = h5f['bghts0'][:]
+        I1 = h5f['bghts1'][:]
+        I2 = h5f['bghts2'][:]
 
-            Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+        Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
 
-            h5f.close()
+        h5f.close()
 
-            thin_image = I0 + I1 + I2
-            # ______________________________________
-            # from astropy import units as u
-            dx = params.dx0
-            one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m) # one Mass length unit = 1 r_g
-            mass_to_uas = np.arctan(one_M.value / dBH) / muas_to_rad  # dBH is in units of meters
-            muas_blurr = 20
-            rg_blurr = muas_blurr / mass_to_uas
+        thin_image = I0 + I1 + I2
+        # ______________________________________
+        dx = params.dx0
+        one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m) # one Mass length unit = 1 r_g
+        mass_to_uas = np.arctan(one_M.value / dBH) / muas_to_rad  # dBH is in units of meters
+        muas_blurr = 20
+        rg_blurr = muas_blurr / mass_to_uas
 
-            sig = rg_blurr / (dx * (2 * np.sqrt(
-                2 * np.log(2))))  # We have 20 uas FWHM resolution. dx = uas/pixels. so 20/dx is FWHM in pixel units.
-            thin_blurr_image = ndimage.gaussian_filter(thin_image, sigma=(sig, sig))
-            thick_blurr_image = ndimage.gaussian_filter(Absorbtion_Image, sigma=(sig, sig))
+        sig = rg_blurr / (dx * (2 * np.sqrt(
+            2 * np.log(2))))  # We have 20 uas FWHM resolution. dx = uas/pixels. so 20/dx is FWHM in pixel units.
+        thin_blurr_image = ndimage.gaussian_filter(thin_image, sigma=(sig, sig))
+        thick_blurr_image = ndimage.gaussian_filter(Absorbtion_Image, sigma=(sig, sig))
+        # ______________________________________
 
-            blurr_intensity_path = (current_model_file +
-                                    action["var"] + "_blurr_" + "{:.5e}".format(brightparams[action["var"]]))
-            h5f = h5py.File(blurr_intensity_path, 'w')
-            h5f.create_dataset('thin_blurr_image', data=thin_blurr_image)
-            h5f.create_dataset("thick_blurr_image",data=thick_blurr_image)
-            h5f.close()
-            print("File ",blurr_intensity_path, " created.")
+        blurr_intensity_path = (current_model_file +
+                                action["var"] + "_blurr_" + "{:.5e}".format(brightparams[action["var"]]))
+        h5f = h5py.File(blurr_intensity_path, 'w')
+        h5f.create_dataset('thin_blurr_image', data=thin_blurr_image)
+        h5f.create_dataset("thick_blurr_image",data=thick_blurr_image)
+        h5f.close()
+        print("File ",blurr_intensity_path, " created.")
 
     return intermodel_data
 
