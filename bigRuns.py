@@ -135,7 +135,7 @@ bigRun = classRunComputing.BigRuns(current_run,current_bp,current_var_params,
 # bigRun.createGeoGrid()
 bigRun.creatIntensityGrid(action,isNormalized,blurr_policy)
 bigRun.blurrGraphCreation(action)
-# bigRun.graphCreation(action)
+bigRun.graphCreation(action)
 
 
 
