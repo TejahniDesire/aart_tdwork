@@ -174,6 +174,9 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
         print(line)
         print('Reading intensity.h5 for Model ' + model + ' number: ' + str(i))
 
+        brightparams[action["var"]] = action["start"] + i * action["step"]
+        x_variable[i] = brightparams[action["var"]]
+
         intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
 
         h5f = h5py.File(intensity_path, 'r')
@@ -319,7 +322,7 @@ def blurrImageAnalysis(action,sub_path, model:str, brightparams):
         print(line)
         print(line)
         print('Reading intensity.h5 for Model ' + model + ' number: ' + str(i))
-
+        brightparams[action["var"]] = action["start"] + i * action["step"]
         intensity_path = current_model_file +action["var"] + "_blurr_" + "{:.5e}".format(brightparams[action["var"]])
 
         h5f = h5py.File(intensity_path, 'r')
