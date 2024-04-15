@@ -120,10 +120,10 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type,brightparams,bl
             2 * np.log(2))))  # We have 20 uas FWHM resolution. dx = uas/pixels. so 20/dx is FWHM in pixel units.
         thin_blurr_image = ndimage.gaussian_filter(thin_image, sigma=(sig, sig))
         thick_blurr_image = ndimage.gaussian_filter(Absorbtion_Image, sigma=(sig, sig))
-        print(R"$\mu a s$: " + mass_to_uas + "\n"
-              + R"$R_g$_blurr: " + rg_blurr + "\n"
-              + "sig: " + sig + "\n"
-              + "dx: " + dx)
+        print(R"$\mu a s$: " + str(mass_to_uas) + "\n"
+              + R"$R_g$_blurr: " + str(rg_blurr) + "\n"
+              + "sig: " + str(sig) + "\n"
+              + "dx: " + str(dx))
         # ______________________________________
 
         blurr_intensity_path = (current_model_file +
