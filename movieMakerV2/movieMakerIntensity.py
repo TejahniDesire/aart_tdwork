@@ -265,7 +265,7 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
 
     final_data_path = current_model_file + "numpy/"
 
-    fileloading.creatSubDirectory(final_data_path,"final image path for {}".format(model), kill_policy=True)
+    fileloading.creatSubDirectory(final_data_path,"final image path for {}".format(model), kill_policy=False)
 
     # Remove Row of Zeros
     radii_Full_Thin = np.delete(radii_Full_Thin, 0, 0)
