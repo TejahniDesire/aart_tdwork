@@ -370,23 +370,23 @@ def blurrImageAnalysis(action,sub_path, model:str, brightparams):
 
         janksys_thick[i, 0] = ilp.total_jy(Absorbtion_Image, brightparams["nu0"], brightparams["mass"]).value
 
-        final_data_path = current_model_file + "numpy/"
+    final_data_path = current_model_file + "numpy/"
 
-        fileloading.creatSubDirectory(final_data_path, "final image path for {}".format(model), kill_policy=False)
+    fileloading.creatSubDirectory(final_data_path, "final image path for {}".format(model), kill_policy=False)
 
-        # Remove Row of Zeros
-        radii_I0_Thin = np.delete(radii_I0_Thin, 0, 0)
-        radii_FullAbsorption_Thick = np.delete(radii_FullAbsorption_Thick, 0, 0)
+    # Remove Row of Zeros
+    radii_I0_Thin = np.delete(radii_I0_Thin, 0, 0)
+    radii_FullAbsorption_Thick = np.delete(radii_FullAbsorption_Thick, 0, 0)
 
-        # Saving Data--------------------------------------------------------------------------------------------------------
-        np.save(final_data_path + "blurr_x_variable", x_variable)
-        np.save(final_data_path + "blurr_janksys_thick", janksys_thick)
-        np.save(final_data_path + "blurr_janksys_thin", janksys_thin)
-        np.save(final_data_path + "blurr_mean_radii_Thin", mean_radii_Thin)
-        np.save(final_data_path + "blurr_mean_radii_Thick", mean_radii_Thick)
-        np.save(final_data_path + "blurr_radii_I0_Thin", radii_I0_Thin)
-        np.save(final_data_path + "blurr_radii_FullAbsorption_Thick", radii_FullAbsorption_Thick)
-        np.save(final_data_path + "blurr_theta", theta)
+    # Saving Data--------------------------------------------------------------------------------------------------------
+    np.save(final_data_path + "blurr_x_variable", x_variable)
+    np.save(final_data_path + "blurr_janksys_thick", janksys_thick)
+    np.save(final_data_path + "blurr_janksys_thin", janksys_thin)
+    np.save(final_data_path + "blurr_mean_radii_Thin", mean_radii_Thin)
+    np.save(final_data_path + "blurr_mean_radii_Thick", mean_radii_Thick)
+    np.save(final_data_path + "blurr_radii_I0_Thin", radii_I0_Thin)
+    np.save(final_data_path + "blurr_radii_FullAbsorption_Thick", radii_FullAbsorption_Thick)
+    np.save(final_data_path + "blurr_theta", theta)
 
 
 
