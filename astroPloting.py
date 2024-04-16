@@ -146,7 +146,7 @@ def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
     for i in range(amount_to_plot):
         ax.plot(xaxis, janksys_thin[:, i], janksky_line_style["linestyle"][i],
                 label=janksky_line_style["label"][i], color=janksky_line_style["color"][i],
-                linewidth=janksky_line_style["color"][i])
+                linewidth=janksky_line_style["linewidth"][i])
 
     # TODO SHOULD I MARK THE PEAK?
 
@@ -188,7 +188,7 @@ def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
     for i in range(amount_to_plot):
         ax1.plot(xaxis, janksys_thick[:, i], janksky_line_style["linestyle"][i],
                 label=janksky_line_style["label"][i], color=janksky_line_style["color"][i],
-                linewidth=janksky_line_style["color"][i])
+                linewidth=janksky_line_style["linewidth"][i])
 
     # Labels
     ax1.set_ylabel("Total Flux ({})".format(R'$J_y$'))
