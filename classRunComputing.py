@@ -861,7 +861,7 @@ class BigRuns:
             astroPloting.fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
                                        poi, conv_1_style, r_outer_style, flux_peak_style, action,blurr_policy=True)
 
-            figname = fluxVNu_path + model + "Flux.jpg"
+            figname = fluxVNu_path + model + "Blurr_Flux.jpg"
             plt.savefig(figname, bbox_inches='tight')
             plt.close()
             print("Image '{}' Created".format(figname))
@@ -875,7 +875,7 @@ class BigRuns:
             astroPloting.radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
                                         poi, conv_1_style, r_outer_style, flux_peak_style, action,blurr_policy=True)
 
-            figname = radVNu_path + model + "Radii.jpeg"
+            figname = radVNu_path + model + "Blurr_Radii.jpeg"
             plt.savefig(figname, bbox_inches='tight')
             print("Image '{}' Created".format(figname))
             plt.close()
@@ -923,7 +923,7 @@ class BigRuns:
                              + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
                              + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="w")
 
-                    pltname = (image_path + 'FullImage_' + str(i) + "_Nu_"
+                    pltname = (image_path + 'Blurr_FullImage_' + str(i) + "_Nu_"
                                + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
                     plt.savefig(pltname, bbox_inches='tight')
                     print("Jpeg Created:  " + pltname)
@@ -949,7 +949,7 @@ class BigRuns:
 
         astroPloting.histogram(ax,hist_flux_peaks_thins,"Flux Peak location (GHz)","Optically Thin Assumption Frequency")
 
-        figname = peak_hist_thin_path + "FluxPeakThin.jpeg"
+        figname = peak_hist_thin_path + "Blurr_FluxPeakThin.jpeg"
         plt.savefig(figname, bbox_inches='tight')
         print("Image '{}' Created".format(figname))
         plt.close()
@@ -960,7 +960,7 @@ class BigRuns:
 
         astroPloting.histogram(ax, hist_flux_peaks_thicks, "Flux Peak location (GHz)", "Full Solution Frequency")
 
-        figname = peak_hist_thick_path + "FluxPeakThick.jpeg"
+        figname = peak_hist_thick_path + "Blurr_FluxPeakThick.jpeg"
         plt.savefig(figname, bbox_inches='tight')
         print("Image '{}' Created".format(figname))
         plt.close()
@@ -971,7 +971,7 @@ class BigRuns:
         astroPloting.bar(ax,bar_xaxis,hist_flux_peaks_thins,"Optical Thin Assumption Peak Flux per model",
                          "Observation Frequency (GHz)",self.all_model_names)
 
-        figname = peak_hist_thin_path + "FluxPeakPerThinModel.jpeg"
+        figname = peak_hist_thin_path + "Blurr_FluxPeakPerThinModel.jpeg"
         plt.savefig(figname, bbox_inches='tight')
         print("Image '{}' Created".format(figname))
         plt.close()
@@ -983,7 +983,7 @@ class BigRuns:
         astroPloting.bar(ax,bar_xaxis,hist_flux_peaks_thicks,"Optical Thin Assumption Peak Flux per model",
                          "Observation Frequency (GHz)",self.all_model_names)
 
-        figname = peak_hist_thick_path + "FluxPeakPerThickModel.jpeg"
+        figname = peak_hist_thick_path + "Blurr_FluxPeakPerThickModel.jpeg"
         plt.savefig(figname, bbox_inches='tight')
         print("Image '{}' Created".format(figname))
         plt.close()
@@ -995,7 +995,7 @@ class BigRuns:
 
         astroPloting.histogram(ax, hist_convs, "Flux Peak location (GHz)", "Full Solution Frequency")
 
-        figname = conv_hist_path + "convHistFreqPerObservationFreq.jpeg"
+        figname = conv_hist_path + "Blurr_convHistFreqPerObservationFreq.jpeg"
         plt.savefig(figname, bbox_inches='tight')
         print("Image '{}' Created".format(figname))
         plt.close()
@@ -1005,7 +1005,7 @@ class BigRuns:
 
         astroPloting.bar(ax,bar_xaxis,hist_convs,"Convergence for cumulative on I2",
                          "Observation Frequency (GHz)",self.all_model_names)
-        figname = conv_hist_path + "convHistPerModel.jpeg"
+        figname = conv_hist_path + "Blurr_convHistPerModel.jpeg"
         plt.savefig(figname, bbox_inches='tight')
         print("Image '{}' Created".format(figname))
         plt.close()
@@ -1016,7 +1016,7 @@ class BigRuns:
         astroPloting.bar(ax, bar_xaxis,thin_total_flux, "Total Flux at 230GHz",
                          "Optically Thin Assumption Frequency",self.all_model_names)
 
-        figname = total_flux_path + "thin.jpeg"
+        figname = total_flux_path + "Blurr_thin.jpeg"
         plt.savefig(figname, bbox_inches='tight')
         print("Image '{}' Created".format(figname))
         plt.close()
@@ -1027,7 +1027,7 @@ class BigRuns:
         astroPloting.bar(ax, bar_xaxis, thick_total_flux, "Total Flux at 230GHz",
                          "Full Solution Frequency", self.all_model_names)
 
-        figname = total_flux_path + "thick.jpeg"
+        figname = total_flux_path + "Blurr_thick.jpeg"
         plt.savefig(figname, bbox_inches='tight')
         print("Image '{}' Created".format(figname))
         plt.close()
