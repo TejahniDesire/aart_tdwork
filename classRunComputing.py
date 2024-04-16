@@ -917,6 +917,7 @@ class BigRuns:
 
                     thin_intensity = [thin_blurr_image]
                     thick_intensity = [Absorbtion_Image]
+                    print("SHAPE: ",radii_I0_Thin.shape)
                     thin_radii = [radii_I0_Thin[i,:]]
                     thick_radii = [radii_FullAbsorption_Thick[i, :]]
 
