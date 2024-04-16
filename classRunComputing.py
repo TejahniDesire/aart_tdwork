@@ -786,7 +786,8 @@ class BigRuns:
             '''Data Readind----------------------------------'''
             data_path = self.sub_paths["intensityPath"] + model + "/" + "numpy/"
 
-            x_variable = np.load(data_path + "blurr_x_variable.npy")
+            # x_variable = np.load(data_path + "blurr_x_variable.npy")
+            x_variable = np.load(data_path + "x_variable.npy")
             janksys_thick = np.load(data_path + "blurr_janksys_thick.npy")
             janksys_thin = np.load(data_path + "blurr_janksys_thin.npy")
             mean_radii_Thin = np.load(data_path + "blurr_mean_radii_Thin.npy")
