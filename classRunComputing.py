@@ -742,7 +742,7 @@ class BigRuns:
         """
         print(line)
         print(line)
-        print("Initializing Graph Creation")
+        print("Initializing Blurr Graph Creation")
         thin_total_flux = np.load(self.sub_paths["meta"] + "thin_total_flux.npy")
         thick_total_flux = np.load(self.sub_paths["meta"] + "thick_total_flux.npy")
 
