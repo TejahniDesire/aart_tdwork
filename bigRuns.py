@@ -167,13 +167,13 @@ bigRun = classRunComputing.BigRuns(
 
 """ Intensity Grid Analysis_________________________________________________________"""
 
-# bigRun.intensityGridAnalysis(
-#     run.getAction()
-# )
-#
-# bigRun.blurrIntensityGridAnalysis(
-#     run.getAction()
-# )
+bigRun.intensityGridAnalysis(
+    run.getAction()
+)
+
+bigRun.blurrIntensityGridAnalysis(
+    run.getAction()
+)
 
 """ Blurr Graph Creation_________________________________________________________"""
 
