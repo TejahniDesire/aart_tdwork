@@ -716,6 +716,8 @@ class BigRuns:
 
             '''Full Images----------------------------------'''
             if action["images"]:
+                parent_model_path = self.sub_paths["intensityPath"] + model + "/"
+                current_model_file = parent_model_path + "clean/"
                 k = action["start"]
                 print("Constructing Full images for " + model)
                 for i in range(num_of_intensity_points):
@@ -724,8 +726,8 @@ class BigRuns:
                     print("Full image production for intensity frame: ", i)
                     print(R"Observation frequency $\nu=$",k)
 
-                    current_intensity_file = (self.sub_paths["intensityPath"] + model + "/" + action["var"]
-                                              + "_" + "{:.5e}".format(brightparams[action["var"]]))
+                    current_intensity_file = (current_model_file +
+                                              action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]]))
 
                     lim0 = 25
 
@@ -1030,6 +1032,9 @@ class BigRuns:
 
             '''Full Images----------------------------------'''
             if action["images"]:
+                parent_model_path = self.sub_paths["intensityPath"] + model + "/"
+                current_model_file = parent_model_path + "blur/"
+
                 k = action["start"]
                 print("Constructing Full images for " + model)
                 for i in range(num_of_intensity_points):
@@ -1038,7 +1043,7 @@ class BigRuns:
                     print("Full image production for intensity frame: ", i)
                     print(R"Observation frequency $\nu=$",k)
 
-                    blurr_intensity_path = (self.sub_paths["intensityPath"] + model + "/"  +
+                    blurr_intensity_path = (current_model_file +
                                             action["var"] + "_blurr_" + "{:.5e}".format(brightparams[action["var"]]))
 
                     lim0 = 25
