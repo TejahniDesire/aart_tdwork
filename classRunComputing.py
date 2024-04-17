@@ -146,7 +146,9 @@ class BigRuns:
             for file in file_paths:
                 arrays[k] = np.load(file,allow_pickle=True)
                 k += 1
-
+            print(self.all_intensity_model_names)
+            print(self.total_models_count)
+            print("____________________")
             fileloading.writeDocString(self.sub_paths["meta"] + "IntensityModelsGuide.txt",
                                        self.intensityModelDocString())
             fileloading.writeDocString(self.sub_paths["meta"] + "AllModelsGuide.txt",
