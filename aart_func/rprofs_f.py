@@ -183,6 +183,9 @@ def rg_func(mass=kw_mass):
     return G * mass / c ** 2
 
 
+'''Power Laws________________________________________________________________________'''
+
+
 def rb_func(mass=kw_mass, rb_0=kw_rb_0):
     """Value at which the power laws take on the value of their constants of proportionality 
 
@@ -215,6 +218,9 @@ def te_func(r, mass=kw_mass, rb_0=kw_rb_0, t_e0=kw_t_e0, p_temp=kw_p_temp):
     rg = rg_func(mass)
     rb = rb_func(mass, rb_0)
     return t_e0 * (r * rg / rb) ** p_temp
+
+
+'''________________________________________________________________________'''
 
 
 def theta_e_func(temp):

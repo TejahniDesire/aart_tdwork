@@ -30,7 +30,8 @@ line_small = "________________________________ \n"
 
 class BigRuns:
 
-    def __init__(self, run: str, intensity_grid_params: dict, var_inensity_grid_names, geo_grid_params, geo_grid_names):
+    def __init__(self, run: str, intensity_grid_params: dict, var_inensity_grid_names, geo_grid_params, geo_grid_names,
+                 normalized_brightparams=False):
         """
 
         Args:
@@ -60,6 +61,7 @@ class BigRuns:
         self.var_inensity_grid_names = var_inensity_grid_names
         self.geo_grid_names = geo_grid_names
         self.geo_grid_params = geo_grid_params
+        self.normalized_brightparams = normalized_brightparams
 
         # Create Directories______________________________________________________________________
         fileloading.creatSubDirectory(EZPaths.modelRunsDir, "storing all run results")
@@ -76,6 +78,7 @@ class BigRuns:
         self.sub_paths = {
             "GeoDoth5Path": data_path + "geo/",
             "intensityPath": data_path + "intensity/",
+            "runWideNumpy": data_path + "numpy/",
             "fluxPath": image_path + "fluxVNu/",
             "radPath": image_path + "radVNu/",
             "imagePath": image_path + "image/",
@@ -117,25 +120,54 @@ class BigRuns:
 
         print("Final Grid Type: ",self.run_type)
         # Create astro ParamGrid________________________________________________________________________________________
-        grid_types = {
-            0: self.type0grid,
-            1: self.type1Grid,
-            2: self.type2Grid
-        }
+        if self.normalized_brightparams:
+            filepath = self.sub_paths["runWideNumpy"] + "all_model_brightparams"
+            np.save(filepath,self.all_model_brightparams)
 
-        self.all_intensity_model_names, self.all_inensity_model_brightparams = grid_types[self.run_type]()
-        self.all_model_names = []
-        self.all_model_brightparams = []
-        self.total_models_count = 0
+            file_paths = [
+                self.sub_paths["runWideNumpy"] + "all_inensity_model_brightparams.npy",
+                self.sub_paths["runWideNumpy"] + "all_intensity_model_names.npy",
+                self.sub_paths["runWideNumpy"] + "all_model_brightparams.npy",
+                self.sub_paths["runWideNumpy"] + "all_model_names.npy",
+                self.sub_paths["runWideNumpy"] + "total_models_count.npy"
+                          ]
+            arrays = [
+                self.all_inensity_model_brightparams,
+                self.all_intensity_model_names,
+                self.all_model_brightparams,
+                self.all_model_names,
+                self.total_models_count
+            ]
+            k = 0
+            for file in file_paths:
+                arrays[k] = np.load(file)
+                k += 1
 
-        fileloading.writeDocString(self.sub_paths["meta"] + "IntensityModelsGuide.txt",
-                                   self.intensityModelDocString())
+            fileloading.writeDocString(self.sub_paths["meta"] + "IntensityModelsGuide.txt",
+                                       self.intensityModelDocString())
+            fileloading.writeDocString(self.sub_paths["meta"] + "AllModelsGuide.txt",
+                                       self.totalModelDocString())
 
-        # All model names
-        self.creatAllModelNames()
+        else:
+            grid_types = {
+                0: self.type0grid,
+                1: self.type1Grid,
+                2: self.type2Grid
+            }
 
-        fileloading.writeDocString(self.sub_paths["meta"] + "AllModelsGuide.txt",
-                                   self.totalModelDocString())
+            self.all_intensity_model_names, self.all_inensity_model_brightparams = grid_types[self.run_type]()
+            self.all_model_names = []
+            self.all_model_brightparams = []
+            self.total_models_count = 0
+
+            fileloading.writeDocString(self.sub_paths["meta"] + "IntensityModelsGuide.txt",
+                                       self.intensityModelDocString())
+
+            # All model names
+            self.creatAllModelNames()
+
+            fileloading.writeDocString(self.sub_paths["meta"] + "AllModelsGuide.txt",
+                                       self.totalModelDocString())
 
     def type2Grid(self):
         all_brightparams = []  # list[tuple (name, bright parameters)]
@@ -298,7 +330,7 @@ class BigRuns:
                 # ________________________________
                 current_bp = self.all_model_brightparams[k]
 
-                if not isNormalized:
+                if not self.normalized_brightparams:
                     print("\n" + "Normalizing " + current_total_name + "\n")
                     print(long_line)
 
@@ -323,6 +355,27 @@ class BigRuns:
                 all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
                 all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
                 k += 1
+        if not self.normalized_brightparams:
+            file_paths = [
+                self.sub_paths["runWideNumpy"] + "all_inensity_model_brightparams",
+                self.sub_paths["runWideNumpy"] + "all_intensity_model_names",
+                self.sub_paths["runWideNumpy"] + "all_model_brightparams",
+                self.sub_paths["runWideNumpy"] + "all_model_names",
+                self.sub_paths["runWideNumpy"] + "total_models_count"
+                          ]
+            arrays = [
+                self.all_inensity_model_brightparams,
+                self.all_intensity_model_names,
+                self.all_model_brightparams,
+                self.all_model_names,
+                self.total_models_count
+            ]
+            k = 0
+            for file in file_paths:
+                np.save(file, arrays[k])
+                k += 1
+
+        self.normalized_brightparams = True
         # Numpy saving________________________________________________
 
         all_230_total_jy_thin_numpy_name = self.sub_paths["meta"] + "thin_total_flux"
