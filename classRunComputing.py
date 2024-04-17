@@ -129,23 +129,29 @@ class BigRuns:
                 self.sub_paths["runWideNumpy"] + "all_model_names.npy",
                 self.sub_paths["runWideNumpy"] + "total_models_count.npy"
                           ]
-            self.all_intensity_model_brightparams = []
-            self.all_intensity_model_names = []
-            self.all_model_brightparams = []
-            self.all_model_names = []
-            self.total_models_count = 0
+            all_intensity_model_brightparams = []
+            all_intensity_model_names = []
+            all_model_brightparams = []
+            all_model_names = []
+            total_models_count = 0
 
             arrays = [
-                self.all_intensity_model_brightparams,
-                self.all_intensity_model_names,
-                self.all_model_brightparams,
-                self.all_model_names,
-                self.total_models_count
+                all_intensity_model_brightparams,
+                all_intensity_model_names,
+                all_model_brightparams,
+                all_model_names,
+                total_models_count
             ]
             k = 0
             for file in file_paths:
                 arrays[k] = np.load(file,allow_pickle=True)
                 k += 1
+
+            self.all_intensity_model_brightparams = arrays[0]
+            self.all_intensity_model_names = arrays[1]
+            self.all_model_brightparams = arrays[2]
+            self.all_model_names = arrays[3]
+            self.total_models_count = arrays[4]
             print(self.all_intensity_model_names)
             print(self.total_models_count)
             print(arrays[4])
