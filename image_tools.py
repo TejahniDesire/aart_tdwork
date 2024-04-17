@@ -37,11 +37,11 @@ def radii_of_theta(I0, size):
     return (peak * ((limits * 2) / I0.shape[0])), np.ravel(theta)  # units of Rg
 
 
-num_of_theta_points = 200
+num_of_theta_points = 360
 num_of_radial_points = 10000
 
 
-def radii_of_thetaV2(I0, dx=None,give_intensities=False,navg_ang=6):
+def radii_of_thetaV2(I0, dx=None,give_intensities=False,navg_ang=10):
     x = np.arange(I0.shape[0])  # number of pixels
     y = x
     interp = RegularGridInterpolator((x, y), I0.T)

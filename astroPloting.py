@@ -555,11 +555,11 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
     if not blurr_policy:
         # im0im = np.log10(thick_intensity[3])
         # im0im[im0im == -np.Infinity] = 0
-        im0 = ax1.imshow(thick_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+        im1 = ax1.imshow(thick_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
     else:
         # im0im = np.log10(thick_intensity[0])
         # im0im[im0im == -np.Infinity] = 0
-        im0 = ax1.imshow(thick_intensity[0], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+        im1 = ax1.imshow(thick_intensity[0], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
 
     #
     ax1.set_xlim(-10, 10)  # units of M
@@ -569,25 +569,25 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
 
     ax1.title.set_text('Full Solution')
 
-    # colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
-    #     vmax * .8,
-    #     vmax * .6,
-    #     vmax * .4,
-    #     vmax * .2,
-    #     vmax * .05
-    # ],
-    #                          ax=ax0
-    #                          )
-    # colorbar1 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
-    #     vmax * .8,
-    #     vmax * .6,
-    #     vmax * .4,
-    #     vmax * .2,
-    #     vmax * .05
-    # ],
-    #                          label=R"$Log_{10}(Brightness Temperature) (1e9 K)$",
-    #                          ax=ax1
-    #                          )
+    colorbar0 = fig.colorbar(im0, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
+        vmax * .8,
+        vmax * .6,
+        vmax * .4,
+        vmax * .2,
+        vmax * .05
+    ],
+                             ax=ax0
+                             )
+    colorbar1 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
+        vmax * .8,
+        vmax * .6,
+        vmax * .4,
+        vmax * .2,
+        vmax * .05
+    ],
+                             label=R"$Log_{10}(Brightness Temperature) (1e9 K)$",
+                             ax=ax1
+                             )
     # colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt),ax=ax0)
     # colorbar1 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt),
     #                          label=R"$Log_{10}(Brightness Temperature) (1e9 K)$",ax=ax1)
