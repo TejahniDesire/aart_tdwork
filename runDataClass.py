@@ -130,7 +130,7 @@ soloRun2 = runData("soloRun2",
                    [],
                    [(["a"], [str(.9)])],
                    ["ModelB"])
-testRun2.setAction(
+soloRun2.setAction(
     {
             "var": "nu0",
             "start": 670e9,
