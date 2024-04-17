@@ -115,6 +115,7 @@ testRun2.setAction(
         "images": True
     }
 )
+testRun2.setisNormalized(True)
 
 # soloRun1______________________________________________________________________
 soloRun1 = runData("soloRun1",

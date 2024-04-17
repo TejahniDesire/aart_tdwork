@@ -148,6 +148,7 @@ def blur_intensity_movie(action,sub_path, model:str, intent_grid_type,brightpara
     # File paths-------------------------
     parent_model_path = sub_path["intensityPath"] + model + "/"
     current_model_file = parent_model_path + "blur/"
+    clean_model_file = parent_model_path + "clean/"
 
     fileloading.creatSubDirectory(parent_model_path,
                                   "for {} intensities".format(model), kill_policy=False)
@@ -178,10 +179,10 @@ def blur_intensity_movie(action,sub_path, model:str, intent_grid_type,brightpara
         print(line)
         print('Reading intensity.h5 for Model ' + model + ' number: ' + str(i))
 
-        intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
+        clean_intensity_path = clean_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
 
         # Read File
-        h5f = h5py.File(intensity_path, 'r')
+        h5f = h5py.File(clean_intensity_path, 'r')
 
         I0 = h5f['bghts0'][:]
         I1 = h5f['bghts1'][:]
