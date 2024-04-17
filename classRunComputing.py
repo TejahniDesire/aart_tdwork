@@ -121,8 +121,6 @@ class BigRuns:
         print("Final Grid Type: ",self.run_type)
         # Create astro ParamGrid________________________________________________________________________________________
         if self.normalized_brightparams:
-            filepath = self.sub_paths["runWideNumpy"] + "all_model_brightparams"
-            np.save(filepath,self.all_model_brightparams)
 
             file_paths = [
                 self.sub_paths["runWideNumpy"] + "all_inensity_model_brightparams.npy",
