@@ -409,7 +409,6 @@ class BigRuns:
 
             # String Names
             current_total_name = self.all_model_names[i]
-            print("     " + current_total_name)
             # ________________________________
             current_bp = self.all_model_brightparams[i]
 
@@ -438,7 +437,6 @@ class BigRuns:
             # current_intent_name = self.all_intensity_model_names[i]
             # self.all_model_names += [current_geo_model + current_intent_name.replace("Model", "")]
             current_total_name = self.all_model_names[i]
-            print("     " + current_total_name)
             # ________________________________
             current_bp = self.all_model_brightparams[i]
 

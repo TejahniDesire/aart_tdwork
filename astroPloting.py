@@ -524,8 +524,8 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
 
 
 
-    vmax = 10e11
-    vmin = 10e8
+    # vmax = 10e11
+    # vmin = 10e8
     # Optically Thin
     if not blurr_policy:
         # im0im = np.log10(thin_intensity[3])
@@ -555,10 +555,12 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
     if not blurr_policy:
         # im0im = np.log10(thick_intensity[3])
         # im0im[im0im == -np.Infinity] = 0
+        vmax1 = np.nanmax(thick_intensity[3]) * 1.2
         im1 = ax1.imshow(thick_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
     else:
         # im0im = np.log10(thick_intensity[0])
         # im0im[im0im == -np.Infinity] = 0
+        vmax1 = np.nanmax(thick_intensity[0]) * 1.2
         im1 = ax1.imshow(thick_intensity[0], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
 
     #
@@ -568,7 +570,7 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
     ax1.set_xlabel(r"$\alpha$" + " " + r"($M$)")
 
     ax1.title.set_text('Full Solution')
-
+    vmax = vmax0
     colorbar0 = fig.colorbar(im0, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
         vmax * .8,
         vmax * .6,
@@ -578,6 +580,7 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
     ],
                              ax=ax0
                              )
+    vmax = vmax1
     colorbar1 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt), ticks=[
         vmax * .8,
         vmax * .6,
@@ -585,7 +588,7 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
         vmax * .2,
         vmax * .05
     ],
-                             label=R"$Log_{10}(Brightness Temperature) (1e9 K)$",
+                             label=R"$(Brightness Temperature) (1e9 K)$",
                              ax=ax1
                              )
     # colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format=ticker.FuncFormatter(fmt),ax=ax0)

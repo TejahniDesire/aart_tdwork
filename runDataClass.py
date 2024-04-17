@@ -1,9 +1,9 @@
 import astroModels
 
 
-class runData():
+class runData:
 
-    def __init__(self, name:str ,brightparams_grid: dict,variable_brightparams_names:list,
+    def __init__(self, name:str,brightparams_grid: dict,variable_brightparams_names:list,
                  variable_geo_values,variable_geo_names):
         """
 

@@ -139,7 +139,7 @@ blurr_policy = True
 # bigRun.graphCreation(action)
 #
 
-run = runDataClass.testRun2
+run = runDataClass.run1
 
 bigRun = classRunComputing.BigRuns(
     run.getRunName(),
