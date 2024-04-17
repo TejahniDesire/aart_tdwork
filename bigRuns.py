@@ -2,6 +2,7 @@ import os.path
 import sys
 import EZPaths
 import classRunComputing
+import runDataClass
 
 sys.path.append(EZPaths.aartPath)
 import bigRunComputing
@@ -129,16 +130,45 @@ blurr_policy = True
 # bigRunComputing.surfacePlot(sub_paths,current_bp,action,current_var_params,current_geo_grid_names)
 
 
-bigRun = classRunComputing.BigRuns(current_run,current_bp,current_var_params,
-                                   current_geo_grid_values,current_geo_grid_names)
+# bigRun = classRunComputing.BigRuns(current_run,current_bp,current_var_params,
+#                                    current_geo_grid_values,current_geo_grid_names)
+# # bigRun.createGeoGrid()
+# bigRun.creatIntensityGrid(action,isNormalized,blurr_policy)
+#
+# bigRun.blurrGraphCreation(action)
+# bigRun.graphCreation(action)
+#
+
+run = runDataClass.testRun2
+
+bigRun = classRunComputing.BigRuns(
+    run.getRunName(),
+    run.getBrightparams(),
+    run.getBPVarNames(),
+    run.getGeoGrid(),
+    run.getGeoGridNames()
+)
+""" Geo Model_________________________________________________________"""
+
 # bigRun.createGeoGrid()
-bigRun.creatIntensityGrid(action,isNormalized,blurr_policy)
 
-bigRun.blurrGraphCreation(action)
-bigRun.graphCreation(action)
+""" Intensity Grid_________________________________________________________"""
 
+# bigRun.creatIntensityGrid(
+#     run.getAction(),
+#     run.getIsNormalized(),
+#     run.getBlurrPolicy()
+# )
+""" Blurr Graph Creation_________________________________________________________"""
 
+bigRun.blurrGraphCreation(
+    run.getAction()
+)
+""" _________________________________________________________"""
 
-
+bigRun.graphCreation(
+    run.getAction()
+)
+""" _________________________________________________________"""
 
 
