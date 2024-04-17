@@ -150,7 +150,7 @@ def blur_intensity_movie(action,sub_path, model:str, intent_grid_type,brightpara
     current_model_file = parent_model_path + "blur/"
     clean_model_file = parent_model_path + "clean/"
 
-    fileloading.creatSubDirectory(parent_model_path,
+    fileloading.creatSubDirectory(current_model_file,
                                   "for {} intensities".format(model), kill_policy=False)
 
     # total jy at 230GHz
