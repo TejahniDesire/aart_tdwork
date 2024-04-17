@@ -30,7 +30,7 @@ line_small = "________________________________ \n"
 
 class BigRuns:
 
-    def __init__(self, run: str, intensity_grid_params: dict, var_inensity_grid_names, geo_grid_params, geo_grid_names,
+    def __init__(self, run: str, intensity_grid_params: dict, var_intensity_grid_names, geo_grid_params, geo_grid_names,
                  normalized_brightparams=False):
         """
 
@@ -38,7 +38,7 @@ class BigRuns:
             run:
             intensity_grid_params: dictionary containing all intensity parameters. Each value is a
                          list containing all parameters to be computed in current run
-            var_inensity_grid_names: list of key names to be varable parameters in the current run,
+            var_intensity_grid_names: list of key names to be varable parameters in the current run,
                         correspond to more than 1 entry in list for grid params
             geo_grid_params: list[tuple(geo parameter, value)]
             geo_grid_names: list of key names to be varable parameters in the current run,
@@ -50,7 +50,7 @@ class BigRuns:
             run: name of this run
             intensity_grid_params: dictionary containing all intensity parameters. Each value is a
                          list containing all parameters to be computed in current run
-            var_inensity_grid_names: list of key names to be varable parameters in the current run,
+            var_intensity_grid_names: list of key names to be varable parameters in the current run,
                         correspond to more than 1 entry in list for grid params
             geo_grid_list: list[tuple(geo parameter, value)]
         Returns:
@@ -58,7 +58,7 @@ class BigRuns:
         """
         self.intensity_grid_params = intensity_grid_params
         self.run = run
-        self.var_inensity_grid_names = var_inensity_grid_names
+        self.var_intensity_grid_names = var_intensity_grid_names
         self.geo_grid_names = geo_grid_names
         self.geo_grid_params = geo_grid_params
         self.normalized_brightparams = normalized_brightparams
@@ -105,10 +105,10 @@ class BigRuns:
 
             param_range = len(self.intensity_grid_params[key])
             # print("Key, " + key + " count: " + str(var_params.count(key)))
-            if param_range > 1 and self.var_inensity_grid_names.count(key) == 0:
+            if param_range > 1 and self.var_intensity_grid_names.count(key) == 0:
                 raise ValueError("More than one parameter put in for static parameter")
 
-            if self.var_inensity_grid_names.count(key) == 1:
+            if self.var_intensity_grid_names.count(key) == 1:
                 if param_range <= 1:
                     raise ValueError("Static parameter listed as variable parameter")
 
@@ -123,7 +123,7 @@ class BigRuns:
         if self.normalized_brightparams:
 
             file_paths = [
-                self.sub_paths["runWideNumpy"] + "all_inensity_model_brightparams.npy",
+                self.sub_paths["runWideNumpy"] + "all_intensity_model_brightparams.npy",
                 self.sub_paths["runWideNumpy"] + "all_intensity_model_names.npy",
                 self.sub_paths["runWideNumpy"] + "all_model_brightparams.npy",
                 self.sub_paths["runWideNumpy"] + "all_model_names.npy",
@@ -176,18 +176,18 @@ class BigRuns:
     def type2Grid(self):
         all_brightparams = []  # list[tuple (name, bright parameters)]
         all_model_names = []
-        for i in range(self.variable_param_ranges[self.var_inensity_grid_names[0]]):
-            for j in range(self.variable_param_ranges[self.var_inensity_grid_names[1]]):
+        for i in range(self.variable_param_ranges[self.var_intensity_grid_names[0]]):
+            for j in range(self.variable_param_ranges[self.var_intensity_grid_names[1]]):
                 current_model_brightparams = {}  # brightprams for current model
                 current_model_name = "Model" + str(i + 1) + str(j + 1)
                 # Fill out the constant parameters
                 for key in list(self.constant_params):
                     current_model_brightparams[key] = self.constant_params[key]
 
-                current_model_brightparams[self.var_inensity_grid_names[0]] =\
-                    self.intensity_grid_params[self.var_inensity_grid_names[0]][i]
-                current_model_brightparams[self.var_inensity_grid_names[1]] =\
-                    self.intensity_grid_params[self.var_inensity_grid_names[1]][j]
+                current_model_brightparams[self.var_intensity_grid_names[0]] =\
+                    self.intensity_grid_params[self.var_intensity_grid_names[0]][i]
+                current_model_brightparams[self.var_intensity_grid_names[1]] =\
+                    self.intensity_grid_params[self.var_intensity_grid_names[1]][j]
 
                 all_brightparams += [current_model_brightparams]
                 all_model_names += [current_model_name]
@@ -197,13 +197,13 @@ class BigRuns:
     def type1Grid(self):
         all_brightparams= []
         all_model_names = []
-        for i in range(self.variable_param_ranges[self.var_inensity_grid_names[0]]):
+        for i in range(self.variable_param_ranges[self.var_intensity_grid_names[0]]):
             current_model_brightparams = {}  # dict[key] = for value of [key]/varied parameter
             current_model_name = "Model" + str(i + 1)
             for key in list(self.constant_params):
                 current_model_brightparams[key] = self.constant_params[key]
 
-            current_model_brightparams[self.var_inensity_grid_names[0]] = self.intensity_grid_params[self.var_inensity_grid_names[0]][i]
+            current_model_brightparams[self.var_intensity_grid_names[0]] = self.intensity_grid_params[self.var_intensity_grid_names[0]][i]
 
             all_brightparams += [current_model_brightparams]
             all_model_names += [current_model_name]
@@ -361,7 +361,7 @@ class BigRuns:
                 k += 1
         if not self.normalized_brightparams:
             file_paths = [
-                self.sub_paths["runWideNumpy"] + "all_inensity_model_brightparams",
+                self.sub_paths["runWideNumpy"] + "all_intensity_model_brightparams",
                 self.sub_paths["runWideNumpy"] + "all_intensity_model_names",
                 self.sub_paths["runWideNumpy"] + "all_model_brightparams",
                 self.sub_paths["runWideNumpy"] + "all_model_names",
@@ -489,9 +489,9 @@ class BigRuns:
         for i in range(len(self.all_intensity_model_names)):
             string += line + self.all_intensity_model_names[i] + '\n'
             current_model = self.all_intensity_model_brightparams[i]
-            for k in range(len(self.var_inensity_grid_names)):
-                string += (breaker + self.var_inensity_grid_names[k] + ": "
-                           + str(current_model[self.var_inensity_grid_names[k]]) + '\n')
+            for k in range(len(self.var_intensity_grid_names)):
+                string += (breaker + self.var_intensity_grid_names[k] + ": "
+                           + str(current_model[self.var_intensity_grid_names[k]]) + '\n')
 
         return string + line + line + line
 
@@ -509,9 +509,9 @@ class BigRuns:
             current_model = self.all_model_brightparams[i]
             intensity_model_string += line_small + current_name + '\n'
 
-            for k in range(len(self.var_inensity_grid_names)):
-                intensity_model_string += (breaker + self.var_inensity_grid_names[k] + ": "
-                           + str(current_model[self.var_inensity_grid_names[k]]) + '\n')
+            for k in range(len(self.var_intensity_grid_names)):
+                intensity_model_string += (breaker + self.var_intensity_grid_names[k] + ": "
+                                           + str(current_model[self.var_intensity_grid_names[k]]) + '\n')
             intensity_model_string += breaker + "n_th0: " + str(current_model["n_th0"]) + '\n'
 
         intensity_model_string += line_small + line_small + line_small
