@@ -129,8 +129,14 @@ class BigRuns:
                 self.sub_paths["runWideNumpy"] + "all_model_names.npy",
                 self.sub_paths["runWideNumpy"] + "total_models_count.npy"
                           ]
+            self.all_intensity_model_brightparams = []
+            self.all_intensity_model_names = []
+            self.all_model_brightparams = []
+            self.all_model_names = []
+            self.total_models_count = 0
+
             arrays = [
-                self.all_inensity_model_brightparams,
+                self.all_intensity_model_brightparams,
                 self.all_intensity_model_names,
                 self.all_model_brightparams,
                 self.all_model_names,
@@ -153,7 +159,7 @@ class BigRuns:
                 2: self.type2Grid
             }
 
-            self.all_intensity_model_names, self.all_inensity_model_brightparams = grid_types[self.run_type]()
+            self.all_intensity_model_names, self.all_intensity_model_brightparams = grid_types[self.run_type]()
             self.all_model_names = []
             self.all_model_brightparams = []
             self.total_models_count = 0
@@ -276,14 +282,14 @@ class BigRuns:
             current_geo_model = self.geo_grid_names[j]
             fileloading.loadGeoModel(current_geo_model, self.run)
 
-            for i in range(len(self.all_inensity_model_brightparams)):
+            for i in range(len(self.all_intensity_model_brightparams)):
                 print(line)
                 print("Model number: " + str(k + 1))
 
                 # String Names
                 current_intent_name = self.all_intensity_model_names[i]
                 self.all_model_names += [current_geo_model + current_intent_name.replace("Model", "")]
-                self.all_model_brightparams += [self.all_inensity_model_brightparams[i]]
+                self.all_model_brightparams += [self.all_intensity_model_brightparams[i]]
                 self.total_models_count += 1
                 k += 1
 
@@ -315,7 +321,7 @@ class BigRuns:
             normlband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "_Normalizing" + "Lensing" + ".h5"
             normrtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "_Normalizing" + "RayTracing" + ".h5"
 
-            for i in range(len(self.all_inensity_model_brightparams)):
+            for i in range(len(self.all_intensity_model_brightparams)):
                 print(line)
                 print(line)
                 print("Model number: " + str(k + 1))
@@ -362,7 +368,7 @@ class BigRuns:
                 self.sub_paths["runWideNumpy"] + "total_models_count"
                           ]
             arrays = [
-                self.all_inensity_model_brightparams,
+                self.all_intensity_model_brightparams,
                 self.all_intensity_model_names,
                 self.all_model_brightparams,
                 self.all_model_names,
@@ -482,7 +488,7 @@ class BigRuns:
         string += line
         for i in range(len(self.all_intensity_model_names)):
             string += line + self.all_intensity_model_names[i] + '\n'
-            current_model = self.all_inensity_model_brightparams[i]
+            current_model = self.all_intensity_model_brightparams[i]
             for k in range(len(self.var_inensity_grid_names)):
                 string += (breaker + self.var_inensity_grid_names[k] + ": "
                            + str(current_model[self.var_inensity_grid_names[k]]) + '\n')
