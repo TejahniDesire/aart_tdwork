@@ -148,6 +148,7 @@ class BigRuns:
                 k += 1
             print(self.all_intensity_model_names)
             print(self.total_models_count)
+            print(arrays[4])
             print("____________________")
             fileloading.writeDocString(self.sub_paths["meta"] + "IntensityModelsGuide.txt",
                                        self.intensityModelDocString())
