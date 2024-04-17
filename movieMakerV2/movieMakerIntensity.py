@@ -46,7 +46,11 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type,brightparams,bl
     rtray = sub_path["GeoDoth5Path"] + geo_model + "RayTracing" + ".h5"
 
     # File paths-------------------------
-    current_model_file = sub_path["intensityPath"] + model + "/"
+    parent_model_path = sub_path["intensityPath"] + model + "/"
+    current_model_file = parent_model_path + "clean/"
+
+    fileloading.creatSubDirectory(parent_model_path,
+                                  "for {} intensities".format(model),kill_policy=False)
 
     fileloading.creatSubDirectory(current_model_file,
                                   "for {} intensities".format(model),kill_policy=True)
@@ -76,9 +80,6 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type,brightparams,bl
         print(line)
         print(line)
         print('Creating intensity.h5 for Model ' + model + ' number: ' + str(i))
-
-
-        current_int_file = sub_path["intensityPath"]
 
         # create current intensity folder
         # Update varing parameter
@@ -135,56 +136,96 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type,brightparams,bl
         h5f.close()
         print("File ",blurr_intensity_path, " created.")
 
+    return intermodel_data
+
+
+def blur_intensity_movie(action,sub_path, model:str, intent_grid_type,brightparams):
+
+    geo_model = model[0:len(model)-intent_grid_type] # remove numbers from model
+    lband = sub_path["GeoDoth5Path"] + geo_model + "Lensing" + ".h5"
+    rtray = sub_path["GeoDoth5Path"] + geo_model + "RayTracing" + ".h5"
+
+    # File paths-------------------------
+    parent_model_path = sub_path["intensityPath"] + model + "/"
+    current_model_file = parent_model_path + "blur/"
+
+    fileloading.creatSubDirectory(parent_model_path,
+                                  "for {} intensities".format(model), kill_policy=False)
+
+    # total jy at 230GHz
+
+    thin_total_flux, thick_total_flux = normalizingBrightparams.totalIntensity230Point(lband,rtray,brightparams,False)
+
+    intermodel_data = {
+        "thin_total_flux": thin_total_flux,
+        "thick_total_flux": thick_total_flux
+    }
+
+    # ----------------------------------------------------------------------------------------------------------------------
+    # size = 1000  # array size for radii calcs
+    # size = 500  # array size for radii calcs
+    num_iterations = int((action["stop"] - action["start"]) / action["step"])
+
+    """GRAPHS________________________________________________________________________________________________________"""
+    x_variable = np.zeros(num_iterations)  # counter for independant variable
+
+    # # Intensity images
+    # I_thins = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
+    # I_thicks = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
+    # #
+    for i in range(num_iterations):
+        print(line)
+        print(line)
+        print('Reading intensity.h5 for Model ' + model + ' number: ' + str(i))
+
+        intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
+
+        # Read File
+        h5f = h5py.File(intensity_path, 'r')
+
+        I0 = h5f['bghts0'][:]
+        I1 = h5f['bghts1'][:]
+        I2 = h5f['bghts2'][:]
+
+        Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+        thin_image = I0 + I1 + I2
+
+        h5f.close()
+
+        # Blurring ______________________________________
+        dx = params.dx0
+        one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)  # one Mass length unit = 1 r_g
+        mass_to_uas = np.arctan(one_M.value / dBH) / muas_to_rad  # dBH is in units of meters
+        # muas_blurr = 20
+        muas_blurr = 10
+        rg_blurr = muas_blurr / mass_to_uas
+
+        sig = rg_blurr / (dx * (2 * np.sqrt(
+            2 * np.log(2))))  # We have 20 uas FWHM resolution. dx = uas/pixels. so 20/dx is FWHM in pixel units.
+        thin_blurr_image = ndimage.gaussian_filter(thin_image, sigma=(sig, sig))
+        thick_blurr_image = ndimage.gaussian_filter(Absorbtion_Image, sigma=(sig, sig))
+        print(R"$\mu a s$: " + str(mass_to_uas) + "\n"
+              + R"$R_g$_blurr: " + str(rg_blurr) + "\n"
+              + "sig: " + str(sig) + "\n"
+              + "dx: " + str(dx))
+        # ______________________________________
+
+        blurr_intensity_path = (current_model_file +
+                                action["var"] + "_blurr_" + "{:.5e}".format(brightparams[action["var"]]))
+        h5f = h5py.File(blurr_intensity_path, 'w')
+        h5f.create_dataset('thin_blurr_image', data=thin_blurr_image)
+        h5f.create_dataset("thick_blurr_image", data=thick_blurr_image)
+        h5f.close()
+        print("File ", blurr_intensity_path, " created.")
 
     return intermodel_data
 
-def blur(action,sub_path, model:str, intent_grid_type,brightparams):
-    new_intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
-    subprocess.run(["mv " + fnrays + ' ' + new_intensity_path], shell=True)
-
-    # bluring
-    # Read File
-    h5f = h5py.File(new_intensity_path, 'r')
-
-    I0 = h5f['bghts0'][:]
-    I1 = h5f['bghts1'][:]
-    I2 = h5f['bghts2'][:]
-
-    Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
-
-    h5f.close()
-
-    thin_image = I0 + I1 + I2
-    # ______________________________________
-    dx = params.dx0
-    one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)  # one Mass length unit = 1 r_g
-    mass_to_uas = np.arctan(one_M.value / dBH) / muas_to_rad  # dBH is in units of meters
-    # muas_blurr = 20
-    muas_blurr = 10
-    rg_blurr = muas_blurr / mass_to_uas
-
-    sig = rg_blurr / (dx * (2 * np.sqrt(
-        2 * np.log(2))))  # We have 20 uas FWHM resolution. dx = uas/pixels. so 20/dx is FWHM in pixel units.
-    thin_blurr_image = ndimage.gaussian_filter(thin_image, sigma=(sig, sig))
-    thick_blurr_image = ndimage.gaussian_filter(Absorbtion_Image, sigma=(sig, sig))
-    print(R"$\mu a s$: " + str(mass_to_uas) + "\n"
-          + R"$R_g$_blurr: " + str(rg_blurr) + "\n"
-          + "sig: " + str(sig) + "\n"
-          + "dx: " + str(dx))
-    # ______________________________________
-
-    blurr_intensity_path = (current_model_file +
-                            action["var"] + "_blurr_" + "{:.5e}".format(brightparams[action["var"]]))
-    h5f = h5py.File(blurr_intensity_path, 'w')
-    h5f.create_dataset('thin_blurr_image', data=thin_blurr_image)
-    h5f.create_dataset("thick_blurr_image", data=thick_blurr_image)
-    h5f.close()
-    print("File ", blurr_intensity_path, " created.")
-
 
 def imageAnalysis(action,sub_path, model:str, brightparams):
-    current_model_file = sub_path["intensityPath"] + model + "/"
-    size = image_tools.num_of_theta_points  # array size for radii calcs
+
+    parent_model_path = sub_path["intensityPath"] + model + "/"
+    current_model_file = parent_model_path + "clean/"
+    num_of_theta_points = image_tools.num_of_theta_points  # array size for radii calcs
     num_iterations = int((action["stop"] - action["start"]) / action["step"])
 
     """GRAPHS________________________________________________________________________________________________________"""
@@ -199,15 +240,15 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
     mean_radii_Thick = np.ndarray([num_iterations, 4])  # [I0, I1, I2, FullImage]
 
     # First layer of Radius as a function of theta_________________________________
-    radii_Full_Thin = np.zeros(size)
-    radii_I0_Thin = np.zeros(size)
-    radii_I1_Thin = np.zeros(size)
-    radii_I2_Thin = np.zeros(size)
+    radii_Full_Thin = np.zeros(num_of_theta_points)
+    radii_I0_Thin = np.zeros(num_of_theta_points)
+    radii_I1_Thin = np.zeros(num_of_theta_points)
+    radii_I2_Thin = np.zeros(num_of_theta_points)
 
-    radii_FullAbsorption_Thick = np.zeros(size)
-    radii_I0_Thick = np.zeros(size)
-    radii_I1_Thick = np.zeros(size)
-    radii_I2_Thick = np.zeros(size)
+    radii_FullAbsorption_Thick = np.zeros(num_of_theta_points)
+    radii_I0_Thick = np.zeros(num_of_theta_points)
+    radii_I1_Thick = np.zeros(num_of_theta_points)
+    radii_I2_Thick = np.zeros(num_of_theta_points)
 
     # Optical Depth_________________________________
     mean_optical_depth_I0 = np.zeros(num_iterations)
@@ -343,8 +384,9 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
 
 
 def blurrImageAnalysis(action,sub_path, model:str, brightparams):
-    current_model_file = sub_path["intensityPath"] + model + "/"
-    size = image_tools.num_of_theta_points  # array size for radii calcs
+    parent_model_path = sub_path["intensityPath"] + model + "/"
+    current_model_file = parent_model_path + "blur/"
+    num_of_theta_points = image_tools.num_of_theta_points  # array size for radii calcs
     num_iterations = int((action["stop"] - action["start"]) / action["step"])
 
     """GRAPHS________________________________________________________________________________________________________"""
@@ -358,10 +400,10 @@ def blurrImageAnalysis(action,sub_path, model:str, brightparams):
     mean_radii_Thin = np.ndarray([num_iterations, 1])  # [FullImage]
     mean_radii_Thick = np.ndarray([num_iterations, 1])  # [FullImage]
 
-    # First layer of Radius as a function of theta_________________________________
-    radii_I0_Thin = np.zeros(size)
+    # Radius as a function of theta_________________________________
+    radii_cumulative_Thin = np.zeros(num_of_theta_points)
 
-    radii_FullAbsorption_Thick = np.zeros(size)
+    radii_cumulative_Thick = np.zeros(num_of_theta_points)
 
     for i in range(num_iterations):
         print(line)
@@ -370,8 +412,6 @@ def blurrImageAnalysis(action,sub_path, model:str, brightparams):
         brightparams[action["var"]] = action["start"] + i * action["step"]
         x_variable[i] = brightparams[action["var"]]
         intensity_path = current_model_file +action["var"] + "_blurr_" + "{:.5e}".format(brightparams[action["var"]])
-
-
 
         h5f = h5py.File(intensity_path, 'r')
 
@@ -398,7 +438,7 @@ def blurrImageAnalysis(action,sub_path, model:str, brightparams):
 
         mean_radii_Thin[i, 0] = r0_thin
 
-        radii_I0_Thin = np.vstack((radii_I0_Thin, radii_I0_Thin_i))
+        radii_cumulative_Thin = np.vstack((radii_cumulative_Thin, radii_I0_Thin_i))
 
         # Thick Radii Calcs---------------------------------------------------------------------------------------------
         radii_FullAbsorption_Thick_i, theta = tls.radii_of_thetaV2(Absorbtion_Image, params.dx0)
@@ -407,7 +447,7 @@ def blurrImageAnalysis(action,sub_path, model:str, brightparams):
 
         mean_radii_Thick[i, 0] = full_thick
 
-        radii_FullAbsorption_Thick = np.vstack((radii_FullAbsorption_Thick, radii_FullAbsorption_Thick_i))
+        radii_cumulative_Thick = np.vstack((radii_cumulative_Thick, radii_FullAbsorption_Thick_i))
 
         # Total Flux Calcualtions
         janksys_thin[i, 0] = ilp.total_jy(I0, brightparams["nu0"], brightparams["mass"]).value
@@ -419,8 +459,8 @@ def blurrImageAnalysis(action,sub_path, model:str, brightparams):
     fileloading.creatSubDirectory(final_data_path, "final image path for {}".format(model), kill_policy=False)
 
     # Remove Row of Zeros
-    radii_I0_Thin = np.delete(radii_I0_Thin, 0, 0)
-    radii_FullAbsorption_Thick = np.delete(radii_FullAbsorption_Thick, 0, 0)
+    radii_cumulative_Thin = np.delete(radii_cumulative_Thin, 0, 0)
+    radii_cumulative_Thick = np.delete(radii_cumulative_Thick, 0, 0)
 
     # Saving Data--------------------------------------------------------------------------------------------------------
     np.save(final_data_path + "blurr_x_variable", x_variable)
@@ -428,8 +468,8 @@ def blurrImageAnalysis(action,sub_path, model:str, brightparams):
     np.save(final_data_path + "blurr_janksys_thin", janksys_thin)
     np.save(final_data_path + "blurr_mean_radii_Thin", mean_radii_Thin)
     np.save(final_data_path + "blurr_mean_radii_Thick", mean_radii_Thick)
-    np.save(final_data_path + "blurr_radii_I0_Thin", radii_I0_Thin)
-    np.save(final_data_path + "blurr_radii_FullAbsorption_Thick", radii_FullAbsorption_Thick)
+    np.save(final_data_path + "blurr_radii_I0_Thin", radii_cumulative_Thin)
+    np.save(final_data_path + "blurr_radii_FullAbsorption_Thick", radii_cumulative_Thick)
     np.save(final_data_path + "blurr_theta", theta)
 
 

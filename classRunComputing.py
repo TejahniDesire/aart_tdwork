@@ -279,8 +279,8 @@ class BigRuns:
         for j in range(len(self.geo_grid_names)):
             current_geo_model = self.geo_grid_names[j]
             fileloading.loadGeoModel(current_geo_model, self.run)
-            lband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
-            rtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
+            # lband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
+            # rtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
 
             normlband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "_Normalizing" + "Lensing" + ".h5"
             normrtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "_Normalizing" + "RayTracing" + ".h5"
@@ -317,15 +317,6 @@ class BigRuns:
                 intermodel_data = movieMakerIntensity.intensity_movie(
                     action, self.sub_paths, current_total_name, run_type_arg, current_bp,blurr_policy=blurr_policy)
 
-                movieMakerIntensity.imageAnalysis(
-                    action, self.sub_paths, current_total_name, current_bp
-                )
-
-                if blurr_policy:
-                    movieMakerIntensity.blurrImageAnalysis(
-                        action, self.sub_paths, current_total_name, current_bp
-                    )
-
                 print(
                     "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(intermodel_data["thin_total_flux"]))
                 print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"]) + "\n")
@@ -334,15 +325,102 @@ class BigRuns:
                 k += 1
         # Numpy saving________________________________________________
 
-        brightparams_numpy_name = self.sub_paths["meta"] + "AllBrightParamsList"
-        all_full_names_numpy_name = self.sub_paths["meta"] + "AllModelsList"
         all_230_total_jy_thin_numpy_name = self.sub_paths["meta"] + "thin_total_flux"
         all_230_total_jy_thick_numpy_name = self.sub_paths["meta"] + "thick_total_flux"
 
-        # np.save(all_full_names_numpy_name, np.array(self.all_model_names))
-        # np.save(brightparams_numpy_name, np.array(self.all_model_brightparams))
         np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
         np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
+
+    def intensityGridAnalysis(self,action):
+        print(line)
+        print(line)
+        print(line)
+        print("Analyzing Intensity Grid for " + self.run)
+        for i in range(len(self.all_model_brightparams)):
+            print(line)
+            print(line)
+            print("Model number: " + str(i + 1))
+
+            # String Names
+            current_total_name = self.all_model_names[i]
+            print("     " + current_total_name)
+            # ________________________________
+            current_bp = self.all_model_brightparams[i]
+
+            print("Analyzing Intensity Movie for Model ", current_total_name)
+            print(long_line)
+
+            movieMakerIntensity.imageAnalysis(
+                action, self.sub_paths, current_total_name, current_bp
+            )
+
+    def blurrIntensityGrid(self, action):
+
+        all_230_total_jy_thin = []
+        all_230_total_jy_thick = []
+
+        print(line)
+        print(line)
+        print(line)
+        print("Bluring Intensity Grid for " + self.run)
+        for i in range(len(self.all_model_brightparams)):
+            print(line)
+            print(line)
+            print("Model number: " + str(i + 1))
+
+            # String Names
+            # current_intent_name = self.all_intensity_model_names[i]
+            # self.all_model_names += [current_geo_model + current_intent_name.replace("Model", "")]
+            current_total_name = self.all_model_names[i]
+            print("     " + current_total_name)
+            # ________________________________
+            current_bp = self.all_model_brightparams[i]
+
+            print("Bluring Intensity Movie for Model ", current_total_name)
+            print(long_line)
+
+            if self.run_type == 0:
+                run_type_arg = 1
+            else:
+                run_type_arg = self.run_type
+            intermodel_data = movieMakerIntensity.blur_intensity_movie(
+                action, self.sub_paths, current_total_name, run_type_arg, current_bp)
+
+            print(
+                "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(intermodel_data["thin_total_flux"]))
+            print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"]) + "\n")
+            all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
+            all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
+        # Numpy saving________________________________________________
+
+        all_230_total_jy_thin_numpy_name = self.sub_paths["meta"] + "blurr_thin_total_flux"
+        all_230_total_jy_thick_numpy_name = self.sub_paths["meta"] + "blurr_thick_total_flux"
+
+        np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
+        np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
+
+    def blurrIntensityGridAnalysis(self,action):
+        print(line)
+        print(line)
+        print(line)
+        print("Analyzing Intensity Grid for " + self.run)
+        for i in range(len(self.all_model_brightparams)):
+            print(line)
+            print(line)
+            print("Model number: " + str(i + 1))
+
+            # String Names
+            current_total_name = self.all_model_names[i]
+            print("     " + current_total_name)
+            # ________________________________
+            current_bp = self.all_model_brightparams[i]
+
+            print("Analyzing Intensity Movie for Model ", current_total_name)
+            print(long_line)
+
+            movieMakerIntensity.blurrImageAnalysis(
+                action, self.sub_paths, current_total_name, current_bp
+            )
 
     def intensityModelDocString(self):
         string = line + line + line + "Total Number of Intensity Models: " + str(
@@ -475,10 +553,10 @@ class BigRuns:
             # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
             # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
 
-            fluxVNu_path = self.sub_paths["fluxPath"] + model + "/"
-            radVNu_path = self.sub_paths["radPath"] + model + "/"
-            image_path = self.sub_paths["imagePath"] + model + "/"
-            Optical_depth_path = self.sub_paths["opticalDepth"] + model + "/"
+            fluxVNu_path = self.sub_paths["fluxPath"] + model + "/clean/"
+            radVNu_path = self.sub_paths["radPath"] + model + "/clean/"
+            image_path = self.sub_paths["imagePath"] + model + "/clean/"
+            Optical_depth_path = self.sub_paths["opticalDepth"] + model + "/clean/"
 
             file_creation = [fluxVNu_path, radVNu_path,image_path,Optical_depth_path]
 
@@ -795,15 +873,15 @@ class BigRuns:
             # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
             # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
 
-            fluxVNu_path = self.sub_paths["fluxPath"] + model + "/"
-            radVNu_path = self.sub_paths["radPath"] + model + "/"
-            image_path = self.sub_paths["imagePath"] + model + "/"
-            Optical_depth_path = self.sub_paths["opticalDepth"] + model + "/"
+            fluxVNu_path = self.sub_paths["fluxPath"] + model + "/blurr/"
+            radVNu_path = self.sub_paths["radPath"] + model + "/blurr/"
+            image_path = self.sub_paths["imagePath"] + model + "/blurr/"
+            Optical_depth_path = self.sub_paths["opticalDepth"] + model + "/blurr/"
 
             file_creation = [fluxVNu_path, radVNu_path,image_path,Optical_depth_path]
 
             for i in range(len(file_creation)):
-                fileloading.creatSubDirectory(file_creation[i],kill_policy=False)
+                fileloading.creatSubDirectory(file_creation[i],kill_policy=True)
 
             fluxVNu_path += "Blurr_"
             radVNu_path += "Blurr_"

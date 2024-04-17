@@ -152,19 +152,34 @@ bigRun = classRunComputing.BigRuns(
 
 # bigRun.createGeoGrid()
 
-""" Intensity Grid_________________________________________________________"""
+""" Intensity Grid Creation_________________________________________________________"""
 
-# bigRun.creatIntensityGrid(
-#     run.getAction(),
-#     run.getIsNormalized(),
-#     run.getBlurrPolicy()
-# )
+bigRun.creatIntensityGrid(
+    run.getAction(),
+    run.getIsNormalized(),
+    run.getBlurrPolicy()
+)
+
+bigRun.blurrIntensityGrid(
+    run.getAction()
+)
+
+""" Intensity Grid Analysis_________________________________________________________"""
+
+bigRun.intensityGridAnalysis(
+    run.getAction()
+)
+
+bigRun.blurrIntensityGridAnalysis(
+    run.getAction()
+)
+
 """ Blurr Graph Creation_________________________________________________________"""
 
 bigRun.blurrGraphCreation(
     run.getAction()
 )
-""" _________________________________________________________"""
+""" Clean Graph Creation_________________________________________________________"""
 
 bigRun.graphCreation(
     run.getAction()
