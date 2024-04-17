@@ -144,7 +144,7 @@ class BigRuns:
             ]
             k = 0
             for file in file_paths:
-                arrays[k] = np.load(file)
+                arrays[k] = np.load(file,allow_pickle=True)
                 k += 1
 
             fileloading.writeDocString(self.sub_paths["meta"] + "IntensityModelsGuide.txt",
