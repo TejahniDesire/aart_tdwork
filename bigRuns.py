@@ -166,7 +166,7 @@ bigRun = classRunComputing.BigRuns(
 # )
 
 """ Intensity Grid Analysis_________________________________________________________"""
-
+print("ACTION",run.getAction())
 bigRun.intensityGridAnalysis(
     run.getAction()
 )
