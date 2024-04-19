@@ -82,6 +82,13 @@ run1 = runData("run1",
                ["p_temp", "p_mag"],
                [(["a"], [str(.3)]),(["a"], [str(.9)])],
                ["ModelA", "ModelB"])
+
+# run2______________________________________________________________________
+run2 = runData("run2",
+               astroModels.bp_run2,
+               ["p_temp", "p_mag"],
+               [(["a"], [str(.3)]),(["a"], [str(.9)])],
+               ["ModelA", "ModelB"])
 # testRun1______________________________________________________________________
 
 testRun1 = runData("testRun1",

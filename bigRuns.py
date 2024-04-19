@@ -139,7 +139,7 @@ blurr_policy = True
 # bigRun.graphCreation(action)
 #
 
-run = runDataClass.run1
+run = runDataClass.run2
 
 bigRun = classRunComputing.BigRuns(
     run.getRunName(),
@@ -170,15 +170,15 @@ bigRun = classRunComputing.BigRuns(
 #     run.getAction()
 # )
 
-bigRun.blurrIntensityGridAnalysis(
-    run.getAction()
-)
+# bigRun.blurrIntensityGridAnalysis(
+#     run.getAction()
+# )
 
 """ Blurr Graph Creation_________________________________________________________"""
 
-bigRun.blurrGraphCreation(
-    run.getAction()
-)
+# bigRun.blurrGraphCreation(
+#     run.getAction()
+# )
 """ Clean Graph Creation_________________________________________________________"""
 
 # bigRun.graphCreation(
