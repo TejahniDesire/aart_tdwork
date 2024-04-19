@@ -12,8 +12,8 @@ import importlib
 from functools import partial
 
 bp_run2 = {
-    "p_mag": [-2,-1.5,-1,-0.5],
-    "p_temp": [-1.2,-1,-.8,-.6],
+    "p_mag": [-2,-1.5,-1],
+    "p_temp": [-1.2,-1,-.8],
     "p_dens": [-.7],
     "n_th0": [1.9e4],
     "t_e0": [1e11],
