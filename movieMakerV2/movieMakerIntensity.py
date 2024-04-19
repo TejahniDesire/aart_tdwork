@@ -380,27 +380,18 @@ def blurrImageAnalysis(action,sub_path, model:str, brightparams):
         I0 = h5f['thin_blurr_image'][:]
         Absorbtion_Image = h5f["thick_blurr_image"][:]
 
-        # tau2 = h5f['tau2'][:]
-        # tau1 = h5f['tau1'][:]
-        # tau0 = h5f['tau0'][:]
-        # full_profiles0 = h5f['full_profiles0'][:]
-        # full_profiles1 = h5f['full_profiles1'][:]
-        # full_profiles2 = h5f['full_profiles2'][:]
-        # full_profiles_unit = h5f['full_profiles_unit'][:]
         h5f.close()
 
 
         # Thin Radii Calcs----------------------------------------------------------------------------------------------
 
-        radii_I0_Thin_i, theta = tls.radii_of_thetaV2(I0, params.dx0)
+        radii_Thin_i, theta = tls.radii_of_thetaV2(I0, params.dx0)
 
-        # profs = scipy.ndimage.convolve1d(profs, np.ones(navg_ang), axis=0) / navg_ang
-
-        r0_thin = tls.curve_params(theta, radii_I0_Thin_i)
+        r0_thin = tls.curve_params(theta, radii_Thin_i)
 
         mean_radii_Thin[i, 0] = r0_thin
 
-        radii_cumulative_Thin = np.vstack((radii_cumulative_Thin, radii_I0_Thin_i))
+        radii_cumulative_Thin = np.vstack((radii_cumulative_Thin, radii_Thin_i))
 
         # Thick Radii Calcs---------------------------------------------------------------------------------------------
         radii_FullAbsorption_Thick_i, theta = tls.radii_of_thetaV2(Absorbtion_Image, params.dx0)
@@ -421,8 +412,8 @@ def blurrImageAnalysis(action,sub_path, model:str, brightparams):
     fileloading.creatSubDirectory(final_data_path, "final image path for {}".format(model), kill_policy=False)
 
     # Remove Row of Zeros
-    radii_cumulative_Thin = np.delete(radii_cumulative_Thin, 0, 0)
-    radii_cumulative_Thick = np.delete(radii_cumulative_Thick, 0, 0)
+    # radii_cumulative_Thin = np.delete(radii_cumulative_Thin, 0, 0)
+    # radii_cumulative_Thick = np.delete(radii_cumulative_Thick, 0, 0)
 
     # Saving Data--------------------------------------------------------------------------------------------------------
     np.save(final_data_path + "blurr_x_variable", x_variable)
