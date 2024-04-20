@@ -292,9 +292,6 @@ class BigRuns:
             fileloading.loadGeoModel(current_geo_model, self.run)
 
             for i in range(len(self.all_intensity_model_brightparams)):
-                print(line)
-                print("Model number: " + str(k + 1))
-
                 # String Names
                 current_intent_name = self.all_intensity_model_names[i]
                 self.all_model_names += [current_geo_model + current_intent_name.replace("Model", "")]
