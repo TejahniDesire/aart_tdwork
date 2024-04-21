@@ -54,9 +54,9 @@ bigRun.blurrIntensityGrid(
 )
 
 """ Intensity Grid Analysis_________________________________________________________"""
-bigRun.intensityGridAnalysis(
-    run.getAction()
-)
+# bigRun.intensityGridAnalysis(
+#     run.getAction()
+# )
 
 # bigRun.blurrIntensityGridAnalysis(
 #     run.getAction()
@@ -69,9 +69,9 @@ bigRun.intensityGridAnalysis(
 # )
 """ Clean Graph Creation_________________________________________________________"""
 
-bigRun.graphCreation(
-    run.getAction()
-)
+# bigRun.graphCreation(
+#     run.getAction()
+# )
 """ _________________________________________________________"""
 
 
