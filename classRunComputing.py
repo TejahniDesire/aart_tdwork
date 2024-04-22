@@ -354,7 +354,7 @@ class BigRuns:
                     do = True
 
                 # only skips below if run is continuous and file already exist, or if do is false
-                if (not (self.isContinuous and os.path.exists(current_model_file))) and do:
+                if (not (self.isContinuous and os.path.exists(current_model_file))) or do:
                     if not self.already_normalized_brightparams:
                         print("\n" + "Normalizing " + current_total_name + "\n")
                         print(long_line)
