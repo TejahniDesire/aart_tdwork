@@ -4,7 +4,7 @@ import astroModels
 class runData:
 
     def __init__(self, name:str,brightparams_grid: dict,variable_brightparams_names:list,
-                 variable_geo_values,variable_geo_names):
+                 variable_geo_values,variable_geo_names,iscontinuous=False):
         """
 
         Args:
@@ -30,6 +30,7 @@ class runData:
 
         self.isNormalized = False
         self.blurr_policy = False
+        self.isContinuous = iscontinuous
 
     def setAction(self,action):
         """
@@ -75,6 +76,9 @@ class runData:
     def getBlurrPolicy(self):
         return self.blurr_policy
 
+    def getIsContinuous(self):
+        return self.isContinuous
+
 
 # run1______________________________________________________________________
 run1 = runData("run1",
@@ -88,7 +92,9 @@ run2 = runData("run2",
                astroModels.bp_run2,
                ["p_temp", "p_mag"],
                [(["a"], [str(.001)]),(["a"], [str(.5)]),(["a"], [str(15/16)])],
-               ["ModelA", "ModelB","ModelC"])
+               ["ModelA", "ModelB","ModelC"],
+               iscontinuous=True
+               )
 # testRun1______________________________________________________________________
 
 testRun1 = runData("testRun1",

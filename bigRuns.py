@@ -35,7 +35,8 @@ bigRun = classRunComputing.BigRuns(
     run.getBPVarNames(),
     run.getGeoGrid(),
     run.getGeoGridNames(),
-    normalized_brightparams=run.getIsNormalized()
+    normalized_brightparams=run.getIsNormalized(),
+    isContinuous=run.getIsContinuous()
 )
 """ Geo Model_________________________________________________________"""
 
@@ -45,13 +46,11 @@ bigRun.createGeoGrid()
 
 bigRun.creatIntensityGrid(
     run.getAction(),
-    run.getIsNormalized(),
-    run.getBlurrPolicy()
 )
 
-bigRun.blurrIntensityGrid(
-    run.getAction()
-)
+# bigRun.blurrIntensityGrid(
+#     run.getAction()
+# )
 
 """ Intensity Grid Analysis_________________________________________________________"""
 # bigRun.intensityGridAnalysis(

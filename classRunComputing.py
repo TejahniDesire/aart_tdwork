@@ -31,7 +31,7 @@ line_small = "________________________________ \n"
 class BigRuns:
 
     def __init__(self, run: str, intensity_grid_params: dict, var_intensity_grid_names, geo_grid_params, geo_grid_names,
-                 normalized_brightparams=False):
+                 normalized_brightparams=False,isContinuous=False):
         """
 
         Args:
@@ -62,6 +62,7 @@ class BigRuns:
         self.geo_grid_names = geo_grid_names
         self.geo_grid_params = geo_grid_params
         self.normalized_brightparams = normalized_brightparams
+        self.isContinuous = isContinuous
 
         # Create Directories______________________________________________________________________
         fileloading.creatSubDirectory(EZPaths.modelRunsDir, "storing all run results")
@@ -299,7 +300,7 @@ class BigRuns:
                 self.total_models_count += 1
                 k += 1
 
-    def creatIntensityGrid(self,action,isNormalized=False,blurr_policy=False):
+    def creatIntensityGrid(self,action):
 
         funckeys = {
             "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
@@ -340,30 +341,36 @@ class BigRuns:
                 # ________________________________
                 current_bp = self.all_model_brightparams[k]
 
-                if not self.normalized_brightparams:
-                    print("\n" + "Normalizing " + current_total_name + "\n")
+                current_model_file = self.sub_paths["intensityPath"] + current_total_name + "/clean/"
+
+                # only skips below if run is continuous and file already exist
+                if not (self.isContinuous and os.path.exists(current_model_file)):
+                    if not self.normalized_brightparams:
+                        print("\n" + "Normalizing " + current_total_name + "\n")
+                        print(long_line)
+
+                        current_bp["n_th0"] = normalizingBrightparams.normalize(normlband, normrtray, current_bp)
+
+                        print("\n" + current_total_name + " normalized with a value of n_th0="
+                              + str(current_bp["n_th0"]) + "\n")
+
+                    print("Creating Intensity Movie for Model ", current_total_name)
                     print(long_line)
 
-                    current_bp["n_th0"] = normalizingBrightparams.normalize(normlband, normrtray, current_bp)
+                    if self.run_type == 0:
+                        run_type_arg = 1
+                    else:
+                        run_type_arg = self.run_type
+                    intermodel_data = movieMakerIntensity.intensity_movie(
+                        action, self.sub_paths, current_total_name, run_type_arg, current_bp)
 
-                    print("\n" + current_total_name + " normalized with a value of n_th0="
-                          + str(current_bp["n_th0"]) + "\n")
-
-                print("Creating Intensity Movie for Model ", current_total_name)
-                print(long_line)
-
-                if self.run_type == 0:
-                    run_type_arg = 1
+                    print(
+                        "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(intermodel_data["thin_total_flux"]))
+                    print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"]) + "\n")
+                    all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
+                    all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
                 else:
-                    run_type_arg = self.run_type
-                intermodel_data = movieMakerIntensity.intensity_movie(
-                    action, self.sub_paths, current_total_name, run_type_arg, current_bp,blurr_policy=blurr_policy)
-
-                print(
-                    "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(intermodel_data["thin_total_flux"]))
-                print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"]) + "\n")
-                all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
-                all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
+                    print("File for Model {} already exist, skipping...".format(current_total_name))
                 k += 1
         if not self.normalized_brightparams:
             file_paths = [
