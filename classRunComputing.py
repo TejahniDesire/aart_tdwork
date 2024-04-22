@@ -303,7 +303,7 @@ class BigRuns:
                 self.total_models_count += 1
                 k += 1
 
-    def creatIntensityGrid(self,action):
+    def creatIntensityGrid(self,action,do_list=None):
 
         funckeys = {
             "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
@@ -346,8 +346,15 @@ class BigRuns:
 
                 current_model_file = self.sub_paths["intensityPath"] + current_total_name + "/clean/"
 
-                # only skips below if run is continuous and file already exist
-                if not (self.isContinuous and os.path.exists(current_model_file)):
+                do = False
+                if do_list is not None:
+                    if current_total_name in do_list:
+                        do = True
+                else:
+                    do = True
+
+                # only skips below if run is continuous and file already exist, or if do is false
+                if (not (self.isContinuous and os.path.exists(current_model_file))) and do:
                     if not self.already_normalized_brightparams:
                         print("\n" + "Normalizing " + current_total_name + "\n")
                         print(long_line)
@@ -373,7 +380,7 @@ class BigRuns:
                     all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
                     all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
                 else:
-                    print("File for Model {} already exist, skipping...".format(current_total_name))
+                    print("{} selected for skipping...".format(current_total_name))
                 k += 1
         if not self.already_normalized_brightparams:
             file_paths = [
@@ -404,7 +411,7 @@ class BigRuns:
         np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
         np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
 
-    def intensityGridAnalysis(self,action):
+    def intensityGridAnalysis(self,action,do_list=None):
         print(line)
         print(line)
         print(line)
@@ -421,10 +428,18 @@ class BigRuns:
 
             print("Analyzing Intensity Movie for Model ", current_total_name)
             print(long_line)
-
-            movieMakerIntensity.imageAnalysis(
-                action, self.sub_paths, current_total_name, current_bp
-            )
+            do = False
+            if do_list is not None:
+                if current_total_name in do_list:
+                    do = True
+            else:
+                do = True
+            if do:
+                movieMakerIntensity.imageAnalysis(
+                    action, self.sub_paths, current_total_name, current_bp
+                )
+            else:
+                print(current_total_name + " not in do list, skipping...")
 
     def blurrIntensityGrid(self, action):
 
