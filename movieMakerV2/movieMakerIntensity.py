@@ -183,6 +183,9 @@ def blur_intensity_movie(action,sub_path, model:str, intent_grid_type,brightpara
     return intermodel_data
 
 
+freq_points = [86e9,230e9,345e9]
+
+
 def imageAnalysis(action,sub_path, model:str, brightparams):
 
     parent_model_path = sub_path["intensityPath"] + model + "/"
@@ -223,7 +226,7 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
 
     did230 = False
     did_freq_points = [False,False,False]
-    freq_points = [86e9,230e9,345e9]
+
     for i in range(num_iterations):
         print(line)
         print(line)
