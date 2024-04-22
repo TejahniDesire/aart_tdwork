@@ -99,7 +99,7 @@ def creatSubDirectory(path_chosen,purpose:str = '',kill_policy=False):
         if isDir:
             print("Subdirectory for " + purpose + " '{}' already exist, removing...".format(path_chosen))
 
-            existing_file = os.listdir(path)
+            existing_file = os.listdir(path_chosen)
             if len(existing_file) == 0:
                 print("Empty directory, removing...")
                 os.rmdir(path_chosen)
