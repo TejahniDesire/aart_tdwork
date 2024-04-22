@@ -61,7 +61,7 @@ class BigRuns:
         self.var_intensity_grid_names = var_intensity_grid_names
         self.geo_grid_names = geo_grid_names
         self.geo_grid_params = geo_grid_params
-        self.normalized_brightparams = normalized_brightparams
+        self.already_normalized_brightparams = normalized_brightparams
         self.isContinuous = isContinuous
 
         # Create Directories______________________________________________________________________
@@ -121,7 +121,7 @@ class BigRuns:
 
         print("Final Grid Type: ",self.run_type)
         # Create astro ParamGrid________________________________________________________________________________________
-        if self.normalized_brightparams:
+        if self.already_normalized_brightparams:
 
             file_paths = [
                 self.sub_paths["runWideNumpy"] + "all_intensity_model_brightparams.npy",
@@ -348,7 +348,7 @@ class BigRuns:
 
                 # only skips below if run is continuous and file already exist
                 if not (self.isContinuous and os.path.exists(current_model_file)):
-                    if not self.normalized_brightparams:
+                    if not self.already_normalized_brightparams:
                         print("\n" + "Normalizing " + current_total_name + "\n")
                         print(long_line)
 
@@ -375,7 +375,7 @@ class BigRuns:
                 else:
                     print("File for Model {} already exist, skipping...".format(current_total_name))
                 k += 1
-        if not self.normalized_brightparams:
+        if not self.already_normalized_brightparams:
             file_paths = [
                 self.sub_paths["runWideNumpy"] + "all_intensity_model_brightparams",
                 self.sub_paths["runWideNumpy"] + "all_intensity_model_names",
@@ -395,7 +395,7 @@ class BigRuns:
                 np.save(file, arrays[k])
                 k += 1
 
-        self.normalized_brightparams = True
+        self.already_normalized_brightparams = True
         # Numpy saving________________________________________________
 
         all_230_total_jy_thin_numpy_name = self.sub_paths["meta"] + "thin_total_flux"

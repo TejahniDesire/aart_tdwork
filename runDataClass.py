@@ -95,6 +95,7 @@ run2 = runData("run2",
                ["ModelA", "ModelB","ModelC"],
                iscontinuous=True
                )
+run2.setisNormalized(True)
 # testRun1______________________________________________________________________
 
 testRun1 = runData("testRun1",
