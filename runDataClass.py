@@ -154,7 +154,7 @@ soloRun2.setAction(
 )
 
 
-class SingleModelDate:
+class SingleModelData:
 
     def __init__(self,sub_paths:dict,run:str,model:str):
         self.sub_paths = sub_paths
