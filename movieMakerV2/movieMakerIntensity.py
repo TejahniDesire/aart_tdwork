@@ -222,6 +222,8 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
     mean_optical_depth_I2 = np.zeros(num_iterations)
 
     did230 = False
+    did_freq_points = [False,False,False]
+    freq_points = [86e9,230e9,345e9]
     for i in range(num_iterations):
         print(line)
         print(line)
@@ -247,18 +249,19 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
         tau1 = h5f['tau1'][:]
         tau0 = h5f['tau0'][:]
 
-        if (not did230) and brightparams[action["var"]] >= 230e9:
-            did230 = True
-            full_profiles0 = h5f['full_profiles0'][:]
-            # full_profiles1 = h5f['full_profiles1'][:]
-            # full_profiles2 = h5f['full_profiles2'][:]
-            full_profiles_unit = h5f['full_profiles_unit'][:]
-            print("Frequency = " + str(brightparams[action["var"]]) + " for power law saving")
-            np.save(final_data_path + "_full_profiles0_230GHz",
-                    full_profiles0)
-            np.save(final_data_path + "_full_profiles_unit_230GHz",
-                    full_profiles_unit)
-
+        for i in range(len(freq_points)):
+            if (not did_freq_points[i]) and brightparams[action["var"]] >= freq_points[i]:
+                did_freq_points[i] = True
+                full_profiles0 = h5f['full_profiles0'][:]
+                # full_profiles1 = h5f['full_profiles1'][:]
+                # full_profiles2 = h5f['full_profiles2'][:]
+                full_profiles_unit = h5f['full_profiles_unit'][:]
+                print("Frequency = " + str(brightparams[action["var"]]) + " for power law saving at "
+                      + "{:.5e}".format(freq_points[i]))
+                np.save(final_data_path + "_full_profiles0_{}GHz".format("{:.5e}".format(freq_points[i])),
+                        full_profiles0)
+                np.save(final_data_path + "_full_profiles_unit_{}GHz".format("{:.5e}".format(freq_points[i])),
+                        full_profiles_unit)
         h5f.close()
 
         # Thin Radii Calcs----------------------------------------------------------------------------------------------
