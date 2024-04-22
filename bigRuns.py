@@ -45,10 +45,10 @@ bigRun = classRunComputing.BigRuns(
 
 """ Intensity Grid Creation_________________________________________________________"""
 
-bigRun.creatIntensityGrid(
-    run.getAction(),
-    do_list=do_list
-)
+# bigRun.creatIntensityGrid(
+#     run.getAction(),
+#     do_list=do_list
+# )
 
 # bigRun.blurrIntensityGrid(
 #     run.getAction()

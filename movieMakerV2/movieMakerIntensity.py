@@ -253,7 +253,7 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
             # full_profiles1 = h5f['full_profiles1'][:]
             # full_profiles2 = h5f['full_profiles2'][:]
             full_profiles_unit = h5f['full_profiles_unit'][:]
-            print("Frequency = " + brightparams[action["var"]] + " for power law saving")
+            print("Frequency = " + str(brightparams[action["var"]]) + " for power law saving")
             np.save(final_data_path + "_full_profiles0_230GHz",
                     full_profiles0)
             np.save(final_data_path + "_full_profiles_unit_230GHz",
