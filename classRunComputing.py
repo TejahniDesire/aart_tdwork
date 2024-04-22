@@ -592,9 +592,8 @@ class BigRuns:
             r_outer = image_tools.curve_params(varphis, rhos_outer)
             # ___________________________________________________________________
 
-
             '''Data Readind----------------------------------'''
-            data_path = self.sub_paths["intensityPath"] + model + "/" + "numpy/"
+            data_path = self.sub_paths["intensityPath"] + model + "/clean/numpy/"
 
             x_variable = np.load(data_path + "x_variable.npy")
             janksys_thick = np.load(data_path + "janksys_thick.npy")
@@ -930,7 +929,7 @@ class BigRuns:
             # ___________________________________________________________________
 
             '''Data Readind----------------------------------'''
-            data_path = self.sub_paths["intensityPath"] + model + "/" + "numpy/"
+            data_path = self.sub_paths["intensityPath"] + model + "/blurr/numpy/"
 
             x_variable = np.load(data_path + "blurr_x_variable.npy")
             janksys_thick = np.load(data_path + "blurr_janksys_thick.npy")
