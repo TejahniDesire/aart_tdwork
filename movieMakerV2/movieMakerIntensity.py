@@ -190,6 +190,10 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
     num_of_theta_points = image_tools.num_of_theta_points  # array size for radii calcs
     num_iterations = int((action["stop"] - action["start"]) / action["step"])
 
+    final_data_path = current_model_file + "numpy/"
+    fileloading.creatSubDirectory(final_data_path,"final image path for {}".format(model), kill_policy=False)
+
+
     """GRAPHS________________________________________________________________________________________________________"""
     x_variable = np.zeros(num_iterations)  # counter for independant variable
 
@@ -217,6 +221,7 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
     mean_optical_depth_I1 = np.zeros(num_iterations)
     mean_optical_depth_I2 = np.zeros(num_iterations)
 
+    did230 = False
     for i in range(num_iterations):
         print(line)
         print(line)
@@ -242,11 +247,18 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
         tau1 = h5f['tau1'][:]
         tau0 = h5f['tau0'][:]
 
-        if brightparams[action["var"]] >= 230e9:
+        if (not did230) and brightparams[action["var"]] >= 230e9:
+            did230 = True
             full_profiles0 = h5f['full_profiles0'][:]
-            full_profiles1 = h5f['full_profiles1'][:]
-            full_profiles2 = h5f['full_profiles2'][:]
+            # full_profiles1 = h5f['full_profiles1'][:]
+            # full_profiles2 = h5f['full_profiles2'][:]
             full_profiles_unit = h5f['full_profiles_unit'][:]
+            print("Frequency = " + brightparams[action["var"]] + " for power law saving")
+            np.save(final_data_path + "_full_profiles0_230GHz",
+                    full_profiles0)
+            np.save(final_data_path + "_full_profiles_unit_230GHz",
+                    full_profiles_unit)
+
         h5f.close()
 
         # Thin Radii Calcs----------------------------------------------------------------------------------------------
@@ -311,10 +323,6 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
         mean_optical_depth_I1[i] = np.sum(tau0 * I1) / np.sum(I1)
         mean_optical_depth_I2[i] = np.sum(tau0 * I2) / np.sum(I2)
         # (\Sum \tau * I) / (\Sum I),
-
-    final_data_path = current_model_file + "numpy/"
-
-    fileloading.creatSubDirectory(final_data_path,"final image path for {}".format(model), kill_policy=False)
 
     # Remove Row of Zeros
     radii_Full_Thin = np.delete(radii_Full_Thin, 0, 0)
