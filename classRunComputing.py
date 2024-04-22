@@ -350,8 +350,6 @@ class BigRuns:
                 if do_list is not None:
                     if current_total_name in do_list:
                         do = True
-                else:
-                    do = True
 
                 # only skips below if run is continuous and file already exist, or if do is false
                 if (not (self.isContinuous and os.path.exists(current_model_file))) or do:
