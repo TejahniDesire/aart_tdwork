@@ -178,9 +178,11 @@ class SingleModelData:
             "radii_I1_Thick": data_path + "radii_I1_Thick.npy",
             "radii_I2_Thick": data_path + "radii_I2_Thick.npy",
             "theta":data_path + "theta.npy",
-            "mean_optical_depth_I0" :data_path + "mean_optical_depth_I0.npy",
+            "mean_optical_depth_I0": data_path + "mean_optical_depth_I0.npy",
             "mean_optical_depth_I1": data_path + "mean_optical_depth_I1.npy",
-            "mean_optical_depth_I2": data_path + "mean_optical_depth_I2.npy"
+            "mean_optical_depth_I2": data_path + "mean_optical_depth_I2.npy",
+            "230full_profiles": data_path + "_full_profiles0_230GHz.npy",
+            "230full_profile_units": data_path + "_full_profiles_unit_230GHz.npy"
         }
 
         data_path = self.sub_paths["intensityPath"] + model + "/blurr/numpy/"
@@ -194,6 +196,8 @@ class SingleModelData:
             "radii_I0_Thin": data_path + "blurr_radii_I0_Thin.npy",
             "radii_FullAbsorption_Thick" :data_path + "blurr_radii_FullAbsorption_Thick.npy",
             "theta":data_path + "theta.npy",
+            "230full_profiles": data_path + "_full_profiles0_230GHz.npy",
+            "230full_profile_units": data_path + "_full_profiles_unit_230GHz.npy"
         }
 
         self.give_clean = True
