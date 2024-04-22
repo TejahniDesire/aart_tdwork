@@ -241,10 +241,12 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
         tau2 = h5f['tau2'][:]
         tau1 = h5f['tau1'][:]
         tau0 = h5f['tau0'][:]
-        # full_profiles0 = h5f['full_profiles0'][:]
-        # full_profiles1 = h5f['full_profiles1'][:]
-        # full_profiles2 = h5f['full_profiles2'][:]
-        # full_profiles_unit = h5f['full_profiles_unit'][:]
+
+        if brightparams[action["var"]] >= 230e9:
+            full_profiles0 = h5f['full_profiles0'][:]
+            full_profiles1 = h5f['full_profiles1'][:]
+            full_profiles2 = h5f['full_profiles2'][:]
+            full_profiles_unit = h5f['full_profiles_unit'][:]
         h5f.close()
 
         # Thin Radii Calcs----------------------------------------------------------------------------------------------
