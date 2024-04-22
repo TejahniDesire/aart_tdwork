@@ -56,21 +56,20 @@ bigRun = classRunComputing.BigRuns(
 bigRun.intensityGridAnalysis(
     run.getAction()
 )
-
-# bigRun.blurrIntensityGridAnalysis(
-#     run.getAction()
-# )
-
-""" Blurr Graph Creation_________________________________________________________"""
-
-# bigRun.blurrGraphCreation(
-#     run.getAction()
-# )
 """ Clean Graph Creation_________________________________________________________"""
-
 bigRun.graphCreation(
     run.getAction()
 )
-""" _________________________________________________________"""
 
+""" Blurring intensity grid_________________________________________________________"""
+bigRun.blurrIntensityGridAnalysis(
+    run.getAction()
+)
+
+""" Blurr Graph Creation_________________________________________________________"""
+
+bigRun.blurrGraphCreation(
+    run.getAction()
+)
+""" _________________________________________________________"""
 
