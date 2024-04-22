@@ -535,12 +535,12 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
         # im0im = np.log10(thin_intensity[3])
         # im0im[im0im == -np.Infinity] = 0
         vmax0 = np.nanmax(thin_intensity[3]) * 1.2
-        im0 = ax0.imshow(thin_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+        im0 = ax0.imshow(thin_intensity[3], vmax=vmax0, origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
     else:
         # im0im = np.log10(thin_intensity[0])
         # im0im[im0im == -np.Infinity] = 0
         vmax0 = np.nanmax(thin_intensity[0]) * 1.2
-        im0 = ax0.imshow(thin_intensity[0], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+        im0 = ax0.imshow(thin_intensity[0], vmax=vmax0, origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
 
 
     # im0 = ax0.imshow(im0im, origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit],
@@ -560,12 +560,12 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
         # im0im = np.log10(thick_intensity[3])
         # im0im[im0im == -np.Infinity] = 0
         vmax1 = np.nanmax(thick_intensity[3]) * 1.2
-        im1 = ax1.imshow(thick_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+        im1 = ax1.imshow(thick_intensity[3], vmax=vmax1, origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
     else:
         # im0im = np.log10(thick_intensity[0])
         # im0im[im0im == -np.Infinity] = 0
         vmax1 = np.nanmax(thick_intensity[0]) * 1.2
-        im1 = ax1.imshow(thick_intensity[0], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+        im1 = ax1.imshow(thick_intensity[0], vmax=vmax1, origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
 
     #
     ax1.set_xlim(-10, 10)  # units of M
