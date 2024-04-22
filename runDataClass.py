@@ -207,7 +207,7 @@ class SingleModelData:
 
     def __getitem__(self, item):
         if self.give_clean:
-            return np.load(self.clean_data_paths[item])
+            return np.load(self.clean_data_paths[item],allow_pickle=True)
         else:
-            return np.load(self.blurr_data_paths[item])
+            return np.load(self.blurr_data_paths[item],allow_pickle=True)
 
