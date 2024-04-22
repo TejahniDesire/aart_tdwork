@@ -1,5 +1,5 @@
 import astroModels
-
+import numpy as np
 
 class runData:
 
@@ -152,4 +152,57 @@ soloRun2.setAction(
             "images": True
     }
 )
+
+
+class SingleModelDate:
+
+    def __init__(self,sub_paths:dict,run:str,model:str):
+        self.sub_paths = sub_paths
+        self.run = run
+        self.model_name = model
+
+        data_path = self.sub_paths["intensityPath"] + model + "/clean/numpy/"
+        self.clean_data_paths = {
+            "x_variable": data_path + "x_variable.npy",
+            "janksys_thick": data_path + "janksys_thick.npy",
+            "janksys_thin" :data_path + "janksys_thin.npy",
+            "mean_radii_Thin": data_path + "mean_radii_Thin.npy",
+            "mean_radii_Thick": data_path + "mean_radii_Thick.npy",
+            "radii_I0_Thin": data_path + "radii_I0_Thin.npy",
+            "radii_I1_Thin": data_path + "radii_I1_Thin.npy",
+            "radii_I2_Thin": data_path + "radii_I2_Thin.npy",
+            "radii_Full_Thin": data_path + "radii_Full_Thin.npy",
+            "radii_FullAbsorption_Thick":data_path + "radii_FullAbsorption_Thick.npy",
+            "radii_I0_Thick": data_path + "radii_I0_Thick.npy",
+            "radii_I1_Thick": data_path + "radii_I1_Thick.npy",
+            "radii_I2_Thick": data_path + "radii_I2_Thick.npy",
+            "theta":data_path + "theta.npy",
+            "mean_optical_depth_I0" :data_path + "mean_optical_depth_I0.npy",
+            "mean_optical_depth_I1": data_path + "mean_optical_depth_I1.npy",
+            "mean_optical_depth_I2": data_path + "mean_optical_depth_I2.npy"
+        }
+
+        data_path = self.sub_paths["intensityPath"] + model + "/blurr/numpy/"
+
+        self.blurr_data_paths = {
+            "x_variable": data_path + "blurr_x_variable.npy",
+            "janksys_thick": data_path + "blurr_janksys_thick.npy",
+            "janksys_thin" :data_path + "blurr_janksys_thin.npy",
+            "mean_radii_Thin": data_path + "blurr_mean_radii_Thin.npy",
+            "mean_radii_Thick": data_path + "blurr_mean_radii_Thick.npy",
+            "radii_I0_Thin": data_path + "blurr_radii_I0_Thin.npy",
+            "radii_FullAbsorption_Thick" :data_path + "blurr_radii_FullAbsorption_Thick.npy",
+            "theta":data_path + "theta.npy",
+        }
+
+        self.give_clean = True
+
+    def set_give_policy(self,policy:bool):
+        self.give_clean = policy
+
+    def __getitem__(self, item):
+        if self.give_clean:
+            return np.load(self.clean_data_paths[item])
+        else:
+            return np.load(self.blurr_data_paths[item])
 

@@ -183,6 +183,9 @@ class BigRuns:
             fileloading.writeDocString(self.sub_paths["meta"] + "AllModelsGuide.txt",
                                        self.totalModelDocString())
 
+    def getSubPaths(self):
+        return self.sub_paths
+
     def type2Grid(self):
         all_brightparams = []  # list[tuple (name, bright parameters)]
         all_model_names = []
