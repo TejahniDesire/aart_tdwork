@@ -14,11 +14,10 @@ from matplotlib import ticker
 from aart_func import *
 import params
 from params import *  # The file params.py contains all the relevant parameters for the simulations
-
 from astropy import units as u
 import image_tools as tls
 import numpy as np
-import intensityBlurr
+from movieMakerV2 import intensityBlurr
 
 
 speed = 8
