@@ -12,6 +12,7 @@ import params
 from params import *
 import importlib
 import astroModels
+from movieMakerV2 import  intensityBlurr
 
 
 def normalize(lband,rtray,brightparams:dict):
@@ -37,7 +38,7 @@ def total_jy_normal_func(fitparams,lband,rtray,bp,y):
     return y - thick_total_flux
 
 
-def totalIntensity230Point(lband,rtray,brightparams:dict,already230=False):
+def totalIntensity230Point(lband,rtray,brightparams:dict,already230=False,blurr_policy=False):
     if already230:
         bp = brightparams
     else:
@@ -61,17 +62,21 @@ def totalIntensity230Point(lband,rtray,brightparams:dict,already230=False):
     # I0_Absorb = h5f['bghts0_absorbtion'][:]
     # I1_Absorb = h5f['bghts1_absorbtion'][:]
     # I2_Absorb = h5f['bghts2_absorbtion'][:]
-    Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+    absorb_image = h5f['bghts_full_absorbtion'][:]
+    thin_image = I0 + I1 + I2
     #
     # tau2 = h5f['tau2'][:]
     # tau1 = h5f['tau1'][:]
     # tau0 = h5f['tau0'][:]
 
+    if blurr_policy:
+        thin_image, absorb_image = intensityBlurr.blurrIntensity(brightparams,thin_image,absorb_image)
+
     h5f.close()
 
     subprocess.run(["rm " + fnrays], shell=True)
 
-    thin_total_flux = ilp.total_jy(I0 + I1 + I2,230e9,bp["mass"]).value
-    thick_total_flux = ilp.total_jy(Absorbtion_Image,230e9,bp["mass"]).value
+    thin_total_flux = ilp.total_jy(thin_image,230e9,bp["mass"]).value
+    thick_total_flux = ilp.total_jy(absorb_image,230e9,bp["mass"]).value
 
     return thin_total_flux,thick_total_flux

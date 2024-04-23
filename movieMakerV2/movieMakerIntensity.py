@@ -18,6 +18,7 @@ from params import *  # The file params.py contains all the relevant parameters 
 from astropy import units as u
 import image_tools as tls
 import numpy as np
+import intensityBlurr
 
 
 speed = 8
@@ -116,7 +117,8 @@ def blur_intensity_movie(action,sub_path, model:str, intent_grid_type,brightpara
 
     # total jy at 230GHz
 
-    thin_total_flux, thick_total_flux = normalizingBrightparams.totalIntensity230Point(lband,rtray,brightparams,False)
+    thin_total_flux, thick_total_flux = normalizingBrightparams.totalIntensity230Point(
+        lband,rtray,brightparams,already230=False,blurr_policy=True)
 
     intermodel_data = {
         "thin_total_flux": thin_total_flux,
@@ -149,27 +151,13 @@ def blur_intensity_movie(action,sub_path, model:str, intent_grid_type,brightpara
         I1 = h5f['bghts1'][:]
         I2 = h5f['bghts2'][:]
 
-        Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+        absorb_image = h5f['bghts_full_absorbtion'][:]
         thin_image = I0 + I1 + I2
 
         h5f.close()
 
         # Blurring ______________________________________
-        dx = params.dx0
-        one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)  # one Mass length unit = 1 r_g
-        mass_to_uas = np.arctan(one_M.value / dBH) / muas_to_rad  # dBH is in units of meters
-        # muas_blurr = 20
-        muas_blurr = 10
-        rg_blurr = muas_blurr / mass_to_uas
-
-        sig = rg_blurr / (dx * (2 * np.sqrt(
-            2 * np.log(2))))  # We have 20 uas FWHM resolution. dx = uas/pixels. so 20/dx is FWHM in pixel units.
-        thin_blurr_image = ndimage.gaussian_filter(thin_image, sigma=(sig, sig))
-        thick_blurr_image = ndimage.gaussian_filter(Absorbtion_Image, sigma=(sig, sig))
-        print(R"$\mu a s$: " + str(mass_to_uas) + "\n"
-              + R"$R_g$_blurr: " + str(rg_blurr) + "\n"
-              + "sig: " + str(sig) + "\n"
-              + "dx: " + str(dx))
+        thin_blurr_image,thick_blurr_image = intensityBlurr.blurrIntensity(brightparams,thin_image,absorb_image)
         # ______________________________________
 
         blurr_intensity_path = (current_model_file +
