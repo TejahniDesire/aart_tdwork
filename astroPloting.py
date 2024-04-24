@@ -252,7 +252,7 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
 
 
 
-def IntensityVSRadiiType1(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intensity,rmax,blurr_policy=False):
+def IntensityVSRadiiType1(fig,ax0,ax1,limit,thin_intensity, thick_intensity,rmax,blurr_policy=False):
     """
 
     Args:
@@ -266,8 +266,8 @@ def IntensityVSRadiiType1(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intens
     rsize = image_tools.num_of_radial_points
     # rmax = I0.shape[0] * .4
 
-    axes_0 = [ax0, ax2]
-    axes_1 = [ax1, ax3]
+    axes_0 = [ax0]
+    axes_1 = [ax1]
     if not blurr_policy:
         images = [thin_intensity[3], thick_intensity[3]]
     else:
@@ -291,12 +291,12 @@ def IntensityVSRadiiType1(fig,ax0,ax1,ax2,ax3,limit,thin_intensity, thick_intens
     interps = [interp012, interpAbsorb]
 
     model = ["for Thin Assumption", "for Full Solution"]
-    for J in range(2):
+    for J in range(1):
         if J == 0:
             axes_0[J].get_xaxis().set_ticks([])
             axes_1[J].get_xaxis().set_ticks([])
         x = np.linspace(0, rmax - 1, rsize) * params.dx0
-        ptheta = [1.51554218, 1.4208208, 1.57868978]  # for frame 33
+        ptheta = [0, np.pi/2, np.pi]  # for frame 33
         colors = ['tab:blue', 'tab:green', 'tab:red']
         parg = []
         for L in range(len(ptheta)):

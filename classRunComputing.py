@@ -87,6 +87,8 @@ class BigRuns:
             "peakHistThick": image_path + "peakHistThick/",
             "convHist": image_path + "convHist/",
             "totalFlux": image_path + "totalFlux230Ghz/",
+            "RadVVarphi": image_path + "radVVarphi/",
+            "fluxVRadii": image_path + "fluxVVarphi/",
             "meta": meta_path,
             "3d": image_path + "3dPloting/"
 
@@ -637,7 +639,11 @@ class BigRuns:
             image_path = self.sub_paths["imagePath"] + model + "/clean/"
             Optical_depth_path = self.sub_paths["opticalDepth"] + model + "/clean/"
 
-            file_creation = [fluxVNu_path, radVNu_path,image_path,Optical_depth_path]
+            radVVarphi_path = self.sub_paths["RadVVarphi"] + model + "/clean/"
+            fluxVRadii_path = self.sub_paths["fluxVRadii"] + model + "/clean/"
+
+
+            file_creation = [fluxVNu_path, radVNu_path,image_path,Optical_depth_path,radVVarphi_path,fluxVRadii_path ]
 
             for i in range(len(file_creation)):
                 fileloading.creatSubDirectory(file_creation[i],kill_policy=False)
@@ -646,6 +652,8 @@ class BigRuns:
             radVNu_path += "Clean_"
             image_path += "Clean_"
             Optical_depth_path += "Clean_"
+            radVVarphi_path += "Clean_"
+            fluxVRadii_path += "Clean_"
 
             # Points of Interest
 
@@ -739,6 +747,7 @@ class BigRuns:
                 k = action["start"]
                 print("Constructing Full images for " + model)
                 for i in range(num_of_intensity_points):
+
                     brightparams = self.all_model_brightparams[j]
                     brightparams["nu0"] = k
                     print("Full image production for intensity frame: ", i)
@@ -763,7 +772,7 @@ class BigRuns:
                     Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
 
                     h5f.close()
-
+                    rmax = I0.shape[0] * .4
                     thin_intensity = [I0,I1,I2,I0 + I1 + I2]
                     thick_intensity = [I0_Absorb, I1_Absorb,I2_Absorb, Absorbtion_Image]
                     thin_radii = [radii_I0_Thin[i,:],radii_I1_Thin[i,:],radii_I2_Thin[i,:],radii_Full_Thin[i,:]]
@@ -786,6 +795,44 @@ class BigRuns:
                     plt.close()
 
                     # Get total jansky
+                    # VARPHI__________________________________________________-
+
+                    '''IntensityVSRadiiType1________________________________________________________________'''
+                    fig, dum = plt.subplots(2, 2, figsize=dim, dpi=400)
+                    ax0 = plt.subplot(2, 2, 1)
+                    ax1 = plt.subplot(2, 2, 2)
+                    ax2 = plt.subplot(2, 2, 3)
+                    ax3 = plt.subplot(2, 2, 4)
+
+                    astroPloting.IntensityVSRadiiType1(fig, ax0, ax1, ax2, ax3, params.limits, thin_intensity,
+                                                       thick_intensity, rmax)
+                    #
+                    # ax1.text(2, 1.01, astroModels.var_label[action["var"]]
+                    #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
+                    #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
+
+                    pltname = (fluxVRadii_path + 'IntVRad_' + str(i) + "_Nu_"
+                               + str(round(k / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+                    plt.savefig(pltname, bbox_inches='tight')
+                    print("Image '{}' Created".format(pltname))
+                    plt.close()
+
+                    '''RadVSVarphiType2________________________________________________________________'''
+                    fig, dum = plt.subplots(1, 2, figsize=dim, dpi=400)
+                    ax0 = plt.subplot(1, 2, 1)
+                    ax1 = plt.subplot(1, 2, 2)
+
+                    astroPloting.radiiVSVarphi(fig, ax0, ax1, params.limits, thin_intensity)
+
+                    # ax0.text(2, 1.01, astroModels.var_label[action["var"]]
+                    #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
+                    #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
+
+                    pltname = (radVVarphi_path + 'radVVarphu_' + str(i) + "_Nu_"
+                               + str(round(k / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+                    plt.savefig(pltname, bbox_inches='tight')
+                    print("Image '{}' Created".format(pltname))
+                    plt.close()
 
                     k += action['step']
             j += 1  # marker for which brightparams to use
