@@ -47,7 +47,8 @@ bigRun = classRunComputing.BigRuns(
 #
 bigRun.creatIntensityGrid(
     run.getAction(),
-    do_list=do_list
+    do_list=do_list,
+    isContinuous=True
 )
 
 # bigRun.blurrIntensityGrid(
@@ -58,12 +59,14 @@ bigRun.creatIntensityGrid(
 """ Intensity Grid Analysis_________________________________________________________"""
 bigRun.intensityGridAnalysis(
     run.getAction(),
-    do_list=do_list
+    do_list=do_list,
+    isContinuous=True
 )
 """ Clean Graph Creation_________________________________________________________"""
 bigRun.graphCreation(
     run.getAction(),
-    do_list=do_list
+    do_list=do_list,
+    isContinuous=True
 )
 
 """ Blurring intensity grid_________________________________________________________"""
