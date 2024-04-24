@@ -28,7 +28,8 @@ import fileloading
 
 
 run = runDataClass.run2
-do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
+# do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
+do_list = ["ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = None
 
 bigRun = classRunComputing.BigRuns(
