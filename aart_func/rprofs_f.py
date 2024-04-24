@@ -505,6 +505,137 @@ def thermal_profile(coords, redshift, cosAng, bp=kw_brightparams, fk=kw_funckeys
     return specific_intensity_thin, specific_intensity_thick, tau, full_profiles, full_profiles_units
 
 
+def rest_frame_thermal_profile(coords, cosAng=None, bp=kw_brightparams, fk=kw_funckeys):
+    """
+
+    Calculate the radial profile emission according to a thermal distribution
+    :param coords: dictionary containg "r" "x" and "y" values for each pixel
+    :param redshift: radius's corrsponding redshift
+    :param bp: dictionary with the following key-value pairs
+        nu0: Obeservation Frequency. Defaults to kw_nu0.
+        mass: Mass of black hole. Defaults to kw_mass.
+        scale_height (Float, optional): Slope of acretion disk height vs radius. Defaults to kw_scale_height.
+        theta_b (Float, optional): Angle between magnetic field and wave vector. Defaults to kw_theta_b.
+        beta (Float, optional): Ratio of gass pressure to Ion pressure. Defaults to kw_beta.
+        r_ie (Float, optional): _description_. Defaults to kw_r_ie.
+        Bchoice (Int, optional): True magnetic field equaiton 0 or Power law magnetic field 1. Defaults to kw_Bchoice.
+        rb_0 (Float, optional): Radius at which n = nth0. Defaults to kw_rb_0.
+        n_th0 (Float, optional): Proportionality constant for density power law. Defaults to kw_n_th0.
+        t_e0 (Float, optional): Proportionality constant for temperature power law. Defaults to kw_t_e0.
+        p_dens (Float, optional): Exponent for density power law. Defaults to kw_p_dens.
+        p_temp (Float, optional): Exponent for temperature power law. Defaults to kw_p_temp.
+        nscale: scale factor of inoisy
+    :param fk: dictionary with the following key-value pairs
+        "absorbkey": absorption or not
+        "emodelkey": thermal profile or power model
+        "bkey":      true magnetic field model or power model
+        "nnoisykey": unperturbed density or inoisy density
+        "tnoisykey": unperturbed temperature or inoisy temperature
+        "bnoisykey": unperturbed magnetic field or inoisy magnetic field
+    :return: brightness temperature and specific intensity
+
+    """
+
+    rnoisy, Xs, Yx = inoisy_radius()
+    # Temperature and Theta_e-------------------------------------------------------------------------------------------
+    tempnoisy = te_func(rnoisy, bp["mass"], bp["rb_0"], bp["t_e0"], bp["p_temp"])
+    te_noisy_funcs = {
+        0: partial(te_func, coords["r"], bp["mass"], bp["rb_0"], bp["t_e0"], bp["p_temp"]),
+        1: partial(inoisy_value, coords["x"], coords["y"], tempnoisy, bp["nscale"], kelv)
+    }
+
+    temp = te_noisy_funcs[fk["tnoisykey"]]()
+    # temp[np.all(temp.value)] = 10 ** -3 * kelv
+    theta_e = theta_e_func(temp)
+
+    # Density-----------------------------------------------------------------------------------------------------------
+    nthnoisy = nth_func(rnoisy, bp["mass"], bp["rb_0"], bp["n_th0"], bp["p_dens"])
+    n_noisy__funcs = {
+        0: partial(nth_func, coords["r"], bp["mass"], bp["rb_0"], bp["n_th0"], bp["p_dens"]),
+        1: partial(inoisy_value, coords["x"], coords["y"], nthnoisy, bp["nscale"], cmcubed)
+    }
+    n = n_noisy__funcs[fk["nnoisykey"]]()
+
+    # Magnetic Field----------------------------------------------------------------------------------------------------
+    b_fieldnoisyfuncs = {
+        0: partial(b_func_true, bp["beta"], bp["r_ie"], theta_e_func(tempnoisy), nthnoisy),
+        1: partial(b_func_power, rnoisy, bp["mass"], bp["rb_0"]),
+        2: partial(b_func_power_variable, rnoisy, bp["mass"], bp["rb_0"], bp["b_0"], bp["p_mag"])
+    }
+    bfieldnoisy = b_fieldnoisyfuncs[fk["bkey"]]()
+
+    b_field_funcs = {
+        0: partial(b_func_true, bp["beta"], bp["r_ie"], theta_e, n),
+        1: partial(b_func_power, coords["r"], bp["mass"], bp["rb_0"]),
+        2: partial(b_func_power_variable, coords["r"], bp["mass"], bp["rb_0"], bp["b_0"], bp["p_mag"])
+    }
+
+    b_field_noisy_funcs = {
+        0: b_field_funcs[fk["bkey"]],
+        1: partial(inoisy_value, coords["x"], coords["y"], bfieldnoisy, bp["nscale"], gauss)
+    }
+    b_field = b_field_noisy_funcs[fk["bnoisykey"]]()
+
+    # ------------------------------------------------------------------------------------------------------------------
+    nu_c = nu_c_func(b_field, theta_e, bp["theta_b"])
+
+    nu = bp["nu0"]
+    x = nu / nu_c
+
+    runits = coords["r"] * rg_func(bp["mass"])
+    # l' (l in the fluid frame)
+    # TODO: WHAT TO DO WITH COSANG
+    # path_length_fluid = runits * bp["scale_height"] / cosAng
+    path_length_fluid = runits * bp["scale_height"]
+
+    # J Coeff Calculations Returns units of [u.erg / (u.cm ** 3 * u.s * u.Hz)]------------------------------------------
+    jcoeff_I_fluid = n * e ** 2 * nu * synchrotron_func_I(x) / (2 * np.sqrt(3) * c * theta_e ** 2)
+
+    # jcoeff_Q_fluid = n * e ** 2 * nu * synchrotron_func_Q(x) / (2 * np.sqrt(3) * c * theta_e ** 2)
+    # jcoeff_V_fluid = 2 * n * e ** 2 * nu * synchrotron_func_Q(x) / (3 * np.sqrt(3) * np.tan(theta_b) * c * theta_e ** 3)
+
+    # Absorption--------------------------------------------------------------------------------------------------------
+
+    b_nu_fluid = ((2 * h * nu ** 3) / c ** 2) / (np.exp(h * nu / (theta_e * me * c ** 2)) - 1)
+
+    acoeff_I_fluid = jcoeff_I_fluid / b_nu_fluid
+    tau = acoeff_I_fluid * path_length_fluid
+
+    specific_intensity_thin = path_length_fluid * jcoeff_I_fluid
+    # brightness = ((c ** 2 / (2 * nu ** 2 * kB)) * specific_intensity_thin).to(u.K)
+
+    # specific_intensity_thick = inplus * np.exp(-tau) + redshift ** 3 * b_nu_fluid * (
+    #             1 - np.exp(- tau))
+    specific_intensity_thick = b_nu_fluid * (1 - np.exp(- tau))
+
+    # Convert planck to brightness radial--------------------
+    b_nu_fluid = brightness_temp(b_nu_fluid, bp["nu0"])
+    # Packing radial curves--------------------
+    jcoeff_I_fluid_packed = jcoeff_I_fluid.reshape(1, jcoeff_I_fluid.shape[0])
+    theta_e = theta_e.reshape(1, theta_e.shape[0])
+    n = n.reshape(1, n.shape[0])
+    b_field = b_field.reshape(1, b_field.shape[0])
+    b_nu_fluid = b_nu_fluid.reshape(1, b_nu_fluid.shape[0])
+    acoeff_I_fluid = acoeff_I_fluid.reshape(1, acoeff_I_fluid.shape[0])
+    tau_curve = tau.reshape(1, tau.shape[0])
+    r = coords["r"].reshape(1, coords["r"].shape[0])
+
+    specific_intensity_thin_packed = specific_intensity_thin.reshape(1, specific_intensity_thin.shape[0])
+    specific_intensity_thick_packed = specific_intensity_thick.reshape(1, specific_intensity_thick.shape[0])
+
+    # full_profiles = np.concatenate([r, theta_e.value, n.value, b_field.value, b_nu_fluid.value,
+    #                                 acoeff_I_fluid.value, tau_curve.value], axis=0)
+
+    full_profiles = np.concatenate([r, theta_e.value, n.value, b_field.value, b_nu_fluid.value,
+                                    acoeff_I_fluid.value, tau_curve.value, jcoeff_I_fluid_packed.value], axis=0)
+
+    full_profiles_units = [str(theta_e.unit), str(n.unit), str(b_field.unit), str(b_nu_fluid.unit),
+                           str(acoeff_I_fluid.unit), str(tau_curve.unit)]
+    # print("b_0: ", b_0)
+    # print("p: ", p_b)
+    return specific_intensity_thin, specific_intensity_thick, tau, full_profiles, full_profiles_units
+
+
 # TODO: remove redshift
 def brightness_temp(specific_intensity, nu0):
     return ((c ** 2 / (2 * nu0 ** 2 * kB)) * specific_intensity).to(u.K)

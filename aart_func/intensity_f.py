@@ -615,3 +615,22 @@ def CosAng(r,a,redshift,lamb,eta):
 
     return thth*redshift*kthkt
 
+def restFrameCosAng(r,eta):
+    """
+    Calculates the cosine of the emission angle
+    :param r: radius of the source
+    :param a: spin of the black hole
+    :param lamb: angular momentum
+
+    :return: the  cosine of the emission angle
+    """
+    #From eta, solve for Sqrt(p_\theta/p_t)
+
+    kthkt=np.sqrt(eta)
+    #kthkt=np.sqrt(eta+a**2*np.cos(thetao)**2-lamb**2/(np.tan(thetao)**2))
+
+    #Sqrt(g^{\theta\theta}) Evaluated at the equatorial plane
+    thth=1/r
+
+    return thth*kthkt
+
