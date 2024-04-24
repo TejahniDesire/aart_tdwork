@@ -45,7 +45,7 @@ def radii_of_thetaV2(I0, dx=None,give_intensities=False,navg_ang=10):
     x = np.arange(I0.shape[0])  # number of pixels
     y = x
     interp = RegularGridInterpolator((x, y), I0.T)
-    theta = np.matrix(np.linspace(0, 2 * np.pi, num_of_theta_points))  # 1 x num_of_theta_points
+    theta = np.matrix(np.linspace(0, 2 * np.pi, num_of_theta_points,endpoint=False))  # 1 x num_of_theta_points
 
     rmax = I0.shape[0] * .4
 

@@ -346,13 +346,10 @@ class BigRuns:
 
                 current_model_file = self.sub_paths["intensityPath"] + current_total_name + "/clean/"
 
-                do = False
-                if do_list is not None:
-                    if current_total_name in do_list:
-                        do = True
-
                 # only skips below if run is continuous and file already exist, or if do is false
-                if (not (self.isContinuous and os.path.exists(current_model_file))) or do:
+                preform_model = fileloading.crossContinousDoAnalysis(
+                    current_total_name,do_list,current_model_file,self.isContinuous)
+                if preform_model:
                     if not self.already_normalized_brightparams:
                         print("\n" + "Normalizing " + current_total_name + "\n")
                         print(long_line)
@@ -378,7 +375,7 @@ class BigRuns:
                     all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
                     all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
                 else:
-                    print("{} selected for skipping...".format(current_total_name))
+                    print("{} marked for skipping...".format(current_total_name))
                 k += 1
         if not self.already_normalized_brightparams:
             file_paths = [
@@ -426,20 +423,20 @@ class BigRuns:
 
             print("Analyzing Intensity Movie for Model ", current_total_name)
             print(long_line)
-            do = False
-            if do_list is not None:
-                if current_total_name in do_list:
-                    do = True
-            else:
-                do = True
-            if do:
+
+            parent_model_path = self.sub_paths["intensityPath"] + current_total_name + "/"
+            current_model_file = parent_model_path + "clean/"
+            preform_model = fileloading.crossContinousDoAnalysis(
+                current_total_name, do_list, current_model_file, self.isContinuous)
+
+            if preform_model:
                 movieMakerIntensity.imageAnalysis(
                     action, self.sub_paths, current_total_name, current_bp
                 )
             else:
-                print(current_total_name + " not in do list, skipping...")
+                print(current_total_name + " marked for skipping...")
 
-    def blurrIntensityGrid(self, action):
+    def blurrIntensityGrid(self,action,do_list):
 
         all_230_total_jy_thin = []
         all_230_total_jy_thick = []
@@ -467,14 +464,24 @@ class BigRuns:
                 run_type_arg = 1
             else:
                 run_type_arg = self.run_type
-            intermodel_data = movieMakerIntensity.blurr_intensity_movie(
-                action, self.sub_paths, current_total_name, run_type_arg, current_bp)
 
-            print(
-                "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(intermodel_data["thin_total_flux"]))
-            print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"]) + "\n")
-            all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
-            all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
+            parent_model_path = self.sub_paths["intensityPath"] + current_total_name + "/"
+            current_model_file = parent_model_path + "blurr/"
+
+            preform_model = fileloading.crossContinousDoAnalysis(
+                current_total_name, do_list, current_model_file, self.isContinuous)
+
+            if preform_model:
+                intermodel_data = movieMakerIntensity.blurr_intensity_movie(
+                    action, self.sub_paths, current_total_name, run_type_arg, current_bp)
+
+                print(
+                    "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(intermodel_data["thin_total_flux"]))
+                print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"]) + "\n")
+                all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
+                all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
+            else:
+                print(current_total_name + " marked for skipping...")
         # Numpy saving________________________________________________
 
         all_230_total_jy_thin_numpy_name = self.sub_paths["meta"] + "blurr_thin_total_flux"
@@ -483,7 +490,7 @@ class BigRuns:
         np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
         np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
 
-    def blurrIntensityGridAnalysis(self,action):
+    def blurrIntensityGridAnalysis(self,action,do_list):
         print(line)
         print(line)
         print(line)
@@ -499,12 +506,21 @@ class BigRuns:
             # ________________________________
             current_bp = self.all_model_brightparams[i]
 
-            print("Analyzing Intensity Movie for Model ", current_total_name)
-            print(long_line)
+            parent_model_path = self.sub_paths["intensityPath"] + current_total_name + "/"
+            current_model_file = parent_model_path + "blurr/"
 
-            movieMakerIntensity.blurrImageAnalysis(
-                action, self.sub_paths, current_total_name, current_bp
-            )
+            preform_model = fileloading.crossContinousDoAnalysis(
+                current_total_name, do_list, current_model_file, self.isContinuous)
+
+            if preform_model:
+                print("Analyzing Intensity Movie for Model ", current_total_name)
+                print(long_line)
+
+                movieMakerIntensity.blurrImageAnalysis(
+                    action, self.sub_paths, current_total_name, current_bp
+                )
+            else:
+                print(current_total_name + " marked for skipping...")
 
     def intensityModelDocString(self):
         string = line + line + line + "Total Number of Intensity Models: " + str(

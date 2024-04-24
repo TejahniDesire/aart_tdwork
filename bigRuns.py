@@ -28,7 +28,7 @@ import fileloading
 
 
 run = runDataClass.run2
-do_list = ["ModelB21","ModelB22","ModelB23"]
+do_list = ["ModelB11"]
 
 bigRun = classRunComputing.BigRuns(
     run.getRunName(),
