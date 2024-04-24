@@ -1066,7 +1066,7 @@ class BigRuns:
                     print(R"Observation frequency $\nu=$",k)
 
                     blurr_intensity_path = (current_model_file +
-                                            action["var"] + "{:.5e}".format(brightparams[action["var"]]))
+                                            action["var"] + "_blurr_" + "{:.5e}".format(brightparams[action["var"]]))
 
                     lim0 = 25
 
