@@ -50,10 +50,10 @@ bigRun.creatIntensityGrid(
     do_list=do_list
 )
 
-bigRun.blurrIntensityGrid(
-    run.getAction(),
-    do_list
-)
+# bigRun.blurrIntensityGrid(
+#     run.getAction(),
+#     do_list
+# )
 
 """ Intensity Grid Analysis_________________________________________________________"""
 bigRun.intensityGridAnalysis(
@@ -62,20 +62,21 @@ bigRun.intensityGridAnalysis(
 )
 """ Clean Graph Creation_________________________________________________________"""
 bigRun.graphCreation(
-    run.getAction()
+    run.getAction(),
+    do_list=do_list
 )
 
 """ Blurring intensity grid_________________________________________________________"""
-bigRun.blurrIntensityGridAnalysis(
-    run.getAction(),
-    do_list=["ModelA11","ModelB31"],
-    isContinuous=True
-)
+# bigRun.blurrIntensityGridAnalysis(
+#     run.getAction(),
+#     do_list=["ModelA11","ModelB31"],
+#     isContinuous=True
+# )
 
 """ Blurr Graph Creation_________________________________________________________"""
-
-bigRun.blurrGraphCreation(
-    run.getAction()
-)
+#
+# bigRun.blurrGraphCreation(
+#     run.getAction()
+# )
 """ _________________________________________________________"""
 

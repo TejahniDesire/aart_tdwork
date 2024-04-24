@@ -550,7 +550,7 @@ class BigRuns:
 
         return intensity_model_string + geo_models_string
 
-    def graphCreation(self,action):
+    def graphCreation(self,action,do_list=None,isContinuous=False):
         """
 
         Args:
@@ -759,90 +759,96 @@ class BigRuns:
                 k = action["start"]
                 print("Constructing Full images for " + model)
                 for i in range(num_of_intensity_points):
+                    preform_model = fileloading.crossContinousDoAnalysis(
+                        model, do_list, current_model_file, isContinuous)
 
-                    brightparams = self.all_model_brightparams[j]
-                    brightparams["nu0"] = k
-                    print("Full image production for intensity frame: ", i)
-                    print(R"Observation frequency $\nu=$",k)
+                    if preform_model:
 
-                    current_intensity_file = (current_model_file +
-                                              action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]]))
+                        brightparams = self.all_model_brightparams[j]
+                        brightparams["nu0"] = k
+                        print("Full image production for intensity frame: ", i)
+                        print(R"Observation frequency $\nu=$",k)
 
-                    lim0 = 25
+                        current_intensity_file = (current_model_file +
+                                                  action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]]))
 
-                    print("Reading file: ", current_intensity_file)
+                        lim0 = 25
 
-                    h5f = h5py.File(current_intensity_file, 'r')
+                        print("Reading file: ", current_intensity_file)
 
-                    I0 = h5f['bghts0'][:]  # This implies I0 is 1 pass
-                    I1 = h5f['bghts1'][:]
-                    I2 = h5f['bghts2'][:]
+                        h5f = h5py.File(current_intensity_file, 'r')
 
-                    I2_Absorb = h5f['bghts2_absorbtion'][:]
-                    I1_Absorb = h5f['bghts1_absorbtion'][:]
-                    I0_Absorb = h5f['bghts0_absorbtion'][:]
-                    Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+                        I0 = h5f['bghts0'][:]  # This implies I0 is 1 pass
+                        I1 = h5f['bghts1'][:]
+                        I2 = h5f['bghts2'][:]
 
-                    h5f.close()
-                    rmax = I0.shape[0] * .4
-                    thin_intensity = [I0,I1,I2,I0 + I1 + I2]
-                    thick_intensity = [I0_Absorb, I1_Absorb,I2_Absorb, Absorbtion_Image]
-                    thin_radii = [radii_I0_Thin[i,:],radii_I1_Thin[i,:],radii_I2_Thin[i,:],radii_Full_Thin[i,:]]
-                    thick_radii = [radii_I0_Thick[i, :], radii_I1_Thick[i, :],
-                                   radii_I2_Thick[i, :], radii_FullAbsorption_Thick[i, :]]
+                        I2_Absorb = h5f['bghts2_absorbtion'][:]
+                        I1_Absorb = h5f['bghts1_absorbtion'][:]
+                        I0_Absorb = h5f['bghts0_absorbtion'][:]
+                        Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
 
-                    fig, (ax0, ax1) = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
+                        h5f.close()
+                        rmax = I0.shape[0] * .4
+                        thin_intensity = [I0,I1,I2,I0 + I1 + I2]
+                        thick_intensity = [I0_Absorb, I1_Absorb,I2_Absorb, Absorbtion_Image]
+                        thin_radii = [radii_I0_Thin[i,:],radii_I1_Thin[i,:],radii_I2_Thin[i,:],radii_Full_Thin[i,:]]
+                        thick_radii = [radii_I0_Thick[i, :], radii_I1_Thick[i, :],
+                                       radii_I2_Thick[i, :], radii_FullAbsorption_Thick[i, :]]
 
-                    astroPloting.fullImage(fig,ax0,ax1,lim0,thin_intensity, thick_intensity,
-                                           thin_radii, thick_radii, theta)
+                        fig, (ax0, ax1) = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
 
-                    ax0.text(-9, 8.5, astroModels.var_label[action["var"]]
-                             + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-                             + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="w")
+                        astroPloting.fullImage(fig,ax0,ax1,lim0,thin_intensity, thick_intensity,
+                                               thin_radii, thick_radii, theta)
 
-                    pltname = (image_path + 'FullImage_' + str(i) + "_Nu_"
-                               + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
-                    plt.savefig(pltname, bbox_inches='tight')
-                    print("Jpeg Created:  " + pltname)
-                    plt.close()
+                        ax0.text(-9, 8.5, astroModels.var_label[action["var"]]
+                                 + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
+                                 + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="w")
 
-                    # Get total jansky
-                    # VARPHI__________________________________________________-
+                        pltname = (image_path + 'FullImage_' + str(i) + "_Nu_"
+                                   + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+                        plt.savefig(pltname, bbox_inches='tight')
+                        print("Jpeg Created:  " + pltname)
+                        plt.close()
 
-                    '''IntensityVSRadiiType1________________________________________________________________'''
-                    fig, dum = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
-                    ax0 = plt.subplot(1, 2, 1)
-                    ax1 = plt.subplot(1, 2, 2)
+                        # Get total jansky
+                        # VARPHI__________________________________________________-
 
-                    astroPloting.IntensityVSRadiiType1(fig, ax0, ax1, params.limits, thin_intensity,
-                                                       thick_intensity, rmax)
-                    #
-                    # ax1.text(2, 1.01, astroModels.var_label[action["var"]]
-                    #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-                    #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
+                        '''IntensityVSRadiiType1________________________________________________________________'''
+                        fig, dum = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
+                        ax0 = plt.subplot(1, 2, 1)
+                        ax1 = plt.subplot(1, 2, 2)
 
-                    pltname = (fluxVRadii_path + 'IntVRad_' + str(i) + "_Nu_"
-                               + str(round(k / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
-                    plt.savefig(pltname, bbox_inches='tight')
-                    print("Image '{}' Created".format(pltname))
-                    plt.close()
+                        astroPloting.IntensityVSRadiiType1(fig, ax0, ax1, params.limits, thin_intensity,
+                                                           thick_intensity, rmax)
+                        #
+                        # ax1.text(2, 1.01, astroModels.var_label[action["var"]]
+                        #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
+                        #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
 
-                    '''RadVSVarphiType2________________________________________________________________'''
-                    fig, dum = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
-                    ax0 = plt.subplot(1, 2, 1)
-                    ax1 = plt.subplot(1, 2, 2)
+                        pltname = (fluxVRadii_path + 'IntVRad_' + str(i) + "_Nu_"
+                                   + str(round(k / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+                        plt.savefig(pltname, bbox_inches='tight')
+                        print("Image '{}' Created".format(pltname))
+                        plt.close()
 
-                    astroPloting.radiiVSVarphi(fig, ax0, ax1, params.limits, thin_intensity)
+                        '''RadVSVarphiType2________________________________________________________________'''
+                        fig, dum = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
+                        ax0 = plt.subplot(1, 2, 1)
+                        ax1 = plt.subplot(1, 2, 2)
 
-                    # ax0.text(2, 1.01, astroModels.var_label[action["var"]]
-                    #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-                    #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
+                        astroPloting.radiiVSVarphi(fig, ax0, ax1, params.limits, thin_intensity)
 
-                    pltname = (radVVarphi_path + 'radVVarphu_' + str(i) + "_Nu_"
-                               + str(round(k / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
-                    plt.savefig(pltname, bbox_inches='tight')
-                    print("Image '{}' Created".format(pltname))
-                    plt.close()
+                        # ax0.text(2, 1.01, astroModels.var_label[action["var"]]
+                        #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
+                        #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
+
+                        pltname = (radVVarphi_path + 'radVVarphu_' + str(i) + "_Nu_"
+                                   + str(round(k / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+                        plt.savefig(pltname, bbox_inches='tight')
+                        print("Image '{}' Created".format(pltname))
+                        plt.close()
+                    else:
+                        print(model + " marked for skipping...")
 
                     k += action['step']
             j += 1  # marker for which brightparams to use
