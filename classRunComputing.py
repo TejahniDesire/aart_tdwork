@@ -559,6 +559,18 @@ class BigRuns:
         Returns:
 
         """
+        # PLOT SETTINGS__________________________________________________
+        plt.rcParams.update({
+            'font.size': 14,  # Set font size to 11pt
+            'axes.labelsize': 14,  # -> axis labels
+            'legend.fontsize': 12,  # -> legends
+            'text.usetex': True,
+            'text.latex.preamble': (  # LaTeX preamble
+                r'\usepackage{lmodern}'
+            ),
+            'font.family': 'Latin Modern Roman',
+        })
+        # ________________________________________________________________
         print(line)
         print(line)
         print("Initializing Graph Creation")
@@ -942,6 +954,19 @@ class BigRuns:
         Returns:
 
         """
+        # PLOT SETTINGS__________________________________________________
+        plt.rcParams.update({
+            'font.size': 14,  # Set font size to 11pt
+            'axes.labelsize': 14,  # -> axis labels
+            'legend.fontsize': 12,  # -> legends
+            'text.usetex': True,
+            'text.latex.preamble': (  # LaTeX preamble
+                r'\usepackage{lmodern}'
+            ),
+            'font.family': 'Latin Modern Roman',
+        })
+        # ________________________________________________________________
+
         print(line)
         print(line)
         print("Initializing Blurr Graph Creation")
