@@ -28,8 +28,8 @@ import fileloading
 
 
 run = runDataClass.run2
-# do_list = ["ModelB11"]
-do_list = None
+do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
+# do_list = None
 
 bigRun = classRunComputing.BigRuns(
     run.getRunName(),
@@ -45,15 +45,15 @@ bigRun = classRunComputing.BigRuns(
 
 """ Intensity Grid Creation_________________________________________________________"""
 #
-# bigRun.creatIntensityGrid(
-#     run.getAction(),
-#     do_list=do_list
-# )
-#
-# bigRun.blurrIntensityGrid(
-#     run.getAction(),
-#     do_list
-# )
+bigRun.creatIntensityGrid(
+    run.getAction(),
+    do_list=do_list
+)
+
+bigRun.blurrIntensityGrid(
+    run.getAction(),
+    do_list
+)
 
 """ Intensity Grid Analysis_________________________________________________________"""
 bigRun.intensityGridAnalysis(
