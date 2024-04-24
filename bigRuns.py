@@ -44,16 +44,16 @@ bigRun = classRunComputing.BigRuns(
 # bigRun.createGeoGrid()
 
 """ Intensity Grid Creation_________________________________________________________"""
-
-bigRun.creatIntensityGrid(
-    run.getAction(),
-    do_list=do_list
-)
-
-bigRun.blurrIntensityGrid(
-    run.getAction(),
-    do_list
-)
+#
+# bigRun.creatIntensityGrid(
+#     run.getAction(),
+#     do_list=do_list
+# )
+#
+# bigRun.blurrIntensityGrid(
+#     run.getAction(),
+#     do_list
+# )
 
 """ Intensity Grid Analysis_________________________________________________________"""
 bigRun.intensityGridAnalysis(

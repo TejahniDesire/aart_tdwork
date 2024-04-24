@@ -235,9 +235,9 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
         I2_Absorb = h5f['bghts2_absorbtion'][:]
         Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
 
-        tau2 = h5f['tau2'][:]
-        tau1 = h5f['tau1'][:]
-        tau0 = h5f['tau0'][:]
+        tau2 = h5f['tau2']
+        tau1 = h5f['tau1']
+        tau0 = h5f['tau0']
 
         for i in range(len(freq_points)):
             if (not did_freq_points[i]) and brightparams[action["var"]] >= freq_points[i]:
