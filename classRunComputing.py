@@ -331,15 +331,8 @@ class BigRuns:
             normrtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "_Normalizing" + "RayTracing" + ".h5"
 
             for i in range(len(self.all_intensity_model_brightparams)):
-                print(line)
-                print(line)
-                print("Model number: " + str(k + 1))
-
                 # String Names
-                # current_intent_name = self.all_intensity_model_names[i]
-                # self.all_model_names += [current_geo_model + current_intent_name.replace("Model", "")]
                 current_total_name = self.all_model_names[k]
-                print("     " + current_total_name)
                 # ________________________________
                 current_bp = self.all_model_brightparams[k]
 
@@ -411,17 +404,10 @@ class BigRuns:
         print(line)
         print("Analyzing Intensity Grid for " + self.run)
         for i in range(len(self.all_model_brightparams)):
-            print(line)
-            print(line)
-            print("Model number: " + str(i + 1))
-
             # String Names
             current_total_name = self.all_model_names[i]
             # ________________________________
             current_bp = self.all_model_brightparams[i]
-
-            print("Analyzing Intensity Movie for Model ", current_total_name)
-            print(long_line)
 
             parent_model_path = self.sub_paths["intensityPath"] + current_total_name + "/"
             current_model_file = parent_model_path + "clean/"
@@ -429,6 +415,8 @@ class BigRuns:
                 current_total_name, do_list, current_model_file, isContinuous)
 
             if preform_model:
+                print("Analyzing Intensity Movie for Model ", current_total_name)
+                print(long_line)
                 movieMakerIntensity.imageAnalysis(
                     action, self.sub_paths, current_total_name, current_bp
                 )
@@ -445,9 +433,6 @@ class BigRuns:
         print(line)
         print("Bluring Intensity Grid for " + self.run)
         for i in range(len(self.all_model_brightparams)):
-            print(line)
-            print(line)
-            print("Model number: " + str(i + 1))
 
             # String Names
             # current_intent_name = self.all_intensity_model_names[i]
@@ -455,9 +440,6 @@ class BigRuns:
             current_total_name = self.all_model_names[i]
             # ________________________________
             current_bp = self.all_model_brightparams[i]
-
-            print("Bluring Intensity Movie for Model ", current_total_name)
-            print(long_line)
 
             if self.run_type == 0:
                 run_type_arg = 1
@@ -495,13 +477,9 @@ class BigRuns:
         print(line)
         print("Analyzing blurred intensity grid for " + self.run)
         for i in range(len(self.all_model_brightparams)):
-            print(line)
-            print(line)
-            print("Model number: " + str(i + 1))
 
             # String Names
             current_total_name = self.all_model_names[i]
-            print("     " + current_total_name)
             # ________________________________
             current_bp = self.all_model_brightparams[i]
 
@@ -512,8 +490,7 @@ class BigRuns:
                 current_total_name, do_list, current_model_file, isContinuous)
 
             if preform_model:
-                print("Analyzing Intensity Movie for Model ", current_total_name)
-                print(long_line)
+                print("Analyzing Blurred Intensity Movie for Model ", current_total_name)
 
                 movieMakerIntensity.blurrImageAnalysis(
                     action, self.sub_paths, current_total_name, current_bp
