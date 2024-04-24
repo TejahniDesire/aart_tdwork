@@ -165,7 +165,7 @@ class SingleModelData:
         self.clean_data_paths = {
             "x_variable": data_path + "x_variable.npy",
             "janksys_thick": data_path + "janksys_thick.npy",
-            "janksys_thin" :data_path + "janksys_thin.npy",
+            "janksys_thin" : data_path + "janksys_thin.npy",
             "mean_radii_Thin": data_path + "mean_radii_Thin.npy",
             "mean_radii_Thick": data_path + "mean_radii_Thick.npy",
             "radii_I0_Thin": data_path + "radii_I0_Thin.npy",
@@ -180,12 +180,18 @@ class SingleModelData:
             "mean_optical_depth_I0": data_path + "mean_optical_depth_I0.npy",
             "mean_optical_depth_I1": data_path + "mean_optical_depth_I1.npy",
             "mean_optical_depth_I2": data_path + "mean_optical_depth_I2.npy",
-            "86full_profiles": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[0])),
-            "86full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[0])),
-            "230full_profiles": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[1])),
-            "230full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[1])),
-            "345full_profiles": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[2])),
-            "345full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[2]))
+            "86full_profiles0": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[0])),
+            "86full_profiles1": data_path + "_full_profiles1_{}GHz.npy".format("{:.5e}".format(freq_points[0])),
+            "86full_profiles2": data_path + "_full_profiles2_{}GHz.npy".format("{:.5e}".format(freq_points[0])),
+            # "86full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[0])),
+            "230full_profiles0": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[1])),
+            "230full_profiles1": data_path + "_full_profiles1_{}GHz.npy".format("{:.5e}".format(freq_points[1])),
+            "230full_profiles2": data_path + "_full_profiles2_{}GHz.npy".format("{:.5e}".format(freq_points[1])),
+            # "230full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[1])),
+            "345full_profiles0": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[2])),
+            "345full_profiles1": data_path + "_full_profiles1_{}GHz.npy".format("{:.5e}".format(freq_points[2])),
+            "345full_profiles2": data_path + "_full_profiles2_{}GHz.npy".format("{:.5e}".format(freq_points[2])),
+            # "345full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[2]))
         }
 
         data_path = self.sub_paths["intensityPath"] + model + "/blurr/numpy/"
@@ -200,11 +206,11 @@ class SingleModelData:
             "radii_FullAbsorption_Thick" :data_path + "blurr_radii_FullAbsorption_Thick.npy",
             "theta":data_path + "theta.npy",
             "86full_profiles": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[0])),
-            "86full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[0])),
+            # "86full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[0])),
             "230full_profiles": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[1])),
-            "230full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[1])),
+            # "230full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[1])),
             "345full_profiles": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[2])),
-            "345full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[2]))
+            # "345full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[2]))
         }
 
         self.give_clean = True

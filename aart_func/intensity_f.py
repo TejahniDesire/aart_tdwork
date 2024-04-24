@@ -371,7 +371,6 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     si_thin0, si_thick0, tau0mask0, full_profiles0, full_profiles_unit, cosAngReturn0, testa, testb, eta = bright_radial(
         supergrid0, mask0, sign0, spin_case,rs0, isco, thetao, brightparams, funckeys, phi0)
 
-
     cosAngReturn0Full = np.zeros(mask0.shape)
     cosAngReturn0Full[mask0] = cosAngReturn0
 
@@ -444,8 +443,8 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     h5f.create_dataset('tau2', data=tau2)
     h5f.create_dataset('tau1', data=tau1)
     h5f.create_dataset('tau0', data=tau0)
-    # h5f.create_dataset('full_profiles2', data=full_profiles2)
-    # h5f.create_dataset('full_profiles1', data=full_profiles1)
+    h5f.create_dataset('full_profiles2', data=full_profiles2)
+    h5f.create_dataset('full_profiles1', data=full_profiles1)
     h5f.create_dataset('full_profiles0', data=full_profiles0)
     h5f.create_dataset('full_profiles_unit', data=full_profiles_unit)
     #

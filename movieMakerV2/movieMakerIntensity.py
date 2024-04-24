@@ -239,19 +239,24 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
         tau1 = h5f['tau1'][()]
         tau0 = h5f['tau0'][()]
 
-        for i in range(len(freq_points)):
-            if (not did_freq_points[i]) and brightparams[action["var"]] >= freq_points[i]:
-                did_freq_points[i] = True
+        for m in range(len(freq_points)):
+            if (not did_freq_points[m]) and brightparams[action["var"]] >= freq_points[m]:
+                did_freq_points[m] = True
                 full_profiles0 = h5f['full_profiles0'][:]
-                # full_profiles1 = h5f['full_profiles1'][:]
-                # full_profiles2 = h5f['full_profiles2'][:]
-                full_profiles_unit = h5f['full_profiles_unit'][:]
+                full_profiles1 = h5f['full_profiles1'][:]
+                full_profiles2 = h5f['full_profiles2'][:]
+                # full_profiles_unit = h5f['full_profiles_unit'][:]
                 print("Frequency = " + str(brightparams[action["var"]]) + " for power law saving at "
-                      + "{:.5e}".format(freq_points[i]))
-                np.save(final_data_path + "_full_profiles0_{}GHz".format("{:.5e}".format(freq_points[i])),
+                      + "{:.5e}".format(freq_points[m]))
+
+                np.save(final_data_path + "_full_profiles0_{}GHz".format("{:.5e}".format(freq_points[m])),
                         full_profiles0)
-                np.save(final_data_path + "_full_profiles_unit_{}GHz".format("{:.5e}".format(freq_points[i])),
-                        full_profiles_unit)
+                np.save(final_data_path + "_full_profiles1_{}GHz".format("{:.5e}".format(freq_points[m])),
+                        full_profiles1)
+                np.save(final_data_path + "_full_profiles2_{}GHz".format("{:.5e}".format(freq_points[m])),
+                        full_profiles2)
+                # np.save(final_data_path + "_full_profiles_unit_{}GHz".format("{:.5e}".format(freq_points[m])),
+                #         full_profiles_unit)
         h5f.close()
 
         # Thin Radii Calcs----------------------------------------------------------------------------------------------
