@@ -855,6 +855,9 @@ class BigRuns:
         total_flux_path = self.sub_paths["totalFlux"]
 
         bar_xaxis = np.arange(len(self.all_model_names))
+        bar_labels = self.all_model_names
+        for i in range(len(bar_xaxis)):
+            bar_labels[i] = bar_labels[i].replace("Model","")
         """Flux Peaks_____________________________________________________________________"""
         # Thin_________________
 
@@ -882,7 +885,7 @@ class BigRuns:
         fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
         astroPloting.bar(ax,bar_xaxis,hist_flux_peaks_thins,"Optical Thin Assumption Peak Flux per model",
-                         "Observation Frequency (GHz)",self.all_model_names)
+                         "Observation Frequency (GHz)",bar_labels)
 
         figname = peak_hist_thin_path + "FluxPeakPerThinModel.jpeg"
         plt.savefig(figname, bbox_inches='tight')
@@ -894,7 +897,7 @@ class BigRuns:
         fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
         astroPloting.bar(ax,bar_xaxis,hist_flux_peaks_thicks,"Optical Thin Assumption Peak Flux per model",
-                         "Observation Frequency (GHz)",self.all_model_names)
+                         "Observation Frequency (GHz)",bar_labels)
 
         figname = peak_hist_thick_path + "FluxPeakPerThickModel.jpeg"
         plt.savefig(figname, bbox_inches='tight')
@@ -917,7 +920,7 @@ class BigRuns:
         fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
         astroPloting.bar(ax,bar_xaxis,hist_convs,"Convergence for cumulative on I2",
-                         "Observation Frequency (GHz)",self.all_model_names)
+                         "Observation Frequency (GHz)",bar_labels)
         figname = conv_hist_path + "convHistPerModel.jpeg"
         plt.savefig(figname, bbox_inches='tight')
         print("Image '{}' Created".format(figname))
@@ -927,7 +930,7 @@ class BigRuns:
         fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
         astroPloting.bar(ax, bar_xaxis,thin_total_flux, "Total Flux at 230GHz",
-                         "Optically Thin Assumption Frequency",self.all_model_names)
+                         "Optically Thin Assumption Frequency",bar_labels)
 
         figname = total_flux_path + "thin.jpeg"
         plt.savefig(figname, bbox_inches='tight')
@@ -938,7 +941,7 @@ class BigRuns:
         fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
         astroPloting.bar(ax, bar_xaxis, thick_total_flux, "Total Flux at 230GHz",
-                         "Full Solution Frequency", self.all_model_names)
+                         "Full Solution Frequency", bar_labels)
 
         figname = total_flux_path + "thick.jpeg"
         plt.savefig(figname, bbox_inches='tight')
