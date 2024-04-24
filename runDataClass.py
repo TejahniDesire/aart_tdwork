@@ -7,7 +7,7 @@ from movieMakerV2 import movieMakerIntensity
 class runData:
 
     def __init__(self, name:str,brightparams_grid: dict,variable_brightparams_names:list,
-                 variable_geo_values,variable_geo_names,iscontinuous=False):
+                 variable_geo_values,variable_geo_names):
         """
 
         Args:
@@ -33,7 +33,6 @@ class runData:
 
         self.isNormalized = False
         self.blurr_policy = False
-        self.isContinuous = iscontinuous
 
     def setAction(self,action):
         """
@@ -79,9 +78,6 @@ class runData:
     def getBlurrPolicy(self):
         return self.blurr_policy
 
-    def getIsContinuous(self):
-        return self.isContinuous
-
 
 # run1______________________________________________________________________
 run1 = runData("run1",
@@ -96,7 +92,6 @@ run2 = runData("run2",
                ["p_temp", "p_mag"],
                [(["a"], [str(.001)]),(["a"], [str(.5)]),(["a"], [str(15/16)])],
                ["ModelA", "ModelB","ModelC"],
-               iscontinuous=True
                )
 run2.setisNormalized(True)
 # testRun1______________________________________________________________________

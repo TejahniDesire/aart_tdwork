@@ -31,7 +31,7 @@ line_small = "________________________________ \n"
 class BigRuns:
 
     def __init__(self, run: str, intensity_grid_params: dict, var_intensity_grid_names, geo_grid_params, geo_grid_names,
-                 normalized_brightparams=False,isContinuous=False):
+                 normalized_brightparams=False):
         """
 
         Args:
@@ -62,7 +62,6 @@ class BigRuns:
         self.geo_grid_names = geo_grid_names
         self.geo_grid_params = geo_grid_params
         self.already_normalized_brightparams = normalized_brightparams
-        self.isContinuous = isContinuous
 
         # Create Directories______________________________________________________________________
         fileloading.creatSubDirectory(EZPaths.modelRunsDir, "storing all run results")
@@ -303,7 +302,7 @@ class BigRuns:
                 self.total_models_count += 1
                 k += 1
 
-    def creatIntensityGrid(self,action,do_list=None):
+    def creatIntensityGrid(self,action,do_list=None,isContinuous=False):
 
         funckeys = {
             "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
@@ -348,7 +347,7 @@ class BigRuns:
 
                 # only skips below if run is continuous and file already exist, or if do is false
                 preform_model = fileloading.crossContinousDoAnalysis(
-                    current_total_name,do_list,current_model_file,self.isContinuous)
+                    current_total_name,do_list,current_model_file,isContinuous)
                 if preform_model:
                     if not self.already_normalized_brightparams:
                         print("\n" + "Normalizing " + current_total_name + "\n")
@@ -406,7 +405,7 @@ class BigRuns:
         np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
         np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
 
-    def intensityGridAnalysis(self,action,do_list=None):
+    def intensityGridAnalysis(self,action,do_list=None,isContinuous=False):
         print(line)
         print(line)
         print(line)
@@ -427,7 +426,7 @@ class BigRuns:
             parent_model_path = self.sub_paths["intensityPath"] + current_total_name + "/"
             current_model_file = parent_model_path + "clean/"
             preform_model = fileloading.crossContinousDoAnalysis(
-                current_total_name, do_list, current_model_file, self.isContinuous)
+                current_total_name, do_list, current_model_file, isContinuous)
 
             if preform_model:
                 movieMakerIntensity.imageAnalysis(
@@ -436,7 +435,7 @@ class BigRuns:
             else:
                 print(current_total_name + " marked for skipping...")
 
-    def blurrIntensityGrid(self,action,do_list=None):
+    def blurrIntensityGrid(self,action,do_list=None,isContinuous=False):
 
         all_230_total_jy_thin = []
         all_230_total_jy_thick = []
@@ -469,7 +468,7 @@ class BigRuns:
             current_model_file = parent_model_path + "blurr/"
 
             preform_model = fileloading.crossContinousDoAnalysis(
-                current_total_name, do_list, current_model_file, self.isContinuous)
+                current_total_name, do_list, current_model_file, isContinuous)
 
             if preform_model:
                 intermodel_data = movieMakerIntensity.blurr_intensity_movie(
@@ -490,11 +489,11 @@ class BigRuns:
         np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
         np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
 
-    def blurrIntensityGridAnalysis(self,action,do_list=None):
+    def blurrIntensityGridAnalysis(self,action,do_list=None,isContinuous=False):
         print(line)
         print(line)
         print(line)
-        print("Analyzing Intensity Grid for " + self.run)
+        print("Analyzing blurred intensity grid for " + self.run)
         for i in range(len(self.all_model_brightparams)):
             print(line)
             print(line)
@@ -510,7 +509,7 @@ class BigRuns:
             current_model_file = parent_model_path + "blurr/"
 
             preform_model = fileloading.crossContinousDoAnalysis(
-                current_total_name, do_list, current_model_file, self.isContinuous)
+                current_total_name, do_list, current_model_file, isContinuous)
 
             if preform_model:
                 print("Analyzing Intensity Movie for Model ", current_total_name)

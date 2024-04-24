@@ -38,7 +38,6 @@ bigRun = classRunComputing.BigRuns(
     run.getGeoGrid(),
     run.getGeoGridNames(),
     normalized_brightparams=run.getIsNormalized(),
-    isContinuous=run.getIsContinuous()
 )
 """ Geo Model_________________________________________________________"""
 

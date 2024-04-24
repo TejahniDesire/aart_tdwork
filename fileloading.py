@@ -335,9 +335,9 @@ def continousAnalysis(file_name,isContinuous):
     return not (isContinuous and os.path.exists(file_name))
 
 
-def crossContinousDoAnalysis(model_name,do_list,file_name,isContinuous):
+def crossContinousDoAnalysis(current_model_name, do_list, file_name, isContinuous):
     # Returns true if do or if continous conditions meet
-    do = doListAnalysis(model_name,do_list)
+    do = doListAnalysis(current_model_name, do_list)
     continueCondition = continousAnalysis(file_name,isContinuous)
     return do or continueCondition
 
