@@ -312,9 +312,9 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
 
         # Optical Depth-------------------------------------------------------------------------------------------------
 
-        mean_optical_depth_I0[i] = np.sum(tau0 * I0) / np.sum(I0)
-        mean_optical_depth_I1[i] = np.sum(tau1 * I1) / np.sum(I1)
-        mean_optical_depth_I2[i] = np.sum(tau2 * I2) / np.sum(I2)
+        # mean_optical_depth_I0[i] = np.sum(tau0 * I0) / np.sum(I0)
+        # mean_optical_depth_I1[i] = np.sum(tau1 * I1) / np.sum(I1)
+        # mean_optical_depth_I2[i] = np.sum(tau2 * I2) / np.sum(I2)
         # (\Sum \tau * I) / (\Sum I),
 
     # Remove Row of Zeros

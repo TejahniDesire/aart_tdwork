@@ -387,6 +387,11 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     I0_temp_thick = ilp.brightness_temp(I0_thick*ilp.specific_int_units, brightparams["nu0"])
     full_temp = ilp.brightness_temp(full_intensity*ilp.specific_int_units, brightparams["nu0"])
 
+    # Optical Depth Averaging
+    tau0 = np.sum(tau0[mask2] * full_intensity)/sum(full_intensity)
+    tau1 = np.sum(tau1[mask2] * full_intensity)/sum(full_intensity)
+    tau2 = np.sum(tau2[mask2] * full_intensity)/sum(full_intensity)
+
     cosAngReturn2Full = cosAngReturn2Full.reshape(N0, N0).T
     cosAngReturn1Full = cosAngReturn1Full.reshape(N0, N0).T
     cosAngReturn0Full = cosAngReturn0Full.reshape(N0, N0).T
