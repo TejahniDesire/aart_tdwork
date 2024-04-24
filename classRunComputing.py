@@ -1055,7 +1055,7 @@ class BigRuns:
             '''Full Images----------------------------------'''
             if action["images"]:
                 parent_model_path = self.sub_paths["intensityPath"] + model + "/"
-                current_model_file = parent_model_path + "blur/"
+                current_model_file = parent_model_path + "blurr/"
 
                 k = action["start"]
                 print("Constructing Full images for " + model)

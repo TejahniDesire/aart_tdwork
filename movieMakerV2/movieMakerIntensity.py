@@ -108,7 +108,7 @@ def blurr_intensity_movie(action, sub_path, model:str, intent_grid_type, brightp
 
     # File paths-------------------------
     parent_model_path = sub_path["intensityPath"] + model + "/"
-    current_model_file = parent_model_path + "blur/"
+    current_model_file = parent_model_path + "blurr/"
     clean_model_file = parent_model_path + "clean/"
 
     fileloading.creatSubDirectory(current_model_file,
