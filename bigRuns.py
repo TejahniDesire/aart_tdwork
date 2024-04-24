@@ -45,37 +45,37 @@ bigRun = classRunComputing.BigRuns(
 
 """ Intensity Grid Creation_________________________________________________________"""
 
-bigRun.creatIntensityGrid(
-    run.getAction(),
-    do_list=do_list
-)
-
-bigRun.blurrIntensityGrid(
-    run.getAction(),
-    do_list
-)
+# bigRun.creatIntensityGrid(
+#     run.getAction(),
+#     do_list=do_list
+# )
+#
+# bigRun.blurrIntensityGrid(
+#     run.getAction(),
+#     do_list
+# )
 
 """ Intensity Grid Analysis_________________________________________________________"""
-bigRun.intensityGridAnalysis(
-    run.getAction(),
-    do_list=do_list
-)
+# bigRun.intensityGridAnalysis(
+#     run.getAction(),
+#     do_list=do_list
+# )
 """ Clean Graph Creation_________________________________________________________"""
 bigRun.graphCreation(
     run.getAction()
 )
 
 """ Blurring intensity grid_________________________________________________________"""
-bigRun.blurrIntensityGridAnalysis(
-    run.getAction(),
-    do_list=["ModelA11","ModelB31"],
-    isContinuous=True
-)
+# bigRun.blurrIntensityGridAnalysis(
+#     run.getAction(),
+#     do_list=["ModelA11","ModelB31"],
+#     isContinuous=True
+# )
 
 """ Blurr Graph Creation_________________________________________________________"""
 
-bigRun.blurrGraphCreation(
-    run.getAction()
-)
+# bigRun.blurrGraphCreation(
+#     run.getAction()
+# )
 """ _________________________________________________________"""
 
