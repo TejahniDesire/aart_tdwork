@@ -532,7 +532,6 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
     # vmin = 10e8
     # Optically Thin
     if not blurr_policy:
-        print("NO BlURR")
         # im0im = np.log10(thin_intensity[3])
         # im0im[im0im == -np.Infinity] = 0
         vmax0 = np.nanmax(thin_intensity[3])
