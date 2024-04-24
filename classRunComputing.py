@@ -798,13 +798,11 @@ class BigRuns:
                     # VARPHI__________________________________________________-
 
                     '''IntensityVSRadiiType1________________________________________________________________'''
-                    fig, dum = plt.subplots(2, 2, figsize=dim, dpi=400)
-                    ax0 = plt.subplot(2, 2, 1)
-                    ax1 = plt.subplot(2, 2, 2)
-                    ax2 = plt.subplot(2, 2, 3)
-                    ax3 = plt.subplot(2, 2, 4)
+                    fig, dum = plt.subplots(1, 2, figsize=dim, dpi=400)
+                    ax0 = plt.subplot(1, 2, 1)
+                    ax1 = plt.subplot(1, 2, 2)
 
-                    astroPloting.IntensityVSRadiiType1(fig, ax0, ax1, ax2, ax3, params.limits, thin_intensity,
+                    astroPloting.IntensityVSRadiiType1(fig, ax0, ax1, params.limits, thin_intensity,
                                                        thick_intensity, rmax)
                     #
                     # ax1.text(2, 1.01, astroModels.var_label[action["var"]]
