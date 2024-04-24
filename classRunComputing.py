@@ -152,10 +152,6 @@ class BigRuns:
             self.all_model_brightparams = arrays[2]
             self.all_model_names = arrays[3]
             self.total_models_count = arrays[4]
-            print(self.all_intensity_model_names)
-            print(self.total_models_count)
-            print(arrays[4])
-            print("____________________")
             fileloading.writeDocString(self.sub_paths["meta"] + "IntensityModelsGuide.txt",
                                        self.intensityModelDocString())
             fileloading.writeDocString(self.sub_paths["meta"] + "AllModelsGuide.txt",
