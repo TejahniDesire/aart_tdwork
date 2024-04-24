@@ -302,6 +302,14 @@ class BigRuns:
                 self.total_models_count += 1
                 k += 1
 
+    def createBrightParamsDict(self):
+        diction = {}
+        for i in range(len(self.all_model_brightparams)):
+            # String Names
+            diction[self.all_model_names[i]] = self.all_model_brightparams[i]
+            # ________________________________
+        return diction
+
     def creatIntensityGrid(self,action,do_list=None,isContinuous=False):
 
         funckeys = {
@@ -490,7 +498,7 @@ class BigRuns:
                 current_total_name, do_list, current_model_file, isContinuous)
 
             if preform_model:
-                print("Analyzing Blurred Intensity Movie for Model ", current_total_name)
+                print("Analyzing blurred intensity movie for model ", current_total_name)
 
                 movieMakerIntensity.blurrImageAnalysis(
                     action, self.sub_paths, current_total_name, current_bp
