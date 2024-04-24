@@ -68,7 +68,7 @@ bigRun = classRunComputing.BigRuns(
 """ Blurring intensity grid_________________________________________________________"""
 bigRun.blurrIntensityGridAnalysis(
     run.getAction(),
-    ["ModelA11"]
+    ["ModelB31"]
 )
 
 """ Blurr Graph Creation_________________________________________________________"""
