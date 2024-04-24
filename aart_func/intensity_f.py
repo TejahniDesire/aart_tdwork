@@ -401,9 +401,9 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     I0_temp_thin = I0_temp_thin.reshape(N0, N0).T
     I1_temp_thin = I1_temp_thin.reshape(N1, N1).T
     I2_temp_thin = I2_temp_thin.reshape(N2, N2).T
-    tau0 = tau0.reshape(N0, N0).T
-    tau1 = tau1.reshape(N0, N0).T
-    tau2 = tau2.reshape(N0, N0).T
+    # tau0 = tau0.reshape(N0, N0).T
+    # tau1 = tau1.reshape(N0, N0).T
+    # tau2 = tau2.reshape(N0, N0).T
     full_temp = full_temp.reshape(N0, N0).T
 
     filename = fileloading.intensityNameWrite(brightparams,funckeys)
