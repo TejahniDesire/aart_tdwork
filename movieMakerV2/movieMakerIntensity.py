@@ -239,6 +239,8 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
         tau1 = h5f['tau1']
         tau0 = h5f['tau0']
 
+        print(tau0)
+
         for i in range(len(freq_points)):
             if (not did_freq_points[i]) and brightparams[action["var"]] >= freq_points[i]:
                 did_freq_points[i] = True
