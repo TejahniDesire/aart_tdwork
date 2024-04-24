@@ -100,7 +100,7 @@ def intensity_movie(action,sub_path, model:str, intent_grid_type,brightparams):
     return intermodel_data
 
 
-def blur_intensity_movie(action,sub_path, model:str, intent_grid_type,brightparams):
+def blurr_intensity_movie(action, sub_path, model:str, intent_grid_type, brightparams):
 
     geo_model = model[0:len(model)-intent_grid_type] # remove numbers from model
     lband = sub_path["GeoDoth5Path"] + geo_model + "Lensing" + ".h5"
@@ -350,7 +350,7 @@ def imageAnalysis(action,sub_path, model:str, brightparams):
 
 def blurrImageAnalysis(action,sub_path, model:str, brightparams):
     parent_model_path = sub_path["intensityPath"] + model + "/"
-    current_model_file = parent_model_path + "blur/"
+    current_model_file = parent_model_path + "blurr/"
     num_of_theta_points = image_tools.num_of_theta_points  # array size for radii calcs
     num_iterations = int((action["stop"] - action["start"]) / action["step"])
 

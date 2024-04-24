@@ -467,7 +467,7 @@ class BigRuns:
                 run_type_arg = 1
             else:
                 run_type_arg = self.run_type
-            intermodel_data = movieMakerIntensity.blur_intensity_movie(
+            intermodel_data = movieMakerIntensity.blurr_intensity_movie(
                 action, self.sub_paths, current_total_name, run_type_arg, current_bp)
 
             print(
