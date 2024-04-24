@@ -436,7 +436,7 @@ class BigRuns:
             else:
                 print(current_total_name + " marked for skipping...")
 
-    def blurrIntensityGrid(self,action,do_list):
+    def blurrIntensityGrid(self,action,do_list=None):
 
         all_230_total_jy_thin = []
         all_230_total_jy_thick = []
@@ -490,7 +490,7 @@ class BigRuns:
         np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
         np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
 
-    def blurrIntensityGridAnalysis(self,action,do_list):
+    def blurrIntensityGridAnalysis(self,action,do_list=None):
         print(line)
         print(line)
         print(line)
