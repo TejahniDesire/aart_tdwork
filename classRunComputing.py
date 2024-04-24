@@ -798,7 +798,7 @@ class BigRuns:
                     # VARPHI__________________________________________________-
 
                     '''IntensityVSRadiiType1________________________________________________________________'''
-                    fig, dum = plt.subplots(1, 2, figsize=dim, dpi=400)
+                    fig, dum = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
                     ax0 = plt.subplot(1, 2, 1)
                     ax1 = plt.subplot(1, 2, 2)
 
@@ -816,7 +816,7 @@ class BigRuns:
                     plt.close()
 
                     '''RadVSVarphiType2________________________________________________________________'''
-                    fig, dum = plt.subplots(1, 2, figsize=dim, dpi=400)
+                    fig, dum = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
                     ax0 = plt.subplot(1, 2, 1)
                     ax1 = plt.subplot(1, 2, 2)
 
