@@ -654,7 +654,6 @@ class BigRuns:
             radVVarphi_path = self.sub_paths["RadVVarphi"] + model + "/clean/"
             fluxVRadii_path = self.sub_paths["fluxVRadii"] + model + "/clean/"
 
-
             file_creation = [fluxVNu_path, radVNu_path,image_path,Optical_depth_path,radVVarphi_path,fluxVRadii_path ]
 
             for i in range(len(file_creation)):

@@ -168,7 +168,7 @@ def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
     # ax.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
     # ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
     # ax1.yaxis.set_minor_formatter(ticker.FormatStrFormatter('%.4f'))
-    ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0e"))
+    # ax.yaxis.set_major_formatter(ticker.FormatStrFormatter("%.0e"))
 
     ax.tick_params('x', which="both", labelbottom=False)
     ax.title.set_text('Optically Thin Assumption')
