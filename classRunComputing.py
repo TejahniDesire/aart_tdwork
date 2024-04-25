@@ -600,12 +600,11 @@ class BigRuns:
             preform_model = fileloading.crossContinousDoAnalysis(
                 model, do_list, fluxVNu_path, isContinuous)
 
-            for i in range(len(file_creation)):
-                fileloading.creatSubDirectory(file_creation[i], kill_policy=True)
-
             if preform_model:
                 print(line)
                 print("Running " + model)
+                for i in range(len(file_creation)):
+                    fileloading.creatSubDirectory(file_creation[i], kill_policy=True)
 
                 fluxVNu_path += "Clean_"
                 radVNu_path += "Clean_"
