@@ -597,23 +597,23 @@ class BigRuns:
             file_creation = [fluxVNu_path, radVNu_path, image_path, Optical_depth_path, radVVarphi_path,
                              fluxVRadii_path]
 
-            for i in range(len(file_creation)):
-                fileloading.creatSubDirectory(file_creation[i], kill_policy=True)
-
             preform_model = fileloading.crossContinousDoAnalysis(
                 model, do_list, fluxVNu_path, isContinuous)
 
-            fluxVNu_path += "Clean_"
-            radVNu_path += "Clean_"
-            image_path += "Clean_"
-            Optical_depth_path += "Clean_"
-            radVVarphi_path += "Clean_"
-            fluxVRadii_path += "Clean_"
-
+            for i in range(len(file_creation)):
+                fileloading.creatSubDirectory(file_creation[i], kill_policy=True)
 
             if preform_model:
                 print(line)
                 print("Running " + model)
+
+                fluxVNu_path += "Clean_"
+                radVNu_path += "Clean_"
+                image_path += "Clean_"
+                Optical_depth_path += "Clean_"
+                radVVarphi_path += "Clean_"
+                fluxVRadii_path += "Clean_"
+
 
                 if self.run_type == 0:
                     amount_to_subtract = 1
