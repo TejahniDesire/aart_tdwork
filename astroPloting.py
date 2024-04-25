@@ -500,7 +500,6 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False,plot_inten
                              ax=ax1
                              )
 
-    print("Varphi (Rads) of equal point: ", theta3[peak3 == peak0])
 
 
 def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_radii,theta,blurr_policy=False):
