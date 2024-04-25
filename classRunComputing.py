@@ -585,183 +585,182 @@ class BigRuns:
         hist_convs = []
         dim = [10, 8]
         for model in self.all_model_names:
-            print(line)
-            print("Running " + model)
+            preform_model = fileloading.crossContinousDoAnalysis(
+                model, do_list, 'dummy/', isContinuous)
+            if preform_model:
+                print(line)
+                print("Running " + model)
 
-            if self.run_type == 0:
-                amount_to_subtract = 1
-            else:
-                amount_to_subtract = self.run_type
+                if self.run_type == 0:
+                    amount_to_subtract = 1
+                else:
+                    amount_to_subtract = self.run_type
 
-            current_geo_model = model[0:len(model) - amount_to_subtract]
-            fileloading.loadGeoModel(current_geo_model, self.run)
-            lband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
-            rtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
+                current_geo_model = model[0:len(model) - amount_to_subtract]
+                fileloading.loadGeoModel(current_geo_model, self.run)
+                lband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
+                rtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
 
-            # Construct Shadows___________________________________________________________________
-            a = params.spin_case
-            inc = params.i_case * np.pi / 180  # inclination angle
-            rh = 1 + np.sqrt(1 - a ** 2)  # event horizon
-            # angles to sample
-            varphis = np.linspace(-180, 179, 360) * np.pi / 180
+                # Construct Shadows___________________________________________________________________
+                a = params.spin_case
+                inc = params.i_case * np.pi / 180  # inclination angle
+                rh = 1 + np.sqrt(1 - a ** 2)  # event horizon
+                # angles to sample
+                varphis = np.linspace(-180, 179, 360) * np.pi / 180
 
-            # generate inner shadow (n=0) curve with kgeo
-            data_inner = kgeo.equatorial_lensing.rho_of_req(a, inc, rh, mbar=0, varphis=varphis)
-            (_, rhos_inner, alphas_inner, betas_inner) = data_inner
+                # generate inner shadow (n=0) curve with kgeo
+                data_inner = kgeo.equatorial_lensing.rho_of_req(a, inc, rh, mbar=0, varphis=varphis)
+                (_, rhos_inner, alphas_inner, betas_inner) = data_inner
 
-            r_inner = image_tools.curve_params(varphis, rhos_inner)
+                r_inner = image_tools.curve_params(varphis, rhos_inner)
 
-            # generate outer shadow (n=inf) curve with kgeo
-            data_outer = kgeo.equatorial_lensing.rho_of_req(a, inc, rh, mbar=5, varphis=varphis)
-            (_, rhos_outer, alphas_outer, betas_outer) = data_outer
+                # generate outer shadow (n=inf) curve with kgeo
+                data_outer = kgeo.equatorial_lensing.rho_of_req(a, inc, rh, mbar=5, varphis=varphis)
+                (_, rhos_outer, alphas_outer, betas_outer) = data_outer
 
-            r_outer = image_tools.curve_params(varphis, rhos_outer)
-            # ___________________________________________________________________
+                r_outer = image_tools.curve_params(varphis, rhos_outer)
+                # ___________________________________________________________________
 
-            '''Data Readind----------------------------------'''
-            data_path = self.sub_paths["intensityPath"] + model + "/clean/numpy/"
+                '''Data Readind----------------------------------'''
+                data_path = self.sub_paths["intensityPath"] + model + "/clean/numpy/"
 
-            x_variable = np.load(data_path + "x_variable.npy")
-            janksys_thick = np.load(data_path + "janksys_thick.npy")
-            janksys_thin = np.load(data_path + "janksys_thin.npy")
-            mean_radii_Thin = np.load(data_path + "mean_radii_Thin.npy")
-            mean_radii_Thick = np.load(data_path + "mean_radii_Thick.npy")
-            radii_I0_Thin = np.load(data_path + "radii_I0_Thin.npy")
-            radii_I1_Thin = np.load(data_path + "radii_I1_Thin.npy")
-            radii_I2_Thin = np.load(data_path + "radii_I2_Thin.npy")
-            radii_Full_Thin = np.load(data_path + "radii_Full_Thin.npy")
-            radii_FullAbsorption_Thick = np.load(data_path + "radii_FullAbsorption_Thick.npy")
-            radii_I0_Thick = np.load(data_path + "radii_I0_Thick.npy")
-            radii_I1_Thick = np.load(data_path + "radii_I1_Thick.npy")
-            radii_I2_Thick = np.load(data_path + "radii_I2_Thick.npy")
-            theta = np.load(data_path + "theta.npy")
-            mean_optical_depth_I0 = np.load(data_path + "mean_optical_depth_I0.npy")
-            mean_optical_depth_I1 = np.load(data_path + "mean_optical_depth_I1.npy")
-            mean_optical_depth_I2 = np.load(data_path + "mean_optical_depth_I2.npy")
+                x_variable = np.load(data_path + "x_variable.npy")
+                janksys_thick = np.load(data_path + "janksys_thick.npy")
+                janksys_thin = np.load(data_path + "janksys_thin.npy")
+                mean_radii_Thin = np.load(data_path + "mean_radii_Thin.npy")
+                mean_radii_Thick = np.load(data_path + "mean_radii_Thick.npy")
+                radii_I0_Thin = np.load(data_path + "radii_I0_Thin.npy")
+                radii_I1_Thin = np.load(data_path + "radii_I1_Thin.npy")
+                radii_I2_Thin = np.load(data_path + "radii_I2_Thin.npy")
+                radii_Full_Thin = np.load(data_path + "radii_Full_Thin.npy")
+                radii_FullAbsorption_Thick = np.load(data_path + "radii_FullAbsorption_Thick.npy")
+                radii_I0_Thick = np.load(data_path + "radii_I0_Thick.npy")
+                radii_I1_Thick = np.load(data_path + "radii_I1_Thick.npy")
+                radii_I2_Thick = np.load(data_path + "radii_I2_Thick.npy")
+                theta = np.load(data_path + "theta.npy")
+                mean_optical_depth_I0 = np.load(data_path + "mean_optical_depth_I0.npy")
+                mean_optical_depth_I1 = np.load(data_path + "mean_optical_depth_I1.npy")
+                mean_optical_depth_I2 = np.load(data_path + "mean_optical_depth_I2.npy")
 
-            num_of_intensity_points = janksys_thin[:,0].shape[0]
-            print("Number of Intensity Points: ", num_of_intensity_points)
+                num_of_intensity_points = janksys_thin[:,0].shape[0]
+                print("Number of Intensity Points: ", num_of_intensity_points)
 
-            xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
-            # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
-            # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
+                xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
+                # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
+                # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
 
-            fluxVNu_path = self.sub_paths["fluxPath"] + model + "/clean/"
-            radVNu_path = self.sub_paths["radPath"] + model + "/clean/"
-            image_path = self.sub_paths["imagePath"] + model + "/clean/"
-            Optical_depth_path = self.sub_paths["opticalDepth"] + model + "/clean/"
+                fluxVNu_path = self.sub_paths["fluxPath"] + model + "/clean/"
+                radVNu_path = self.sub_paths["radPath"] + model + "/clean/"
+                image_path = self.sub_paths["imagePath"] + model + "/clean/"
+                Optical_depth_path = self.sub_paths["opticalDepth"] + model + "/clean/"
 
-            radVVarphi_path = self.sub_paths["RadVVarphi"] + model + "/clean/"
-            fluxVRadii_path = self.sub_paths["fluxVRadii"] + model + "/clean/"
+                radVVarphi_path = self.sub_paths["RadVVarphi"] + model + "/clean/"
+                fluxVRadii_path = self.sub_paths["fluxVRadii"] + model + "/clean/"
 
-            file_creation = [fluxVNu_path, radVNu_path,image_path,Optical_depth_path,radVVarphi_path,fluxVRadii_path ]
+                file_creation = [fluxVNu_path, radVNu_path,image_path,Optical_depth_path,radVVarphi_path,fluxVRadii_path ]
 
-            for i in range(len(file_creation)):
-                fileloading.creatSubDirectory(file_creation[i],kill_policy=False)
+                for i in range(len(file_creation)):
+                    fileloading.creatSubDirectory(file_creation[i],kill_policy=False)
 
-            fluxVNu_path += "Clean_"
-            radVNu_path += "Clean_"
-            image_path += "Clean_"
-            Optical_depth_path += "Clean_"
-            radVVarphi_path += "Clean_"
-            fluxVRadii_path += "Clean_"
+                fluxVNu_path += "Clean_"
+                radVNu_path += "Clean_"
+                image_path += "Clean_"
+                Optical_depth_path += "Clean_"
+                radVVarphi_path += "Clean_"
+                fluxVRadii_path += "Clean_"
 
-            # Points of Interest
+                # Points of Interest
 
-            conv_1 = (action["start"] + action["step"] *
-                      ilp.ring_convergance(mean_radii_Thick[:, 2], mean_radii_Thick[:,3],3))
-            conv_1 = conv_1 / astroModels.scale_label[action['var']]
+                conv_1 = (action["start"] + action["step"] *
+                          ilp.ring_convergance(mean_radii_Thick[:, 2], mean_radii_Thick[:,3],3))
+                conv_1 = conv_1 / astroModels.scale_label[action['var']]
 
-            flux_peak_thin = action["start"] + action["step"] * np.argmax(janksys_thin[:, 3])
-            flux_peak_thin = flux_peak_thin / astroModels.scale_label[action['var']]
+                flux_peak_thin = action["start"] + action["step"] * np.argmax(janksys_thin[:, 3])
+                flux_peak_thin = flux_peak_thin / astroModels.scale_label[action['var']]
 
-            flux_peak_thick = action["start"] + action["step"] * np.argmax(janksys_thick[:, 3])
-            flux_peak_thick = flux_peak_thick / astroModels.scale_label[action['var']]
+                flux_peak_thick = action["start"] + action["step"] * np.argmax(janksys_thick[:, 3])
+                flux_peak_thick = flux_peak_thick / astroModels.scale_label[action['var']]
 
-            hist_flux_peaks_thins += [flux_peak_thin]
-            hist_flux_peaks_thicks += [flux_peak_thick]
-            hist_convs += [conv_1]
+                hist_flux_peaks_thins += [flux_peak_thin]
+                hist_flux_peaks_thicks += [flux_peak_thick]
+                hist_convs += [conv_1]
 
-            poi = {
-                "r_outer": r_outer,
-                "flux_peak_thin": flux_peak_thin,
-                "flux_peak_thick":flux_peak_thick,
-                "conv_1": conv_1,
-            }
+                poi = {
+                    "r_outer": r_outer,
+                    "flux_peak_thin": flux_peak_thin,
+                    "flux_peak_thick":flux_peak_thick,
+                    "conv_1": conv_1,
+                }
 
-            conv_1_style = {
-                "color": 'dimgrey',
-                "linestyle": "-",
-                "linewidth": 2
-            }
+                conv_1_style = {
+                    "color": 'dimgrey',
+                    "linestyle": "-",
+                    "linewidth": 2
+                }
 
-            r_outer_style = {
-                "color": 'dimgrey',
-                "linestyle": "-",
-                "linewidth": 5
-            }
+                r_outer_style = {
+                    "color": 'dimgrey',
+                    "linestyle": "-",
+                    "linewidth": 5
+                }
 
-            flux_peak_style = {
-                "color": 'k',
-                "linestyle": "-.",
-                "linewidth": 3
-            }
+                flux_peak_style = {
+                    "color": 'k',
+                    "linestyle": "-.",
+                    "linewidth": 3
+                }
 
-            # _______________________________________________
-            # _______________________________________________
-            # ________________________________
-            '''JANKSKY PLOTS----------------------------------'''
+                # _______________________________________________
+                # _______________________________________________
+                # ________________________________
+                '''JANKSKY PLOTS----------------------------------'''
 
-            fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True)
+                fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True)
 
-            astroPloting.fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
-                                       poi, conv_1_style, r_outer_style, flux_peak_style, action)
+                astroPloting.fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
+                                           poi, conv_1_style, r_outer_style, flux_peak_style, action)
 
-            figname = fluxVNu_path + model + "Flux.jpg"
-            plt.savefig(figname, bbox_inches='tight')
-            plt.close()
-            print("Image '{}' Created".format(figname))
+                figname = fluxVNu_path + model + "Flux.jpg"
+                plt.savefig(figname, bbox_inches='tight')
+                plt.close()
+                print("Image '{}' Created".format(figname))
 
-            # ______________________________________________
-            # ______________________________________________
-            # ___________________________________
-            '''RADII PLOTS----------------------------------'''
-            fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True)
+                # ______________________________________________
+                # ______________________________________________
+                # ___________________________________
+                '''RADII PLOTS----------------------------------'''
+                fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True)
 
-            astroPloting.radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
-                                        poi, conv_1_style, r_outer_style, flux_peak_style, action)
+                astroPloting.radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
+                                            poi, conv_1_style, r_outer_style, flux_peak_style, action)
 
-            figname = radVNu_path + model + "Radii.jpeg"
-            plt.savefig(figname, bbox_inches='tight')
-            print("Image '{}' Created".format(figname))
-            plt.close()
+                figname = radVNu_path + model + "Radii.jpeg"
+                plt.savefig(figname, bbox_inches='tight')
+                print("Image '{}' Created".format(figname))
+                plt.close()
 
-            # --------------------------------------------------
-            # --------------------------------------------------
-            # --------------------------------------------------
-            '''Optical Depth----------------------------------'''
-            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+                # --------------------------------------------------
+                # --------------------------------------------------
+                # --------------------------------------------------
+                '''Optical Depth----------------------------------'''
+                fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-            astroPloting.opticalDepth(ax, xaxis,
-                                      [mean_optical_depth_I0,mean_optical_depth_I1,mean_optical_depth_I2],
-                                      poi, conv_1_style, flux_peak_style, action)
+                astroPloting.opticalDepth(ax, xaxis,
+                                          [mean_optical_depth_I0,mean_optical_depth_I1,mean_optical_depth_I2],
+                                          poi, conv_1_style, flux_peak_style, action)
 
-            figname = Optical_depth_path + model + "OpticalDepth.jpeg"
-            plt.savefig(figname, bbox_inches='tight')
-            print("Image '{}' Created".format(figname))
-            plt.close()
+                figname = Optical_depth_path + model + "OpticalDepth.jpeg"
+                plt.savefig(figname, bbox_inches='tight')
+                print("Image '{}' Created".format(figname))
+                plt.close()
 
-            '''Full Images----------------------------------'''
-            if action["images"]:
-                parent_model_path = self.sub_paths["intensityPath"] + model + "/"
-                current_model_file = parent_model_path + "clean/"
-                k = action["start"]
-                print("Constructing Full images for " + model)
-                for i in range(num_of_intensity_points):
-                    preform_model = fileloading.crossContinousDoAnalysis(
-                        model, do_list, current_model_file, isContinuous)
-
-                    if preform_model:
+                '''Full Images----------------------------------'''
+                if action["images"]:
+                    parent_model_path = self.sub_paths["intensityPath"] + model + "/"
+                    current_model_file = parent_model_path + "clean/"
+                    k = action["start"]
+                    print("Constructing Full images for " + model)
+                    for i in range(num_of_intensity_points):
 
                         brightparams = self.all_model_brightparams[j]
                         brightparams["nu0"] = k
@@ -846,112 +845,113 @@ class BigRuns:
                         plt.savefig(pltname, bbox_inches='tight')
                         print("Image '{}' Created".format(pltname))
                         plt.close()
-                    else:
-                        print(model + " marked for skipping...")
 
-                    k += action['step']
-            j += 1  # marker for which brightparams to use
-        # histograms
-        print(line)
-        print("Creating Histograms")
-        peak_hist_thin_path = self.sub_paths["peakHistThin"]
-        peak_hist_thick_path = self.sub_paths["peakHistThick"]
-        conv_hist_path = self.sub_paths["convHist"]
-        total_flux_path = self.sub_paths["totalFlux"]
 
-        bar_xaxis = np.arange(len(self.all_model_names))
-        bar_labels = self.all_model_names
-        for i in range(len(bar_xaxis)):
-            bar_labels[i] = bar_labels[i].replace("Model","")
-        """Flux Peaks_____________________________________________________________________"""
-        # Thin_________________
+                        k += action['step']
+                j += 1  # marker for which brightparams to use
+                # histograms
+                print(line)
+                print("Creating Histograms")
+                peak_hist_thin_path = self.sub_paths["peakHistThin"]
+                peak_hist_thick_path = self.sub_paths["peakHistThick"]
+                conv_hist_path = self.sub_paths["convHist"]
+                total_flux_path = self.sub_paths["totalFlux"]
 
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+                bar_xaxis = np.arange(len(self.all_model_names))
+                bar_labels = self.all_model_names
+                for i in range(len(bar_xaxis)):
+                    bar_labels[i] = bar_labels[i].replace("Model","")
+                """Flux Peaks_____________________________________________________________________"""
+                # Thin_________________
 
-        astroPloting.histogram(ax,hist_flux_peaks_thins,"Flux Peak location (GHz)","Optically Thin Assumption Frequency")
+                fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        figname = peak_hist_thin_path + "FluxPeakThin.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
+                astroPloting.histogram(ax,hist_flux_peaks_thins,"Flux Peak location (GHz)","Optically Thin Assumption Frequency")
 
-        # Thick_______________
+                figname = peak_hist_thin_path + "FluxPeakThin.jpeg"
+                plt.savefig(figname, bbox_inches='tight')
+                print("Image '{}' Created".format(figname))
+                plt.close()
 
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+                # Thick_______________
 
-        astroPloting.histogram(ax, hist_flux_peaks_thicks, "Flux Peak location (GHz)", "Full Solution Frequency")
+                fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        figname = peak_hist_thick_path + "FluxPeakThick.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
+                astroPloting.histogram(ax, hist_flux_peaks_thicks, "Flux Peak location (GHz)", "Full Solution Frequency")
 
-        # Thin Bar__________________
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+                figname = peak_hist_thick_path + "FluxPeakThick.jpeg"
+                plt.savefig(figname, bbox_inches='tight')
+                print("Image '{}' Created".format(figname))
+                plt.close()
 
-        astroPloting.bar(ax,bar_xaxis,hist_flux_peaks_thins,"Optical Thin Assumption Peak Flux per model",
-                         "Observation Frequency (GHz)",bar_labels)
+                # Thin Bar__________________
+                fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        figname = peak_hist_thin_path + "FluxPeakPerThinModel.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
+                astroPloting.bar(ax,bar_xaxis,hist_flux_peaks_thins,"Optical Thin Assumption Peak Flux per model",
+                                 "Observation Frequency (GHz)",bar_labels)
 
-        # Thick Bar_______________
+                figname = peak_hist_thin_path + "FluxPeakPerThinModel.jpeg"
+                plt.savefig(figname, bbox_inches='tight')
+                print("Image '{}' Created".format(figname))
+                plt.close()
 
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+                # Thick Bar_______________
 
-        astroPloting.bar(ax,bar_xaxis,hist_flux_peaks_thicks,"Optical Thin Assumption Peak Flux per model",
-                         "Observation Frequency (GHz)",bar_labels)
+                fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        figname = peak_hist_thick_path + "FluxPeakPerThickModel.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
-        # Thick Bar
+                astroPloting.bar(ax,bar_xaxis,hist_flux_peaks_thicks,"Optical Thin Assumption Peak Flux per model",
+                                 "Observation Frequency (GHz)",bar_labels)
 
-        """Conv_____________________________________________________________________"""
-        # Conv Hist ______________________
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+                figname = peak_hist_thick_path + "FluxPeakPerThickModel.jpeg"
+                plt.savefig(figname, bbox_inches='tight')
+                print("Image '{}' Created".format(figname))
+                plt.close()
+                # Thick Bar
 
-        astroPloting.histogram(ax, hist_convs, "Flux Peak location (GHz)", "Full Solution Frequency")
+                """Conv_____________________________________________________________________"""
+                # Conv Hist ______________________
+                fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        figname = conv_hist_path + "convHistFreqPerObservationFreq.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
+                astroPloting.histogram(ax, hist_convs, "Flux Peak location (GHz)", "Full Solution Frequency")
 
-        # Conv Bar______________________
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+                figname = conv_hist_path + "convHistFreqPerObservationFreq.jpeg"
+                plt.savefig(figname, bbox_inches='tight')
+                print("Image '{}' Created".format(figname))
+                plt.close()
 
-        astroPloting.bar(ax,bar_xaxis,hist_convs,"Convergence for cumulative on I2",
-                         "Observation Frequency (GHz)",bar_labels)
-        figname = conv_hist_path + "convHistPerModel.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
+                # Conv Bar______________________
+                fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        """230 total flux Thin___________________________________________________________"""
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+                astroPloting.bar(ax,bar_xaxis,hist_convs,"Convergence for cumulative on I2",
+                                 "Observation Frequency (GHz)",bar_labels)
+                figname = conv_hist_path + "convHistPerModel.jpeg"
+                plt.savefig(figname, bbox_inches='tight')
+                print("Image '{}' Created".format(figname))
+                plt.close()
 
-        astroPloting.bar(ax, bar_xaxis,thin_total_flux, "Total Flux at 230GHz",
-                         "Optically Thin Assumption Frequency",bar_labels)
+                """230 total flux Thin___________________________________________________________"""
+                fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        figname = total_flux_path + "thin.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
+                astroPloting.bar(ax, bar_xaxis,thin_total_flux, "Total Flux at 230GHz",
+                                 "Optically Thin Assumption Frequency",bar_labels)
 
-        """230 total flux Thick___________________________________________________________"""
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+                figname = total_flux_path + "thin.jpeg"
+                plt.savefig(figname, bbox_inches='tight')
+                print("Image '{}' Created".format(figname))
+                plt.close()
 
-        astroPloting.bar(ax, bar_xaxis, thick_total_flux, "Total Flux at 230GHz",
-                         "Full Solution Frequency", bar_labels)
+                """230 total flux Thick___________________________________________________________"""
+                fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        figname = total_flux_path + "thick.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
+                astroPloting.bar(ax, bar_xaxis, thick_total_flux, "Total Flux at 230GHz",
+                                 "Full Solution Frequency", bar_labels)
+
+                figname = total_flux_path + "thick.jpeg"
+                plt.savefig(figname, bbox_inches='tight')
+                print("Image '{}' Created".format(figname))
+                plt.close()
+            else:
+                print(model + " marked for skipping...")
 
     def blurrGraphCreation(self,action):
         """
