@@ -585,8 +585,30 @@ class BigRuns:
         hist_convs = []
         dim = [10, 8]
         for model in self.all_model_names:
+
+            fluxVNu_path = self.sub_paths["fluxPath"] + model + "/clean/"
+            radVNu_path = self.sub_paths["radPath"] + model + "/clean/"
+            image_path = self.sub_paths["imagePath"] + model + "/clean/"
+            Optical_depth_path = self.sub_paths["opticalDepth"] + model + "/clean/"
+
+            radVVarphi_path = self.sub_paths["RadVVarphi"] + model + "/clean/"
+            fluxVRadii_path = self.sub_paths["fluxVRadii"] + model + "/clean/"
+
+            file_creation = [fluxVNu_path, radVNu_path, image_path, Optical_depth_path, radVVarphi_path,
+                             fluxVRadii_path]
+
+            for i in range(len(file_creation)):
+                fileloading.creatSubDirectory(file_creation[i], kill_policy=False)
+
+            fluxVNu_path += "Clean_"
+            radVNu_path += "Clean_"
+            image_path += "Clean_"
+            Optical_depth_path += "Clean_"
+            radVVarphi_path += "Clean_"
+            fluxVRadii_path += "Clean_"
+
             preform_model = fileloading.crossContinousDoAnalysis(
-                model, do_list, 'dummy/', isContinuous)
+                model, do_list, fluxVNu_path, isContinuous)
             if preform_model:
                 print(line)
                 print("Running " + model)
@@ -648,26 +670,6 @@ class BigRuns:
                 xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
                 # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
                 # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
-
-                fluxVNu_path = self.sub_paths["fluxPath"] + model + "/clean/"
-                radVNu_path = self.sub_paths["radPath"] + model + "/clean/"
-                image_path = self.sub_paths["imagePath"] + model + "/clean/"
-                Optical_depth_path = self.sub_paths["opticalDepth"] + model + "/clean/"
-
-                radVVarphi_path = self.sub_paths["RadVVarphi"] + model + "/clean/"
-                fluxVRadii_path = self.sub_paths["fluxVRadii"] + model + "/clean/"
-
-                file_creation = [fluxVNu_path, radVNu_path,image_path,Optical_depth_path,radVVarphi_path,fluxVRadii_path ]
-
-                for i in range(len(file_creation)):
-                    fileloading.creatSubDirectory(file_creation[i],kill_policy=False)
-
-                fluxVNu_path += "Clean_"
-                radVNu_path += "Clean_"
-                image_path += "Clean_"
-                Optical_depth_path += "Clean_"
-                radVVarphi_path += "Clean_"
-                fluxVRadii_path += "Clean_"
 
                 # Points of Interest
 
