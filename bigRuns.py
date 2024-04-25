@@ -28,9 +28,9 @@ import fileloading
 
 
 run = runDataClass.run2
-do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
+# do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = ["ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
-# do_list = None
+do_list = None
 
 bigRun = classRunComputing.BigRuns(
     run.getRunName(),
@@ -46,23 +46,23 @@ bigRun = classRunComputing.BigRuns(
 
 """ Intensity Grid Creation_________________________________________________________"""
 #
-# bigRun.creatIntensityGrid(
-#     run.getAction(),
-#     do_list=do_list,
-#     isContinuous=True
-# )
+bigRun.creatIntensityGrid(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=True
+)
 
-# bigRun.blurrIntensityGrid(
-#     run.getAction(),
-#     do_list
-# )
+bigRun.blurrIntensityGrid(
+    run.getAction(),
+    do_list
+)
 
 """ Intensity Grid Analysis_________________________________________________________"""
-# bigRun.intensityGridAnalysis(
-#     run.getAction(),
-#     do_list=do_list,
-#     isContinuous=True
-# )
+bigRun.intensityGridAnalysis(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=True
+)
 """ Clean Graph Creation_________________________________________________________"""
 bigRun.graphCreation(
     run.getAction(),
@@ -71,16 +71,16 @@ bigRun.graphCreation(
 )
 
 """ Blurring intensity grid_________________________________________________________"""
-# bigRun.blurrIntensityGridAnalysis(
-#     run.getAction(),
-#     do_list=["ModelA11","ModelB31"],
-#     isContinuous=True
-# )
+bigRun.blurrIntensityGridAnalysis(
+    run.getAction(),
+    do_list=["ModelA11","ModelB31"],
+    isContinuous=True
+)
 
 """ Blurr Graph Creation_________________________________________________________"""
-#
-# bigRun.blurrGraphCreation(
-#     run.getAction()
-# )
+
+bigRun.blurrGraphCreation(
+    run.getAction()
+)
 """ _________________________________________________________"""
 
