@@ -602,7 +602,7 @@ class BigRuns:
 
             if preform_model:
                 print(line)
-                print("Graphing" + model)
+                print("Graphing " + model)
                 for i in range(len(file_creation)):
                     fileloading.creatSubDirectory(file_creation[i], kill_policy=True)
 
