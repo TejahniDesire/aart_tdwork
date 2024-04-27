@@ -395,12 +395,15 @@ class BigRuns:
                 fileloading.creatSubDirectory(parent_model_path,
                                               "for {} intensities".format(current_total_name), kill_policy=False)
 
-                fileloading.creatSubDirectory(current_model_file,
-                                              "for {} intensities".format(current_total_name), kill_policy=True)
-
                 preform_model = fileloading.crossContinousDoAnalysis(
                     current_total_name, do_list, current_model_file, isContinuous)
                 if preform_model:
+                    print("Creating Intensity Movie for Model ", current_total_name)
+                    print(long_line)
+
+                    fileloading.creatSubDirectory(current_model_file,
+                                                  "for {} intensities".format(current_total_name), kill_policy=True)
+
                     if not self.already_normalized_brightparams:
                         print("\n" + "Normalizing " + current_total_name + "\n")
                         print(long_line)
@@ -409,9 +412,6 @@ class BigRuns:
 
                         print("\n" + current_total_name + " normalized with a value of n_th0="
                               + str(current_bp["n_th0"]) + "\n")
-
-                    print("Creating Intensity Movie for Model ", current_total_name)
-                    print(long_line)
 
                     if self.run_type == 0:
                         run_type_arg = 1
