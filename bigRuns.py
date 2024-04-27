@@ -31,6 +31,7 @@ run = runDataClass.run2
 # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = ["ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 do_list = ["ModelC22"]
+isContinuous= True
 blurr_frequency_list = [86e9,230e9,345e9]
 blurr_kernal = [1,10,20]
 
@@ -57,12 +58,14 @@ bigRun = classRunComputing.BigRuns(
 bigRun.blurrIntensityGrid(
     run.getAction(),
     do_list,
+    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[0]
 )
 bigRun.blurrIntensityGrid(
     run.getAction(),
     do_list,
+    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[1]
 )
@@ -70,6 +73,7 @@ bigRun.blurrIntensityGrid(
 bigRun.blurrIntensityGrid(
     run.getAction(),
     do_list,
+    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[2]
 )
@@ -92,7 +96,7 @@ bigRun.blurrIntensityGrid(
 bigRun.blurrIntensityGridAnalysis(
     run.getAction(),
     do_list=do_list,
-    isContinuous=False,
+    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[0]
 )
@@ -100,7 +104,7 @@ bigRun.blurrIntensityGridAnalysis(
 bigRun.blurrIntensityGridAnalysis(
     run.getAction(),
     do_list=do_list,
-    isContinuous=False,
+    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[1]
 )
@@ -108,7 +112,7 @@ bigRun.blurrIntensityGridAnalysis(
 bigRun.blurrIntensityGridAnalysis(
     run.getAction(),
     do_list=do_list,
-    isContinuous=False,
+    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[2]
 )
@@ -118,7 +122,7 @@ bigRun.blurrIntensityGridAnalysis(
 bigRun.blurrGraphCreation(
     run.getAction(),
     do_list=do_list,
-    isContinuous=False,
+    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[0],
 )
@@ -126,7 +130,7 @@ bigRun.blurrGraphCreation(
 bigRun.blurrGraphCreation(
     run.getAction(),
     do_list=do_list,
-    isContinuous=False,
+    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[1],
 )
@@ -134,7 +138,7 @@ bigRun.blurrGraphCreation(
 bigRun.blurrGraphCreation(
     run.getAction(),
     do_list=do_list,
-    isContinuous=False,
+    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[2]
 )
