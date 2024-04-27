@@ -1194,7 +1194,7 @@ class BigRuns:
 
                     if do_image:
                         print("Full image production for intensity frame: ", L)
-                        print(R"Observation frequency $\nu=$", k)
+                        print(R"Observation frequency $\nu=$", str(k/1e9) + " GHz")
 
                         blurr_intensity_path = (current_model_file +
                                                 action["var"] + "_blurr_" + "{:.5e}".format(current_freqeuncy))
@@ -1212,7 +1212,6 @@ class BigRuns:
 
                         thin_intensity = [thin_blurr_image]
                         thick_intensity = [Absorbtion_Image]
-                        print("SHAPE: ", radii_I0_Thin.shape)
                         thin_radii = [radii_I0_Thin[L, :]]
                         thick_radii = [radii_FullAbsorption_Thick[L, :]]
 

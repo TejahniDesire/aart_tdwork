@@ -33,7 +33,7 @@ run = runDataClass.run2
 do_list = ["ModelC22"]
 isContinuous= True
 blurr_frequency_list = [86e9,230e9,345e9]
-blurr_kernal = [1,10,20]
+blurr_kernal = [1,5,10,20]
 
 bigRun = classRunComputing.BigRuns(
     run.getRunName(),
@@ -88,6 +88,12 @@ bigRun = classRunComputing.BigRuns(
 #     blur_kernal=blurr_kernal[2]
 # )
 
+bigRun.blurrIntensityGrid(
+    run.getAction(),
+    do_list,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[3]
+)
 """ Blurring intensity analysis grid_________________________________________________________"""
 # bigRun.blurrIntensityGridAnalysis(
 #     run.getAction(),
@@ -131,6 +137,13 @@ bigRun.blurrGraphCreation(
     do_list=do_list,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[2]
+)
+
+bigRun.blurrGraphCreation(
+    run.getAction(),
+    do_list=do_list,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[3]
 )
 """ _________________________________________________________"""
 

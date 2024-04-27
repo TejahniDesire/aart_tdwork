@@ -369,26 +369,34 @@ def blurrImageAnalysis(action, sub_path, model: str, brightparams,blurr_frequenc
     num_of_theta_points = image_tools.num_of_theta_points  # array size for radii calcs
     num_iterations = int((action["stop"] - action["start"]) / action["step"])
 
-    """GRAPHS________________________________________________________________________________________________________"""
-    x_variable = np.zeros(num_iterations)  # counter for independant variable
+    if blurr_frequency_list is None:
+        len_of_freq_list = num_iterations
+    else:
+        len_of_freq_list = len(blurr_frequency_list)
+
+    """GRAPH Variables________________________________________________________________________________________________________"""
+    x_variable = np.zeros(len_of_freq_list)  # counter for independant variable
 
     # flux_________________________________
-    janksys_thick = np.ndarray([num_iterations, 1])  # [FullImage]
-    janksys_thin = np.ndarray([num_iterations, 1])  # [total]
+    janksys_thick = np.ndarray([len_of_freq_list, 1])  # [FullImage]
+    janksys_thin = np.ndarray([len_of_freq_list, 1])  # [total]
 
     # Average Radius over all Theta_________________________________
-    mean_radii_Thin = np.ndarray([num_iterations, 1])  # [FullImage]
-    mean_radii_Thick = np.ndarray([num_iterations, 1])  # [FullImage]
+    mean_radii_Thin = np.ndarray([len_of_freq_list, 1])  # [FullImage]
+    mean_radii_Thick = np.ndarray([len_of_freq_list, 1])  # [FullImage]
 
     # Radius as a function of theta_________________________________
     radii_cumulative_Thin = np.zeros(num_of_theta_points)
 
     radii_cumulative_Thick = np.zeros(num_of_theta_points)
 
+    """________________________________________________________________________________________________________"""
+
     done_list = None
     if blurr_frequency_list is not None:
         done_list = np.full(len(blurr_frequency_list),False)
 
+    L = 0
     for i in range(num_iterations):
         print('Reading intensity.h5 for Model ' + model + ' number: ' + str(i))
         print(line)
@@ -400,8 +408,8 @@ def blurrImageAnalysis(action, sub_path, model: str, brightparams,blurr_frequenc
         do_blurr, done_list = fileloading.blurrListAnalysis(blurr_frequency_list, done_list, current_freqeuncy)
 
         if do_blurr:
-            print('Reading intensity.h5 for Model ' + model + ' number: ' + str(i))
-            x_variable[i] = current_freqeuncy
+            print('Reading blurred intensity.h5 for Model ' + model + ' number: ' + str(L))
+            x_variable+= [current_freqeuncy]
             intensity_path = current_model_file + action["var"] + "_blurr_" + "{:.5e}".format(current_freqeuncy)
 
             h5f = h5py.File(intensity_path, 'r')
@@ -417,7 +425,7 @@ def blurrImageAnalysis(action, sub_path, model: str, brightparams,blurr_frequenc
 
             r0_thin = tls.curve_params(theta, radii_Thin_i)
 
-            mean_radii_Thin[i, 0] = r0_thin
+            mean_radii_Thin[L, 0] = r0_thin
 
             radii_cumulative_Thin = np.vstack((radii_cumulative_Thin, radii_Thin_i))
 
@@ -426,14 +434,14 @@ def blurrImageAnalysis(action, sub_path, model: str, brightparams,blurr_frequenc
 
             full_thick = tls.curve_params(theta, radii_FullAbsorption_Thick_i)
 
-            mean_radii_Thick[i, 0] = full_thick
+            mean_radii_Thick[L, 0] = full_thick
 
             radii_cumulative_Thick = np.vstack((radii_cumulative_Thick, radii_FullAbsorption_Thick_i))
 
             # Total Flux Calcualtions
-            janksys_thin[i, 0] = ilp.total_jy(I0, brightparams["nu0"], brightparams["mass"]).value
+            janksys_thin[L, 0] = ilp.total_jy(I0, brightparams["nu0"], brightparams["mass"]).value
 
-            janksys_thick[i, 0] = ilp.total_jy(Absorbtion_Image, brightparams["nu0"], brightparams["mass"]).value
+            janksys_thick[L, 0] = ilp.total_jy(Absorbtion_Image, brightparams["nu0"], brightparams["mass"]).value
 
         else:
             print("Freuquency {} marked for skipping...".format("{:.5e}".format(current_freqeuncy)))
