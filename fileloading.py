@@ -342,13 +342,13 @@ def crossContinousDoAnalysis(current_model_name, do_list, file_name, isContinuou
     return do or continueCondition
 
 
-def blurrListAnalysis(blurr_list, done_list, frequency):
+def blurrListAnalysis(blurr_list, done_list, current_frequency):
     """
 
     Args:
         blurr_list: list of intensity points to blurr at
         done_list: list of bool values indicating which blurr points have already been done
-        frequency: current frequency
+        current_frequency: current frequency
 
     Returns: updated blurr list, extra True value if condition met
 
@@ -356,7 +356,7 @@ def blurrListAnalysis(blurr_list, done_list, frequency):
     first_false = np.argmin(done_list)
     do_blurr = False
 
-    if (blurr_list is not None) and (blurr_list[first_false] >= frequency):
+    if (blurr_list is not None) and (current_frequency >= blurr_list[first_false]):
         done_list[first_false] = True
         do_blurr = True
 

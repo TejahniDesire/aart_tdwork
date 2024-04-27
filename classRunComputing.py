@@ -912,6 +912,7 @@ class BigRuns:
                 current_total_name, do_list, current_model_file, isContinuous)
 
             if preform_model:
+                print("Blurring " + current_total_name)
                 intermodel_data = movieMakerIntensity.blurr_intensity_movie(
                     action, self.sub_paths, current_total_name, run_type_arg, current_bp,
                     blurr_frequency_list, blur_kernal)
