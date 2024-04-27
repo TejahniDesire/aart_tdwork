@@ -58,14 +58,12 @@ bigRun = classRunComputing.BigRuns(
 bigRun.blurrIntensityGrid(
     run.getAction(),
     do_list,
-    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[0]
 )
 bigRun.blurrIntensityGrid(
     run.getAction(),
     do_list,
-    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[1]
 )
@@ -73,7 +71,6 @@ bigRun.blurrIntensityGrid(
 bigRun.blurrIntensityGrid(
     run.getAction(),
     do_list,
-    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[2]
 )
@@ -96,7 +93,6 @@ bigRun.blurrIntensityGrid(
 bigRun.blurrIntensityGridAnalysis(
     run.getAction(),
     do_list=do_list,
-    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[0]
 )
@@ -104,7 +100,6 @@ bigRun.blurrIntensityGridAnalysis(
 bigRun.blurrIntensityGridAnalysis(
     run.getAction(),
     do_list=do_list,
-    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[1]
 )
@@ -112,7 +107,6 @@ bigRun.blurrIntensityGridAnalysis(
 bigRun.blurrIntensityGridAnalysis(
     run.getAction(),
     do_list=do_list,
-    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[2]
 )
@@ -122,7 +116,6 @@ bigRun.blurrIntensityGridAnalysis(
 bigRun.blurrGraphCreation(
     run.getAction(),
     do_list=do_list,
-    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[0],
 )
@@ -130,7 +123,6 @@ bigRun.blurrGraphCreation(
 bigRun.blurrGraphCreation(
     run.getAction(),
     do_list=do_list,
-    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[1],
 )
@@ -138,7 +130,6 @@ bigRun.blurrGraphCreation(
 bigRun.blurrGraphCreation(
     run.getAction(),
     do_list=do_list,
-    isContinuous=isContinuous,
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[2]
 )

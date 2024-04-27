@@ -323,9 +323,8 @@ def writeDocString(filename:str, text:str):
 
 def doListAnalysis(current_model_name, do_list):
     do = False
-    if do_list is not None:
-        if current_model_name in do_list:
-            do = True
+    if current_model_name in do_list:
+        do = True
 
     return do
 
@@ -336,10 +335,12 @@ def continousAnalysis(file_name,isContinuous):
 
 
 def crossContinousDoAnalysis(current_model_name, do_list, file_name, isContinuous):
-    # Returns true if do or if continous conditions meet
-    do = doListAnalysis(current_model_name, do_list)
-    continueCondition = continousAnalysis(file_name,isContinuous)
-    return do or continueCondition
+    # If "do_list" is not Null, only factor in continuous condition and "do" returns false no matter what
+    # If "do_list" is none, only factor in continous condition
+    if do_list is not None:
+        return doListAnalysis(current_model_name, do_list)
+    else:
+        return continousAnalysis(file_name,isContinuous)
 
 
 def blurrListAnalysis(blurr_list, done_list, current_frequency):
