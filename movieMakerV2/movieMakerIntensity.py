@@ -25,7 +25,7 @@ speed = 8
 line = "\n__________________________________________________\n"
 
 
-def intensity_movie(action, sub_path, model: str, intent_grid_type, brightparams):
+def intensity_movie(action, sub_path, model: str, intent_grid_type, brightparams,frequency_list):
     """
         sub_paths = {
         "GeoDoth5Path"
@@ -49,12 +49,6 @@ def intensity_movie(action, sub_path, model: str, intent_grid_type, brightparams
     parent_model_path = sub_path["intensityPath"] + model + "/"
     current_model_file = parent_model_path + "clean/"
 
-    fileloading.creatSubDirectory(parent_model_path,
-                                  "for {} intensities".format(model), kill_policy=False)
-
-    fileloading.creatSubDirectory(current_model_file,
-                                  "for {} intensities".format(model), kill_policy=True)
-
     # total jy at 230GHz
 
     thin_total_flux, thick_total_flux = normalizingBrightparams.totalIntensity230Point(lband, rtray, brightparams,
@@ -71,32 +65,42 @@ def intensity_movie(action, sub_path, model: str, intent_grid_type, brightparams
     num_iterations = int((action["stop"] - action["start"]) / action["step"])
 
     """GRAPHS________________________________________________________________________________________________________"""
-    x_variable = np.zeros(num_iterations)  # counter for independant variable
-
     # # Intensity images
     # I_thins = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
     # I_thicks = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
     # #
+
+    done_list = None
+    if frequency_list is not None:
+        done_list = np.full(len(frequency_list),False)
+
     for i in range(num_iterations):
         print(line)
         print(line)
-        print('Creating intensity.h5 for Model ' + model + ' number: ' + str(i))
 
-        # create current intensity folder
-        # Update varing parameter
         brightparams[action["var"]] = action["start"] + i * action["step"]
-        x_variable[i] = brightparams[action["var"]]
+        current_freqeuncy = brightparams[action["var"]]
 
-        args = bigRunComputing.createIntensityArgs(brightparams)
-        args += "--lband " + lband + " --rtray " + rtray
+        do_image, done_list = fileloading.frequencyListAnalysis(frequency_list, done_list, current_freqeuncy)
 
-        subprocess.run(['python3 ' + EZPaths.aartPath + '/radialintensity.py' + args], shell=True)
+        if do_image:
+            print('Creating intensity.h5 for Model ' + model + ' number: ' + str(i))
 
-        # Read created file
+            # create current intensity folder
+            # Update varing parameter
 
-        fnrays = fileloading.intensityNameNoUnits(brightparams, astroModels.funckeys)
-        new_intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
-        subprocess.run(["mv " + fnrays + ' ' + new_intensity_path], shell=True)
+            args = bigRunComputing.createIntensityArgs(brightparams)
+            args += "--lband " + lband + " --rtray " + rtray
+
+            subprocess.run(['python3 ' + EZPaths.aartPath + '/radialintensity.py' + args], shell=True)
+
+            # Read created file
+
+            fnrays = fileloading.intensityNameNoUnits(brightparams, astroModels.funckeys)
+            new_intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(current_freqeuncy)
+            subprocess.run(["mv " + fnrays + ' ' + new_intensity_path], shell=True)
+        else:
+            print('Skipping Intensity.h5 for Model ' + model + ' number: ' + str(i) + "...")
 
     return intermodel_data
 
@@ -327,7 +331,7 @@ def blurr_intensity_movie(action, sub_path, model: str, intent_grid_type: int,
         brightparams[action["var"]] = action["start"] + i * action["step"]
         current_freqeuncy = brightparams[action["var"]]
 
-        do_blurr, done_list = fileloading.blurrListAnalysis(blurr_frequency_list,done_list,current_freqeuncy)
+        do_blurr, done_list = fileloading.frequencyListAnalysis(blurr_frequency_list, done_list, current_freqeuncy)
 
         if do_blurr:
             print('Reading intensity.h5 for Model ' + model + ' number: ' + str(i))
@@ -405,7 +409,7 @@ def blurrImageAnalysis(action, sub_path, model: str, brightparams,blurr_frequenc
         brightparams[action["var"]] = action["start"] + i * action["step"]
         current_freqeuncy = brightparams[action["var"]]
 
-        do_blurr, done_list = fileloading.blurrListAnalysis(blurr_frequency_list, done_list, current_freqeuncy)
+        do_blurr, done_list = fileloading.frequencyListAnalysis(blurr_frequency_list, done_list, current_freqeuncy)
 
         if do_blurr:
             print('Reading blurred intensity.h5 for Model ' + model + ' number: ' + str(L))

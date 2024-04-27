@@ -308,7 +308,54 @@ class BigRuns:
             # ________________________________
         return diction
 
-    def creatIntensityGrid(self, action, do_list=None, isContinuous=False):
+    def intensityModelDocString(self):
+        string = line + line + line + "Total Number of Intensity Models: " + str(
+            self.total_intensity_models_count) + '\n' + "Constant Params: " + '\n'
+        for key in list(self.constant_params):
+            string += breaker + key + ": " + str(self.constant_params[key]) + '\n'
+
+        string += line
+        for i in range(len(self.all_intensity_model_names)):
+            string += line + self.all_intensity_model_names[i] + '\n'
+            current_model = self.all_intensity_model_brightparams[i]
+            for k in range(len(self.var_intensity_grid_names)):
+                string += (breaker + self.var_intensity_grid_names[k] + ": "
+                           + str(current_model[self.var_intensity_grid_names[k]]) + '\n')
+
+        return string + line + line + line
+
+    def totalModelDocString(self):
+
+        intensity_model_string = line_small + line_small + line_small + "Total Number of Models: " + str(
+            self.total_models_count) + '\n' + "Constant Params: " + '\n'
+        for key in list(self.constant_params):
+            if key != "n_th0":
+                intensity_model_string += breaker + key + ": " + str(self.constant_params[key]) + '\n'
+
+        intensity_model_string += line_small
+        for i in range(len(self.all_model_names)):
+            current_name = self.all_model_names[i]
+            current_model = self.all_model_brightparams[i]
+            intensity_model_string += line_small + current_name + '\n'
+
+            for k in range(len(self.var_intensity_grid_names)):
+                intensity_model_string += (breaker + self.var_intensity_grid_names[k] + ": "
+                                           + str(current_model[self.var_intensity_grid_names[k]]) + '\n')
+            intensity_model_string += breaker + "n_th0: " + str(current_model["n_th0"]) + '\n'
+
+        intensity_model_string += line_small + line_small + line_small
+
+        geo_models_string = "\nGEOMODELS\n"
+        for i in range(len(self.geo_grid_names)):
+            geo_models_string += self.geo_grid_names[i] + "| "
+            for j in range(len(self.geo_grid_params[i][0])):
+                geo_models_string += '\n    ' + self.geo_grid_params[i][0][j] + ": " + self.geo_grid_params[i][1][j]
+            geo_models_string += '\n'
+
+        return intensity_model_string + geo_models_string
+
+    """ Clean _______________________________________________________________________________________________________"""
+    def creatIntensityGrid(self, action, do_list=None, isContinuous=False,frequency_list=None):
 
         funckeys = {
             "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
@@ -342,9 +389,15 @@ class BigRuns:
                 # ________________________________
                 current_bp = self.all_model_brightparams[k]
 
-                current_model_file = self.sub_paths["intensityPath"] + current_total_name + "/clean/"
+                parent_model_path = self.sub_paths["intensityPath"] + current_total_name + "/"
+                current_model_file = parent_model_path + "clean/"
 
-                # only skips below if run is continuous and file already exist, or if do is false
+                fileloading.creatSubDirectory(parent_model_path,
+                                              "for {} intensities".format(current_total_name), kill_policy=False)
+
+                fileloading.creatSubDirectory(current_model_file,
+                                              "for {} intensities".format(current_total_name), kill_policy=True)
+
                 preform_model = fileloading.crossContinousDoAnalysis(
                     current_total_name, do_list, current_model_file, isContinuous)
                 if preform_model:
@@ -365,7 +418,7 @@ class BigRuns:
                     else:
                         run_type_arg = self.run_type
                     intermodel_data = movieMakerIntensity.intensity_movie(
-                        action, self.sub_paths, current_total_name, run_type_arg, current_bp)
+                        action, self.sub_paths, current_total_name, run_type_arg, current_bp,frequency_list)
 
                     print(
                         "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(
@@ -429,52 +482,6 @@ class BigRuns:
                 )
             else:
                 print(current_total_name + " marked for skipping...")
-
-    def intensityModelDocString(self):
-        string = line + line + line + "Total Number of Intensity Models: " + str(
-            self.total_intensity_models_count) + '\n' + "Constant Params: " + '\n'
-        for key in list(self.constant_params):
-            string += breaker + key + ": " + str(self.constant_params[key]) + '\n'
-
-        string += line
-        for i in range(len(self.all_intensity_model_names)):
-            string += line + self.all_intensity_model_names[i] + '\n'
-            current_model = self.all_intensity_model_brightparams[i]
-            for k in range(len(self.var_intensity_grid_names)):
-                string += (breaker + self.var_intensity_grid_names[k] + ": "
-                           + str(current_model[self.var_intensity_grid_names[k]]) + '\n')
-
-        return string + line + line + line
-
-    def totalModelDocString(self):
-
-        intensity_model_string = line_small + line_small + line_small + "Total Number of Models: " + str(
-            self.total_models_count) + '\n' + "Constant Params: " + '\n'
-        for key in list(self.constant_params):
-            if key != "n_th0":
-                intensity_model_string += breaker + key + ": " + str(self.constant_params[key]) + '\n'
-
-        intensity_model_string += line_small
-        for i in range(len(self.all_model_names)):
-            current_name = self.all_model_names[i]
-            current_model = self.all_model_brightparams[i]
-            intensity_model_string += line_small + current_name + '\n'
-
-            for k in range(len(self.var_intensity_grid_names)):
-                intensity_model_string += (breaker + self.var_intensity_grid_names[k] + ": "
-                                           + str(current_model[self.var_intensity_grid_names[k]]) + '\n')
-            intensity_model_string += breaker + "n_th0: " + str(current_model["n_th0"]) + '\n'
-
-        intensity_model_string += line_small + line_small + line_small
-
-        geo_models_string = "\nGEOMODELS\n"
-        for i in range(len(self.geo_grid_names)):
-            geo_models_string += self.geo_grid_names[i] + "| "
-            for j in range(len(self.geo_grid_params[i][0])):
-                geo_models_string += '\n    ' + self.geo_grid_params[i][0][j] + ": " + self.geo_grid_params[i][1][j]
-            geo_models_string += '\n'
-
-        return intensity_model_string + geo_models_string
 
     def graphCreation(self, action, do_list=None, isContinuous=False):
         """
@@ -895,6 +902,7 @@ class BigRuns:
         print("Image '{}' Created".format(figname))
         plt.close()
 
+    """ Blurr _______________________________________________________________________________________________________"""
     def blurrIntensityGrid(self, action, do_list=None, isContinuous=False,
                            blurr_frequency_list: list = None, blur_kernal: int = 20):
 
@@ -920,7 +928,7 @@ class BigRuns:
                 run_type_arg = self.run_type
 
             parent_model_path = self.sub_paths["intensityPath"] + current_total_name + "/"
-            current_model_file =  parent_model_path + "blurr" + str(blur_kernal) + "/"
+            current_model_file = parent_model_path + "blurr" + str(blur_kernal) + "/"
 
             preform_model = fileloading.crossContinousDoAnalysis(
                 current_total_name, do_list, current_model_file, isContinuous)
@@ -1189,8 +1197,8 @@ class BigRuns:
 
                     current_freqeuncy = brightparams[action["var"]]
 
-                    do_image, done_list = fileloading.blurrListAnalysis(blurr_frequency_list, done_list,
-                                                                        current_freqeuncy)
+                    do_image, done_list = fileloading.frequencyListAnalysis(blurr_frequency_list, done_list,
+                                                                            current_freqeuncy)
 
                     if do_image:
                         print("Full image production for intensity frame: ", L)
