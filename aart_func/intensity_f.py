@@ -214,22 +214,20 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys
         0: ilp.thermal_profile,
         1: ilp.power_profile
     }
-    si_thin[rs>=isco], si_thick[rs>=isco], tau[rs>=isco], full_profiles[:,rs>=isco], full_profiles_unit = emissionmodel[
+    si_thin[rs>=isco], si_thick[rs>=isco], tau[rs>=isco], full_profiles[:,rs>=isco], = emissionmodel[
         funckeys["emodelkey"]](coords_inner,redshift_inner,CosAng_inner,brightparams,funckeys)
-    si_thin[rs<isco], si_thick[rs<isco], tau[rs<isco], full_profiles[:,rs<isco], full_profiles_unit = emissionmodel[
+    si_thin[rs<isco], si_thick[rs<isco], tau[rs<isco], full_profiles[:,rs<isco] = emissionmodel[
         funckeys["emodelkey"]](coords_outter,redshift_outter,CosAng_outter,brightparams,funckeys)
 
     r_p = 1+np.sqrt(1-a**2)
     # si_thin[rs<=r_p] = 0
     si_thin[rs <= r_p] = -np.inf
 
-    cosAngReturn[rs>=isco] = CosAng_inner
-    cosAngReturn[rs<isco] = CosAng_outter
+    # cosAngReturn[rs>=isco] = CosAng_inner
+    # cosAngReturn[rs<isco] = CosAng_outter
 
-    testa = np.sqrt(eta)
-    testb = np.sqrt(eta+a**2*np.cos(thetao)**2-lamb**2/(np.tan(thetao)**2))
 
-    return si_thin, si_thick, tau, full_profiles, full_profiles_unit, cosAngReturn, testa, testb, eta
+    return si_thin, si_thick, tau, full_profiles
 
 
 #calculate the observed brightness for an arbitrary profile, passed in as the interpolation object
@@ -326,11 +324,8 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     rs2 = rs2[mask2]
     phi2 = phi012[2][mask2]
 
-    si_thin2, si_thick2, tau2mask2, full_profiles2, full_profiles_unit, cosAngReturn2, testa, testb, eta= bright_radial(
+    si_thin2, si_thick2, tau2mask2, full_profiles2= bright_radial(
         supergrid2,mask2,sign2,spin_case,rs2,isco,thetao,brightparams,funckeys,phi2)
-
-    cosAngReturn2Full = np.zeros(mask2.shape)
-    cosAngReturn2Full[mask2] = cosAngReturn2
 
     I2_thin = np.zeros(mask2.shape)
     I2_thin[mask2] = si_thin2
@@ -347,11 +342,8 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     rs1 = rs1[mask1]
     phi1 = phi012[1][mask1]
 
-    si_thin1, si_thick1, tau1mask1, full_profiles1, full_profiles_unit, cosAngReturn1, testa, testb, eta = bright_radial(
+    si_thin1, si_thick1, tau1mask1, full_profiles1 = bright_radial(
         supergrid1, mask1, sign1, spin_case,rs1, isco, thetao, brightparams, funckeys, phi1)
-
-    cosAngReturn1Full = np.zeros(mask1.shape)
-    cosAngReturn1Full[mask1] = cosAngReturn1
 
     I1_thin = np.zeros(mask1.shape)
     I1_thin[mask1] = si_thin1
@@ -368,11 +360,8 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     rs0 = rs0[mask0]
     phi0 = phi012[0][mask0]
 
-    si_thin0, si_thick0, tau0mask0, full_profiles0, full_profiles_unit, cosAngReturn0, testa, testb, eta = bright_radial(
+    si_thin0, si_thick0, tau0mask0, full_profiles0 = bright_radial(
         supergrid0, mask0, sign0, spin_case,rs0, isco, thetao, brightparams, funckeys, phi0)
-
-    cosAngReturn0Full = np.zeros(mask0.shape)
-    cosAngReturn0Full[mask0] = cosAngReturn0
 
     I0_thin = np.zeros(mask0.shape)
     I0_thin[mask0] = si_thin0
@@ -391,10 +380,6 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     tau1 = np.sum(tau1[mask2] * full_intensity[mask2])/sum(full_intensity[mask2])
     tau2 = np.sum(tau2[mask2] * full_intensity[mask2])/sum(full_intensity[mask2])
 
-    # cosAngReturn2Full = cosAngReturn2Full.reshape(N0, N0).T
-    # cosAngReturn1Full = cosAngReturn1Full.reshape(N1, N1).T
-    # cosAngReturn0Full = cosAngReturn0Full.reshape(N2, N2).T
-    #
     I0_temp_thick = I0_temp_thick.reshape(N0, N0).T
     I2_temp_thick = I2_temp_thick.reshape(N1, N1).T
     I1_temp_thick = I1_temp_thick.reshape(N2, N2).T
@@ -448,14 +433,7 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     h5f.create_dataset('full_profiles2', data=full_profiles2)
     h5f.create_dataset('full_profiles1', data=full_profiles1)
     h5f.create_dataset('full_profiles0', data=full_profiles0)
-    #
-    # h5f.create_dataset('cosAngReturn2', data=cosAngReturn2Full)
-    # h5f.create_dataset('cosAngReturn1', data=cosAngReturn1Full)
-    # h5f.create_dataset('cosAngReturn0', data=cosAngReturn0Full)
-    #
-    # h5f.create_dataset('testa0', data=testa)
-    # h5f.create_dataset('testb0', data=testb)
-    # h5f.create_dataset('eta0', data=eta)
+
 
     h5f.close()
 

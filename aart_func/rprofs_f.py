@@ -629,11 +629,11 @@ def rest_frame_thermal_profile(coords, cosAng=None, bp=kw_brightparams, fk=kw_fu
     full_profiles = np.concatenate([r, theta_e.value, n.value, b_field.value, b_nu_fluid.value,
                                     acoeff_I_fluid.value, tau_curve.value, jcoeff_I_fluid_packed.value], axis=0)
 
-    full_profiles_units = [str(theta_e.unit), str(n.unit), str(b_field.unit), str(b_nu_fluid.unit),
-                           str(acoeff_I_fluid.unit), str(tau_curve.unit)]
+    # full_profiles_units = [str(theta_e.unit), str(n.unit), str(b_field.unit), str(b_nu_fluid.unit),
+    #                        str(acoeff_I_fluid.unit), str(tau_curve.unit)]
     # print("b_0: ", b_0)
     # print("p: ", p_b)
-    return specific_intensity_thin, specific_intensity_thick, tau, full_profiles, full_profiles_units
+    return specific_intensity_thin, specific_intensity_thick, tau, full_profiles
 
 
 # TODO: remove redshift

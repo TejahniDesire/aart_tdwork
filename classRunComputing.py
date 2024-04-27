@@ -1089,8 +1089,8 @@ class BigRuns:
                 radii_FullAbsorption_Thick = np.load(data_path + "blurr_radii_FullAbsorption_Thick.npy")
                 theta = np.load(data_path + "blurr_theta.npy")
 
-                num_of_intensity_points = janksys_thin[:, 0].shape[0]
-                print("Number of Intensity Points: ", num_of_intensity_points)
+                num_of_action_points = int((action["stop"] - action["start"]) / action["step"])
+                print("Number of Intensity Points: ", num_of_action_points)
 
                 xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
                 # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
@@ -1183,7 +1183,7 @@ class BigRuns:
                 k = action["start"]
                 L = 0
                 print("Constructing Full images for " + model)
-                for i in range(num_of_intensity_points):
+                for i in range(num_of_action_points):
                     brightparams = self.all_model_brightparams[j]
                     brightparams[action["var"]] = k
 
