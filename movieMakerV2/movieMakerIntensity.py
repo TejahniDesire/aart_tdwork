@@ -409,7 +409,7 @@ def blurrImageAnalysis(action, sub_path, model: str, brightparams,blurr_frequenc
 
         if do_blurr:
             print('Reading blurred intensity.h5 for Model ' + model + ' number: ' + str(L))
-            x_variable+= [current_freqeuncy]
+            x_variable[L] = current_freqeuncy
             intensity_path = current_model_file + action["var"] + "_blurr_" + "{:.5e}".format(current_freqeuncy)
 
             h5f = h5py.File(intensity_path, 'r')
