@@ -200,12 +200,12 @@ class SingleModelData:
             "radii_I0_Thin": data_path + "blurr_radii_I0_Thin.npy",
             "radii_FullAbsorption_Thick" :data_path + "blurr_radii_FullAbsorption_Thick.npy",
             "theta":data_path + "theta.npy",
-            "86full_profiles": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[0])),
-            # "86full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[0])),
-            "230full_profiles": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[1])),
-            # "230full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[1])),
-            "345full_profiles": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[2])),
-            # "345full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[2]))
+            # "86full_profiles": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[0])),
+            # # "86full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[0])),
+            # "230full_profiles": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[1])),
+            # # "230full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[1])),
+            # "345full_profiles": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[2])),
+            # # "345full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[2]))
         }
 
 
