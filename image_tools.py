@@ -41,7 +41,7 @@ num_of_theta_points = 360
 num_of_radial_points = 10000
 
 
-def radii_of_thetaV2(I0, dx=None,give_intensities=False,navg_ang=10):
+def radii_of_thetaV2(I0, dx=None,give_intensities=False,navg_ang=10,average=True):
     x = np.arange(I0.shape[0])  # number of pixels
     y = x
     interp = RegularGridInterpolator((x, y), I0.T)
@@ -66,7 +66,8 @@ def radii_of_thetaV2(I0, dx=None,give_intensities=False,navg_ang=10):
 
     coords = np.array([xprime, yprime]).T
     profile = interp(coords)
-    profile = convolve1d(profile, np.ones(navg_ang), axis=0)
+    if average:
+        profile = convolve1d(profile, np.ones(navg_ang), axis=0)
     peak = np.argmax(profile, 1)
 
     if dx is None:

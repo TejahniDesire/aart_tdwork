@@ -140,7 +140,7 @@ soloRun1 = runData("soloRun1",
 soloRun2 = runData("soloRun2",
                    astroModels.bp_soloRun2,
                    [],
-                   [(["a"], [str(.9)])],
+                   [(["a"], [str(15/16)])],
                    ["ModelB"])
 soloRun2.setAction(
     {

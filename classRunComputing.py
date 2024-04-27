@@ -458,7 +458,7 @@ class BigRuns:
         np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
         np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
 
-    def intensityGridAnalysis(self, action, do_list=None, isContinuous=False,frequency_list=None):
+    def intensityGridAnalysis(self, action, do_list=None, isContinuous=False,frequency_list=None,average=True):
         print(line)
         print(line)
         print(line)
@@ -478,7 +478,7 @@ class BigRuns:
                 print("Analyzing Intensity Movie for Model ", current_total_name)
                 print(long_line)
                 movieMakerIntensity.imageAnalysis(
-                    action, self.sub_paths, current_total_name, current_bp,frequency_list
+                    action, self.sub_paths, current_total_name, current_bp,frequency_list,average=average
                 )
             else:
                 print(current_total_name + " marked for skipping...")

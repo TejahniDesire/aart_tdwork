@@ -108,7 +108,7 @@ def intensity_movie(action, sub_path, model: str, intent_grid_type, brightparams
 """________________________________________________________________________________________________________"""
 
 
-def imageAnalysis(action, sub_path, model: str, brightparams,frequency_list=None):
+def imageAnalysis(action, sub_path, model: str, brightparams,frequency_list=None,average=True):
     parent_model_path = sub_path["intensityPath"] + model + "/"
     current_model_file = parent_model_path + "clean/"
     num_of_theta_points = image_tools.num_of_theta_points  # array size for radii calcs
@@ -206,10 +206,10 @@ def imageAnalysis(action, sub_path, model: str, brightparams,frequency_list=None
 
             # Thin Radii Calcs----------------------------------------------------------------------------------------------
 
-            radii_I0_Thin_i, theta = tls.radii_of_thetaV2(I0, params.dx0)
-            radii_I1_Thin_i, theta = tls.radii_of_thetaV2(I1, params.dx0)
-            radii_I2_Thin_i, theta = tls.radii_of_thetaV2(I2, params.dx0)
-            radii_Full_Thick_i, theta = tls.radii_of_thetaV2(I0 + I1 + I2, params.dx0)
+            radii_I0_Thin_i, theta = tls.radii_of_thetaV2(I0, params.dx0,average=average)
+            radii_I1_Thin_i, theta = tls.radii_of_thetaV2(I1, params.dx0,average=average)
+            radii_I2_Thin_i, theta = tls.radii_of_thetaV2(I2, params.dx0,average=average)
+            radii_Full_Thick_i, theta = tls.radii_of_thetaV2(I0 + I1 + I2, params.dx0,average=average)
 
             # profs = scipy.ndimage.convolve1d(profs, np.ones(navg_ang), axis=0) / navg_ang
 
@@ -229,10 +229,10 @@ def imageAnalysis(action, sub_path, model: str, brightparams,frequency_list=None
             radii_Full_Thin = np.vstack((radii_Full_Thin, radii_Full_Thick_i))
 
             # Thick Radii Calcs---------------------------------------------------------------------------------------------
-            radii_I0_Thick_i, theta = tls.radii_of_thetaV2(I0_Absorb, params.dx0)
-            radii_I1_Thick_i, theta = tls.radii_of_thetaV2(I1_Absorb, params.dx0)
-            radii_I2_Thick_i, theta = tls.radii_of_thetaV2(I2_Absorb, params.dx0)
-            radii_FullAbsorption_Thick_i, theta = tls.radii_of_thetaV2(Absorbtion_Image, params.dx0)
+            radii_I0_Thick_i, theta = tls.radii_of_thetaV2(I0_Absorb, params.dx0,average=average)
+            radii_I1_Thick_i, theta = tls.radii_of_thetaV2(I1_Absorb, params.dx0,average=average)
+            radii_I2_Thick_i, theta = tls.radii_of_thetaV2(I2_Absorb, params.dx0,average=average)
+            radii_FullAbsorption_Thick_i, theta = tls.radii_of_thetaV2(Absorbtion_Image, params.dx0,average=average)
 
             r0_thick = tls.curve_params(theta, radii_I0_Thick_i)
             r1_thick = tls.curve_params(theta, radii_I1_Thick_i)

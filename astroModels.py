@@ -81,8 +81,8 @@ bp_soloRun1 = {
 }
 
 bp_soloRun2 = {
-    "p_mag": [-1],
-    "p_temp": [-1.2],
+    "p_mag": [-1.5],
+    "p_temp": [ -1],
     "p_dens": [-.7],
     "n_th0": [1.9e4],
     "t_e0": [2e11],
