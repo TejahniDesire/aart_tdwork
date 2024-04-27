@@ -333,6 +333,7 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     I2_thick[mask2] = si_thick2
     tau2 = np.zeros(mask2.shape)
     tau2[mask2] = tau2mask2
+
     full_intensity = full_intensity * np.exp(-tau2) + I2_thick
 
     I2_temp_thin = ilp.brightness_temp(I2_thin*ilp.specific_int_units, brightparams["nu0"])
@@ -344,6 +345,8 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
 
     si_thin1, si_thick1, tau1mask1, full_profiles1 = bright_radial(
         supergrid1, mask1, sign1, spin_case,rs1, isco, thetao, brightparams, funckeys, phi1)
+
+
 
     I1_thin = np.zeros(mask1.shape)
     I1_thin[mask1] = si_thin1
@@ -394,28 +397,17 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
 
     filename = fileloading.intensityNameWrite(brightparams,funckeys)
 
-    # filename = path + ('Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}_'
-    #                    'pdens_{}_ptemp_{}_nscale_{}_emkey_{}_bkey_{}_nkey_{}_tnkey_{}_bnkey_{}.h5').format(
-    #     spin_case,
-    #     i_case,
-    #     "{:.5e}".format(brightparams["nu0"].value),
-    #     "{:.5e}".format(brightparams["mass"].value),
-    #     float(brightparams["scale_height"]),
-    #     "{:.3f}".format(brightparams["theta_b"].value),
-    #     "{:.2f}".format(float(brightparams["beta"])),
-    #     "{:.1f}".format(float(brightparams["r_ie"])),
-    #     "{:.1f}".format(float(brightparams["rb_0"])),
-    #     "{:.1e}".format(brightparams["n_th0"].value),
-    #     "{:.1e}".format(brightparams["t_e0"].value),
-    #     float(brightparams["p_dens"]),
-    #     float(brightparams["p_temp"]),
-    #     "{:.1f}".format(brightparams["nscale"]),
-    #     funckeys["emodelkey"],
-    #     funckeys["bkey"],
-    #     funckeys["nnoisykey"],
-    #     funckeys["tnoisykey"],
-    #     funckeys["bnoisykey"]
-    # )
+    """Full Profile Reshaping_________________________"""
+    num_of_profiles = full_profiles2.shape[0]
+
+    full_profiles2resized = np.ndarray((num_of_profiles, mask2.shape))
+    full_profiles1resized = np.ndarray((num_of_profiles, mask1.shape))
+    full_profiles0resized = np.ndarray((num_of_profiles, mask0.shape))
+    for i in range(num_of_profiles):
+        full_profiles2resized[i, mask2] = full_profiles2[i, :]
+        full_profiles1resized[i, mask1] = full_profiles1[i, :]
+        full_profiles0resized[i, mask0] = full_profiles0[i, :]
+    """_________________________"""
 
     h5f = h5py.File(filename, 'w')
 
@@ -430,9 +422,9 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     h5f.create_dataset('tau2', data=tau2)
     h5f.create_dataset('tau1', data=tau1)
     h5f.create_dataset('tau0', data=tau0)
-    h5f.create_dataset('full_profiles2', data=full_profiles2)
-    h5f.create_dataset('full_profiles1', data=full_profiles1)
-    h5f.create_dataset('full_profiles0', data=full_profiles0)
+    h5f.create_dataset('full_profiles2', data=full_profiles2resized)
+    h5f.create_dataset('full_profiles1', data=full_profiles1resized)
+    h5f.create_dataset('full_profiles0', data=full_profiles0resized)
 
 
     h5f.close()
