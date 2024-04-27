@@ -1230,10 +1230,10 @@ class BigRuns:
                         plt.savefig(pltname, bbox_inches='tight')
                         print("Jpeg Created:  " + pltname)
                         plt.close()
+                        L += 1
                     else:
                         print("Freuquency {} marked for skipping...".format("{:.5e}".format(current_freqeuncy)))
                     k += action['step']
-                    L += 1
                 j += 1  # marker for which brightparams to use
             else:
                 print(model + " marked for skipping...")
