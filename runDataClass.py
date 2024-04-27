@@ -181,7 +181,7 @@ class SingleModelData:
             "mean_optical_depth_I1": data_path + "mean_optical_depth_I1.npy",
             "mean_optical_depth_I2": data_path + "mean_optical_depth_I2.npy",
         }
-        for i in range(freq_points):
+        for i in range(len(freq_points)):
             keys = [str(i) + "full_profiles0", str(i) + "full_profiles1", str(i) + "full_profiles2"]
             L = 0
             for key in keys:
