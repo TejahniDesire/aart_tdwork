@@ -30,7 +30,9 @@ import fileloading
 run = runDataClass.run2
 # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = ["ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
-do_list = None
+do_list = ["ModelC22"]
+blurr_frequency_list = [86e9,230e9,345e9]
+blurr_kernal = [1,10,20]
 
 bigRun = classRunComputing.BigRuns(
     run.getRunName(),
@@ -52,10 +54,26 @@ bigRun = classRunComputing.BigRuns(
 #     isContinuous=False
 # )
 #
-# bigRun.blurrIntensityGrid(
-#     run.getAction(),
-#     do_list
-# )
+bigRun.blurrIntensityGrid(
+    run.getAction(),
+    do_list,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[0]
+)
+bigRun.blurrIntensityGrid(
+    run.getAction(),
+    do_list,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[1]
+)
+
+bigRun.blurrIntensityGrid(
+    run.getAction(),
+    do_list,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[2]
+)
+
 
 """ Intensity Grid Analysis_________________________________________________________"""
 # bigRun.intensityGridAnalysis(
@@ -64,23 +82,61 @@ bigRun = classRunComputing.BigRuns(
 #     isContinuous=False
 # )
 """ Clean Graph Creation_________________________________________________________"""
-bigRun.graphCreation(
-    run.getAction(),
-    do_list=do_list,
-    isContinuous=False
-)
+# bigRun.graphCreation(
+#     run.getAction(),
+#     do_list=do_list,
+#     isContinuous=False
+# )
 
 """ Blurring intensity grid_________________________________________________________"""
 bigRun.blurrIntensityGridAnalysis(
     run.getAction(),
-    do_list=["ModelA11","ModelB31"],
-    isContinuous=False
+    do_list=do_list,
+    isContinuous=False,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[0]
 )
 
+bigRun.blurrIntensityGridAnalysis(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=False,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[1]
+)
+
+bigRun.blurrIntensityGridAnalysis(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=False,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[2]
+)
+
+
 """ Blurr Graph Creation_________________________________________________________"""
+bigRun.blurrGraphCreation(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=False,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[0],
+)
 
 bigRun.blurrGraphCreation(
-    run.getAction()
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=False,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[1],
+)
+
+bigRun.blurrGraphCreation(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=False,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[2]
 )
 """ _________________________________________________________"""
 

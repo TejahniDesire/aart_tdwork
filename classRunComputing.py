@@ -4,7 +4,6 @@ import kgeo
 import numpy as np
 from matplotlib import ticker
 
-
 import EZPaths
 import os
 
@@ -120,7 +119,7 @@ class BigRuns:
             else:
                 self.constant_params[key] = self.intensity_grid_params[key][0]
 
-        print("Final Grid Type: ",self.run_type)
+        print("Final Grid Type: ", self.run_type)
         # Create astro ParamGrid________________________________________________________________________________________
         if self.already_normalized_brightparams:
 
@@ -130,7 +129,7 @@ class BigRuns:
                 self.sub_paths["runWideNumpy"] + "all_model_brightparams.npy",
                 self.sub_paths["runWideNumpy"] + "all_model_names.npy",
                 self.sub_paths["runWideNumpy"] + "total_models_count.npy"
-                          ]
+            ]
             all_intensity_model_brightparams = []
             all_intensity_model_names = []
             all_model_brightparams = []
@@ -146,7 +145,7 @@ class BigRuns:
             ]
             k = 0
             for file in file_paths:
-                arrays[k] = np.load(file,allow_pickle=True)
+                arrays[k] = np.load(file, allow_pickle=True)
                 k += 1
 
             self.all_intensity_model_brightparams = arrays[0]
@@ -194,18 +193,18 @@ class BigRuns:
                 for key in list(self.constant_params):
                     current_model_brightparams[key] = self.constant_params[key]
 
-                current_model_brightparams[self.var_intensity_grid_names[0]] =\
+                current_model_brightparams[self.var_intensity_grid_names[0]] = \
                     self.intensity_grid_params[self.var_intensity_grid_names[0]][i]
-                current_model_brightparams[self.var_intensity_grid_names[1]] =\
+                current_model_brightparams[self.var_intensity_grid_names[1]] = \
                     self.intensity_grid_params[self.var_intensity_grid_names[1]][j]
 
                 all_brightparams += [current_model_brightparams]
                 all_model_names += [current_model_name]
 
-        return all_model_names,all_brightparams
+        return all_model_names, all_brightparams
 
     def type1Grid(self):
-        all_brightparams= []
+        all_brightparams = []
         all_model_names = []
         for i in range(self.variable_param_ranges[self.var_intensity_grid_names[0]]):
             current_model_brightparams = {}  # dict[key] = for value of [key]/varied parameter
@@ -213,12 +212,13 @@ class BigRuns:
             for key in list(self.constant_params):
                 current_model_brightparams[key] = self.constant_params[key]
 
-            current_model_brightparams[self.var_intensity_grid_names[0]] = self.intensity_grid_params[self.var_intensity_grid_names[0]][i]
+            current_model_brightparams[self.var_intensity_grid_names[0]] = \
+                self.intensity_grid_params[self.var_intensity_grid_names[0]][i]
 
             all_brightparams += [current_model_brightparams]
             all_model_names += [current_model_name]
 
-        return all_model_names,all_brightparams
+        return all_model_names, all_brightparams
 
     def type0grid(self):
         current_model_brightparams = {}  # dict[key] = for value of [key]/varied parameter
@@ -308,7 +308,7 @@ class BigRuns:
             # ________________________________
         return diction
 
-    def creatIntensityGrid(self,action,do_list=None,isContinuous=False):
+    def creatIntensityGrid(self, action, do_list=None, isContinuous=False):
 
         funckeys = {
             "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
@@ -346,7 +346,7 @@ class BigRuns:
 
                 # only skips below if run is continuous and file already exist, or if do is false
                 preform_model = fileloading.crossContinousDoAnalysis(
-                    current_total_name,do_list,current_model_file,isContinuous)
+                    current_total_name, do_list, current_model_file, isContinuous)
                 if preform_model:
                     if not self.already_normalized_brightparams:
                         print("\n" + "Normalizing " + current_total_name + "\n")
@@ -368,7 +368,8 @@ class BigRuns:
                         action, self.sub_paths, current_total_name, run_type_arg, current_bp)
 
                     print(
-                        "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(intermodel_data["thin_total_flux"]))
+                        "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(
+                            intermodel_data["thin_total_flux"]))
                     print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"]) + "\n")
                     all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
                     all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
@@ -382,7 +383,7 @@ class BigRuns:
                 self.sub_paths["runWideNumpy"] + "all_model_brightparams",
                 self.sub_paths["runWideNumpy"] + "all_model_names",
                 self.sub_paths["runWideNumpy"] + "total_models_count"
-                          ]
+            ]
             arrays = [
                 self.all_intensity_model_brightparams,
                 self.all_intensity_model_names,
@@ -404,7 +405,7 @@ class BigRuns:
         np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
         np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
 
-    def intensityGridAnalysis(self,action,do_list=None,isContinuous=False):
+    def intensityGridAnalysis(self, action, do_list=None, isContinuous=False):
         print(line)
         print(line)
         print(line)
@@ -424,81 +425,6 @@ class BigRuns:
                 print("Analyzing Intensity Movie for Model ", current_total_name)
                 print(long_line)
                 movieMakerIntensity.imageAnalysis(
-                    action, self.sub_paths, current_total_name, current_bp
-                )
-            else:
-                print(current_total_name + " marked for skipping...")
-
-    def blurrIntensityGrid(self,action,do_list=None,isContinuous=False):
-
-        all_230_total_jy_thin = []
-        all_230_total_jy_thick = []
-
-        print(line)
-        print(line)
-        print(line)
-        print("Bluring Intensity Grid for " + self.run)
-        for i in range(len(self.all_model_brightparams)):
-
-            # String Names
-            # current_intent_name = self.all_intensity_model_names[i]
-            # self.all_model_names += [current_geo_model + current_intent_name.replace("Model", "")]
-            current_total_name = self.all_model_names[i]
-            # ________________________________
-            current_bp = self.all_model_brightparams[i]
-
-            if self.run_type == 0:
-                run_type_arg = 1
-            else:
-                run_type_arg = self.run_type
-
-            parent_model_path = self.sub_paths["intensityPath"] + current_total_name + "/"
-            current_model_file = parent_model_path + "blurr/"
-
-            preform_model = fileloading.crossContinousDoAnalysis(
-                current_total_name, do_list, current_model_file, isContinuous)
-
-            if preform_model:
-                intermodel_data = movieMakerIntensity.blurr_intensity_movie(
-                    action, self.sub_paths, current_total_name, run_type_arg, current_bp)
-
-                print(
-                    "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(intermodel_data["thin_total_flux"]))
-                print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"]) + "\n")
-                all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
-                all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
-            else:
-                print(current_total_name + " marked for skipping...")
-        # Numpy saving________________________________________________
-
-        all_230_total_jy_thin_numpy_name = self.sub_paths["meta"] + "blurr_thin_total_flux"
-        all_230_total_jy_thick_numpy_name = self.sub_paths["meta"] + "blurr_thick_total_flux"
-
-        np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
-        np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
-
-    def blurrIntensityGridAnalysis(self,action,do_list=None,isContinuous=False):
-        print(line)
-        print(line)
-        print(line)
-        print("Analyzing blurred intensity grid for " + self.run)
-        for i in range(len(self.all_model_brightparams)):
-
-            # String Names
-            current_total_name = self.all_model_names[i]
-            # ________________________________
-            current_bp = self.all_model_brightparams[i]
-
-            parent_model_path = self.sub_paths["intensityPath"] + current_total_name + "/"
-            current_model_file = parent_model_path + "blurr/"
-
-            preform_model = fileloading.crossContinousDoAnalysis(
-                current_total_name, do_list, current_model_file, isContinuous)
-
-            if preform_model:
-                print("Analyzing blurred intensity movie for model ", current_total_name)
-
-                movieMakerIntensity.blurrImageAnalysis(
                     action, self.sub_paths, current_total_name, current_bp
                 )
             else:
@@ -550,7 +476,7 @@ class BigRuns:
 
         return intensity_model_string + geo_models_string
 
-    def graphCreation(self,action,do_list=None,isContinuous=False):
+    def graphCreation(self, action, do_list=None, isContinuous=False):
         """
 
         Args:
@@ -613,7 +539,6 @@ class BigRuns:
                 radVVarphi_path += "Clean_"
                 fluxVRadii_path += "Clean_"
 
-
                 if self.run_type == 0:
                     amount_to_subtract = 1
                 else:
@@ -665,7 +590,7 @@ class BigRuns:
                 mean_optical_depth_I1 = np.load(data_path + "mean_optical_depth_I1.npy")
                 mean_optical_depth_I2 = np.load(data_path + "mean_optical_depth_I2.npy")
 
-                num_of_intensity_points = janksys_thin[:,0].shape[0]
+                num_of_intensity_points = janksys_thin[:, 0].shape[0]
                 print("Number of Intensity Points: ", num_of_intensity_points)
 
                 xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
@@ -675,7 +600,7 @@ class BigRuns:
                 # Points of Interest
 
                 conv_1 = (action["start"] + action["step"] *
-                          ilp.ring_convergance(mean_radii_Thick[:, 2], mean_radii_Thick[:,3],3))
+                          ilp.ring_convergance(mean_radii_Thick[:, 2], mean_radii_Thick[:, 3], 3))
                 conv_1 = conv_1 / astroModels.scale_label[action['var']]
 
                 flux_peak_thin = action["start"] + action["step"] * np.argmax(janksys_thin[:, 3])
@@ -691,7 +616,7 @@ class BigRuns:
                 poi = {
                     "r_outer": r_outer,
                     "flux_peak_thin": flux_peak_thin,
-                    "flux_peak_thick":flux_peak_thick,
+                    "flux_peak_thick": flux_peak_thick,
                     "conv_1": conv_1,
                 }
 
@@ -749,7 +674,7 @@ class BigRuns:
                 fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
                 astroPloting.opticalDepth(ax, xaxis,
-                                          [mean_optical_depth_I0,mean_optical_depth_I1,mean_optical_depth_I2],
+                                          [mean_optical_depth_I0, mean_optical_depth_I1, mean_optical_depth_I2],
                                           poi, conv_1_style, flux_peak_style, action)
 
                 figname = Optical_depth_path + model + "OpticalDepth.jpeg"
@@ -764,11 +689,10 @@ class BigRuns:
                     k = action["start"]
                     print("Constructing Full images for " + model)
                     for i in range(num_of_intensity_points):
-
                         brightparams = self.all_model_brightparams[j]
                         brightparams["nu0"] = k
                         print("Full image production for intensity frame: ", i)
-                        print(R"Observation frequency $\nu=$",k)
+                        print(R"Observation frequency $\nu=$", k)
 
                         current_intensity_file = (current_model_file +
                                                   action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]]))
@@ -790,15 +714,16 @@ class BigRuns:
 
                         h5f.close()
                         rmax = I0.shape[0] * .4
-                        thin_intensity = [I0,I1,I2,I0 + I1 + I2]
-                        thick_intensity = [I0_Absorb, I1_Absorb,I2_Absorb, Absorbtion_Image]
-                        thin_radii = [radii_I0_Thin[i,:],radii_I1_Thin[i,:],radii_I2_Thin[i,:],radii_Full_Thin[i,:]]
+                        thin_intensity = [I0, I1, I2, I0 + I1 + I2]
+                        thick_intensity = [I0_Absorb, I1_Absorb, I2_Absorb, Absorbtion_Image]
+                        thin_radii = [radii_I0_Thin[i, :], radii_I1_Thin[i, :], radii_I2_Thin[i, :],
+                                      radii_Full_Thin[i, :]]
                         thick_radii = [radii_I0_Thick[i, :], radii_I1_Thick[i, :],
                                        radii_I2_Thick[i, :], radii_FullAbsorption_Thick[i, :]]
 
                         fig, (ax0, ax1) = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
 
-                        astroPloting.fullImage(fig,ax0,ax1,lim0,thin_intensity, thick_intensity,
+                        astroPloting.fullImage(fig, ax0, ax1, lim0, thin_intensity, thick_intensity,
                                                thin_radii, thick_radii, theta)
 
                         ax0.text(-9, 8.5, astroModels.var_label[action["var"]]
@@ -849,7 +774,6 @@ class BigRuns:
                         print("Image '{}' Created".format(pltname))
                         plt.close()
 
-
                         k += action['step']
                 j += 1  # marker for which brightparams to use
             else:
@@ -865,13 +789,14 @@ class BigRuns:
         bar_xaxis = np.arange(len(self.all_model_names))
         bar_labels = self.all_model_names
         for i in range(len(bar_xaxis)):
-            bar_labels[i] = bar_labels[i].replace("Model","")
+            bar_labels[i] = bar_labels[i].replace("Model", "")
         """Flux Peaks_____________________________________________________________________"""
         # Thin_________________
 
         fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.histogram(ax,hist_flux_peaks_thins,"Flux Peak location (GHz)","Optically Thin Assumption Frequency")
+        astroPloting.histogram(ax, hist_flux_peaks_thins, "Flux Peak location (GHz)",
+                               "Optically Thin Assumption Frequency")
 
         figname = peak_hist_thin_path + "FluxPeakThin.jpeg"
         plt.savefig(figname, bbox_inches='tight')
@@ -892,8 +817,8 @@ class BigRuns:
         # Thin Bar__________________
         fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.bar(ax,bar_xaxis,hist_flux_peaks_thins,"Optical Thin Assumption Peak Flux per model",
-                         "Observation Frequency (GHz)",bar_labels)
+        astroPloting.bar(ax, bar_xaxis, hist_flux_peaks_thins, "Optical Thin Assumption Peak Flux per model",
+                         "Observation Frequency (GHz)", bar_labels)
 
         figname = peak_hist_thin_path + "FluxPeakPerThinModel.jpeg"
         plt.savefig(figname, bbox_inches='tight')
@@ -904,8 +829,8 @@ class BigRuns:
 
         fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.bar(ax,bar_xaxis,hist_flux_peaks_thicks,"Optical Thin Assumption Peak Flux per model",
-                         "Observation Frequency (GHz)",bar_labels)
+        astroPloting.bar(ax, bar_xaxis, hist_flux_peaks_thicks, "Optical Thin Assumption Peak Flux per model",
+                         "Observation Frequency (GHz)", bar_labels)
 
         figname = peak_hist_thick_path + "FluxPeakPerThickModel.jpeg"
         plt.savefig(figname, bbox_inches='tight')
@@ -927,8 +852,8 @@ class BigRuns:
         # Conv Bar______________________
         fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.bar(ax,bar_xaxis,hist_convs,"Convergence for cumulative on I2",
-                         "Observation Frequency (GHz)",bar_labels)
+        astroPloting.bar(ax, bar_xaxis, hist_convs, "Convergence for cumulative on I2",
+                         "Observation Frequency (GHz)", bar_labels)
         figname = conv_hist_path + "convHistPerModel.jpeg"
         plt.savefig(figname, bbox_inches='tight')
         print("Image '{}' Created".format(figname))
@@ -937,8 +862,8 @@ class BigRuns:
         """230 total flux Thin___________________________________________________________"""
         fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.bar(ax, bar_xaxis,thin_total_flux, "Total Flux at 230GHz",
-                         "Optically Thin Assumption Frequency",bar_labels)
+        astroPloting.bar(ax, bar_xaxis, thin_total_flux, "Total Flux at 230GHz",
+                         "Optically Thin Assumption Frequency", bar_labels)
 
         figname = total_flux_path + "thin.jpeg"
         plt.savefig(figname, bbox_inches='tight')
@@ -956,12 +881,94 @@ class BigRuns:
         print("Image '{}' Created".format(figname))
         plt.close()
 
+    def blurrIntensityGrid(self, action, do_list=None, isContinuous=False,
+                           blurr_frequency_list: list = None, blur_kernal: int = 20):
 
-    def blurrGraphCreation(self,action):
+        all_230_total_jy_thin = []
+        all_230_total_jy_thick = []
+
+        print(line)
+        print(line)
+        print(line)
+        print("Bluring Intensity Grid for " + self.run)
+        for i in range(len(self.all_model_brightparams)):
+
+            # String Names
+            # current_intent_name = self.all_intensity_model_names[i]
+            # self.all_model_names += [current_geo_model + current_intent_name.replace("Model", "")]
+            current_total_name = self.all_model_names[i]
+            # ________________________________
+            current_bp = self.all_model_brightparams[i]
+
+            if self.run_type == 0:
+                run_type_arg = 1
+            else:
+                run_type_arg = self.run_type
+
+            parent_model_path = self.sub_paths["intensityPath"] + current_total_name + "/"
+            current_model_file = parent_model_path + "blurr/"
+
+            preform_model = fileloading.crossContinousDoAnalysis(
+                current_total_name, do_list, current_model_file, isContinuous)
+
+            if preform_model:
+                intermodel_data = movieMakerIntensity.blurr_intensity_movie(
+                    action, self.sub_paths, current_total_name, run_type_arg, current_bp,
+                    blurr_frequency_list, blur_kernal)
+
+                print(
+                    "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(intermodel_data["thin_total_flux"]))
+                print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"]) + "\n")
+                all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
+                all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
+            else:
+                print(current_total_name + " marked for skipping...")
+        # Numpy saving________________________________________________
+
+        all_230_total_jy_thin_numpy_name = self.sub_paths["meta"] + "blurr_thin_total_flux"
+        all_230_total_jy_thick_numpy_name = self.sub_paths["meta"] + "blurr_thick_total_flux"
+
+        np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
+        np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
+
+    def blurrIntensityGridAnalysis(self, action, do_list=None, isContinuous=False, blurr_frequency_list=None,
+                                   blur_kernal=20):
+        print(line)
+        print(line)
+        print(line)
+        print("Analyzing blurred intensity grid for " + self.run)
+        for i in range(len(self.all_model_brightparams)):
+
+            # String Names
+            current_total_name = self.all_model_names[i]
+            # ________________________________
+            current_bp = self.all_model_brightparams[i]
+
+            parent_model_path = self.sub_paths["intensityPath"] + current_total_name + "/"
+            current_model_file = parent_model_path + "blurr/"
+
+            preform_model = fileloading.crossContinousDoAnalysis(
+                current_total_name, do_list, current_model_file, isContinuous)
+
+            if preform_model:
+                print("Analyzing blurred intensity movie for model ", current_total_name)
+
+                movieMakerIntensity.blurrImageAnalysis(
+                    action, self.sub_paths, current_total_name, current_bp, blurr_frequency_list, blur_kernal
+                )
+            else:
+                print(current_total_name + " marked for skipping...")
+
+    def blurrGraphCreation(self, action, do_list=None, isContinuous=False, blurr_frequency_list=None,
+                           blur_kernal=20):
         """
 
         Args:
-            action: = {"var":str, "start":float, "stop":float, "step":float}
+            action:  = {"var":str, "start":float, "stop":float, "step":float}
+            do_list:
+            isContinuous:
+            blurr_frequency_list:
+            blur_kernal:
 
         Returns:
 
@@ -991,9 +998,11 @@ class BigRuns:
         hist_convs = []
         dim = [10, 8]
         for model in self.all_model_names:
+
             print(line)
             print("Running " + model)
 
+            # File Analysis__________________________________________________________________
             if self.run_type == 0:
                 amount_to_subtract = 1
             else:
@@ -1002,186 +1011,205 @@ class BigRuns:
             current_geo_model = model[0:len(model) - amount_to_subtract]
             fileloading.loadGeoModel(current_geo_model, self.run)
 
-            # Construct Shadows___________________________________________________________________
-            a = params.spin_case
-            inc = params.i_case * np.pi / 180  # inclination angle
-            rh = 1 + np.sqrt(1 - a ** 2)  # event horizon
-            # angles to sample
-            varphis = np.linspace(-180, 179, 360) * np.pi / 180
+            fluxVNu_path = self.sub_paths["fluxPath"] + model + "blurr" + str(blur_kernal) + "/"
+            radVNu_path = self.sub_paths["radPath"] + model + "blurr" + str(blur_kernal) + "/"
+            image_path = self.sub_paths["imagePath"] + model + "blurr" + str(blur_kernal) + "/"
+            Optical_depth_path = self.sub_paths["opticalDepth"] + model + "blurr" + str(blur_kernal) + "/"
 
-            # generate inner shadow (n=0) curve with kgeo
-            data_inner = kgeo.equatorial_lensing.rho_of_req(a, inc, rh, mbar=0, varphis=varphis)
-            (_, rhos_inner, alphas_inner, betas_inner) = data_inner
-
-            r_inner = image_tools.curve_params(varphis, rhos_inner)
-
-            # generate outer shadow (n=inf) curve with kgeo
-            data_outer = kgeo.equatorial_lensing.rho_of_req(a, inc, rh, mbar=5, varphis=varphis)
-            (_, rhos_outer, alphas_outer, betas_outer) = data_outer
-
-            r_outer = image_tools.curve_params(varphis, rhos_outer)
-            # ___________________________________________________________________
-
-            '''Data Readind----------------------------------'''
-            data_path = self.sub_paths["intensityPath"] + model + "/blurr/numpy/"
-
-            x_variable = np.load(data_path + "blurr_x_variable.npy")
-            janksys_thick = np.load(data_path + "blurr_janksys_thick.npy")
-            janksys_thin = np.load(data_path + "blurr_janksys_thin.npy")
-            mean_radii_Thin = np.load(data_path + "blurr_mean_radii_Thin.npy")
-            mean_radii_Thick = np.load(data_path + "blurr_mean_radii_Thick.npy")
-            radii_I0_Thin = np.load(data_path + "blurr_radii_I0_Thin.npy")
-            radii_FullAbsorption_Thick = np.load(data_path + "blurr_radii_FullAbsorption_Thick.npy")
-            theta = np.load(data_path + "blurr_theta.npy")
-
-            num_of_intensity_points = janksys_thin[:,0].shape[0]
-            print("Number of Intensity Points: ", num_of_intensity_points)
-
-            xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
-            # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
-            # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
-
-            fluxVNu_path = self.sub_paths["fluxPath"] + model + "/blurr/"
-            radVNu_path = self.sub_paths["radPath"] + model + "/blurr/"
-            image_path = self.sub_paths["imagePath"] + model + "/blurr/"
-            Optical_depth_path = self.sub_paths["opticalDepth"] + model + "/blurr/"
-
-            file_creation = [fluxVNu_path, radVNu_path,image_path,Optical_depth_path]
+            file_creation = [fluxVNu_path, radVNu_path, image_path, Optical_depth_path]
 
             for i in range(len(file_creation)):
-                fileloading.creatSubDirectory(file_creation[i],kill_policy=True)
+                fileloading.creatSubDirectory(file_creation[i], kill_policy=True)
 
-            fluxVNu_path += "Blurr_"
-            radVNu_path += "Blurr_"
-            image_path += "Blurr_"
-            Optical_depth_path += "Blurr_"
+            preform_model = fileloading.crossContinousDoAnalysis(
+                model, do_list, fluxVNu_path, isContinuous)
 
-            # Points of Interest
+            if preform_model:
 
-            conv_1 = action["start"] + action["step"] * ilp.ring_convergance(mean_radii_Thick[:, 0], mean_radii_Thick[:, 0],
-                                                                             3)
-            conv_1 = conv_1 / astroModels.scale_label[action['var']]
+                fluxVNu_path += "Blurr" + str(blur_kernal) + "_"
+                radVNu_path += "Blurr" + str(blur_kernal) + "_"
+                image_path += "Blurr" + str(blur_kernal) + "_"
+                Optical_depth_path += "Blurr" + str(blur_kernal) + "_"
 
-            flux_peak_thin = action["start"] + action["step"] * np.argmax(janksys_thin[:, 0])
-            flux_peak_thin = flux_peak_thin / astroModels.scale_label[action['var']]
+                # Construct Shadows___________________________________________________________________
+                a = params.spin_case
+                inc = params.i_case * np.pi / 180  # inclination angle
+                rh = 1 + np.sqrt(1 - a ** 2)  # event horizon
+                # angles to sample
+                varphis = np.linspace(-180, 179, 360) * np.pi / 180
 
-            flux_peak_thick = action["start"] + action["step"] * np.argmax(janksys_thick[:, 0])
-            flux_peak_thick = flux_peak_thick / astroModels.scale_label[action['var']]
+                # generate inner shadow (n=0) curve with kgeo
+                data_inner = kgeo.equatorial_lensing.rho_of_req(a, inc, rh, mbar=0, varphis=varphis)
+                (_, rhos_inner, alphas_inner, betas_inner) = data_inner
 
-            hist_flux_peaks_thins += [flux_peak_thin]
-            hist_flux_peaks_thicks += [flux_peak_thick]
-            hist_convs += [conv_1]
+                r_inner = image_tools.curve_params(varphis, rhos_inner)
 
-            poi = {
-                "r_outer": r_outer,
-                "flux_peak_thin": flux_peak_thin,
-                "flux_peak_thick":flux_peak_thick,
-                "conv_1": conv_1,
-            }
+                # generate outer shadow (n=inf) curve with kgeo
+                data_outer = kgeo.equatorial_lensing.rho_of_req(a, inc, rh, mbar=5, varphis=varphis)
+                (_, rhos_outer, alphas_outer, betas_outer) = data_outer
 
-            conv_1_style = {
-                "color": 'dimgrey',
-                "linestyle": "-",
-                "linewidth": 2
-            }
+                r_outer = image_tools.curve_params(varphis, rhos_outer)
+                # ___________________________________________________________________
 
-            r_outer_style = {
-                "color": 'dimgrey',
-                "linestyle": "-",
-                "linewidth": 5
-            }
+                '''Data Readind----------------------------------'''
+                data_path = self.sub_paths["intensityPath"] + model + "/blurr/numpy/"
 
-            flux_peak_style = {
-                "color": 'k',
-                "linestyle": "-.",
-                "linewidth": 3
-            }
+                x_variable = np.load(data_path + "blurr_x_variable.npy")
+                janksys_thick = np.load(data_path + "blurr_janksys_thick.npy")
+                janksys_thin = np.load(data_path + "blurr_janksys_thin.npy")
+                mean_radii_Thin = np.load(data_path + "blurr_mean_radii_Thin.npy")
+                mean_radii_Thick = np.load(data_path + "blurr_mean_radii_Thick.npy")
+                radii_I0_Thin = np.load(data_path + "blurr_radii_I0_Thin.npy")
+                radii_FullAbsorption_Thick = np.load(data_path + "blurr_radii_FullAbsorption_Thick.npy")
+                theta = np.load(data_path + "blurr_theta.npy")
 
-            # _______________________________________________
-            # _______________________________________________
-            # ________________________________
-            '''JANKSKY PLOTS----------------------------------'''
+                num_of_intensity_points = janksys_thin[:, 0].shape[0]
+                print("Number of Intensity Points: ", num_of_intensity_points)
 
-            fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True)
+                xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
+                # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
+                # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
 
-            astroPloting.fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
-                                       poi, conv_1_style, r_outer_style, flux_peak_style, action,blurr_policy=True)
+                # Points of Interest
 
-            figname = fluxVNu_path + model + "_Flux.jpg"
-            plt.savefig(figname, bbox_inches='tight')
-            plt.close()
-            print("Image '{}' Created".format(figname))
+                conv_1 = action["start"] + action["step"] * ilp.ring_convergance(mean_radii_Thick[:, 0],
+                                                                                 mean_radii_Thick[:, 0],
+                                                                                 3)
+                conv_1 = conv_1 / astroModels.scale_label[action['var']]
 
-            # ______________________________________________
-            # ______________________________________________
-            # ___________________________________
-            '''RADII PLOTS----------------------------------'''
-            fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True)
+                flux_peak_thin = action["start"] + action["step"] * np.argmax(janksys_thin[:, 0])
+                flux_peak_thin = flux_peak_thin / astroModels.scale_label[action['var']]
 
-            astroPloting.radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
-                                        poi, conv_1_style, r_outer_style, flux_peak_style, action,blurr_policy=True)
+                flux_peak_thick = action["start"] + action["step"] * np.argmax(janksys_thick[:, 0])
+                flux_peak_thick = flux_peak_thick / astroModels.scale_label[action['var']]
 
-            figname = radVNu_path + model + "_Radii.jpeg"
-            plt.savefig(figname, bbox_inches='tight')
-            print("Image '{}' Created".format(figname))
-            plt.close()
+                hist_flux_peaks_thins += [flux_peak_thin]
+                hist_flux_peaks_thicks += [flux_peak_thick]
+                hist_convs += [conv_1]
 
-            # --------------------------------------------------
-            # --------------------------------------------------
-            # --------------------------------------------------
+                poi = {
+                    "r_outer": r_outer,
+                    "flux_peak_thin": flux_peak_thin,
+                    "flux_peak_thick": flux_peak_thick,
+                    "conv_1": conv_1,
+                }
 
-            '''Full Images----------------------------------'''
-            if action["images"]:
+                conv_1_style = {
+                    "color": 'dimgrey',
+                    "linestyle": "-",
+                    "linewidth": 2
+                }
+
+                r_outer_style = {
+                    "color": 'dimgrey',
+                    "linestyle": "-",
+                    "linewidth": 5
+                }
+
+                flux_peak_style = {
+                    "color": 'k',
+                    "linestyle": "-.",
+                    "linewidth": 3
+                }
+
+                # _______________________________________________
+                # _______________________________________________
+                # ________________________________
+                '''JANKSKY PLOTS----------------------------------'''
+
+                fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True)
+
+                astroPloting.fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
+                                           poi, conv_1_style, r_outer_style, flux_peak_style, action, blurr_policy=True)
+
+                figname = fluxVNu_path + model + "_Flux.jpg"
+                plt.savefig(figname, bbox_inches='tight')
+                plt.close()
+                print("Image '{}' Created".format(figname))
+
+                # ______________________________________________
+                # ______________________________________________
+                # ___________________________________
+                '''RADII PLOTS----------------------------------'''
+                fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True)
+
+                astroPloting.radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
+                                            poi, conv_1_style, r_outer_style, flux_peak_style, action,
+                                            blurr_policy=True)
+
+                figname = radVNu_path + model + "_Radii.jpeg"
+                plt.savefig(figname, bbox_inches='tight')
+                print("Image '{}' Created".format(figname))
+                plt.close()
+
+                # --------------------------------------------------
+                # --------------------------------------------------
+                # --------------------------------------------------
+
+                '''Full Images----------------------------------'''
                 parent_model_path = self.sub_paths["intensityPath"] + model + "/"
-                current_model_file = parent_model_path + "blurr/"
+                current_model_file = parent_model_path + "blurr" + str(blur_kernal) + "/"
+
+                done_list = None
+                if blurr_frequency_list is not None:
+                    done_list = np.full(len(blurr_frequency_list), False)
 
                 k = action["start"]
                 print("Constructing Full images for " + model)
                 for i in range(num_of_intensity_points):
                     brightparams = self.all_model_brightparams[j]
-                    brightparams["nu0"] = k
-                    print("Full image production for intensity frame: ", i)
-                    print(R"Observation frequency $\nu=$",k)
+                    brightparams[action["var"]] = k
 
-                    blurr_intensity_path = (current_model_file +
-                                            action["var"] + "_blurr_" + "{:.5e}".format(brightparams[action["var"]]))
+                    current_freqeuncy = brightparams[action["var"]]
 
-                    lim0 = 25
+                    do_image, done_list = fileloading.blurrListAnalysis(blurr_frequency_list, done_list,
+                                                                        current_freqeuncy)
 
-                    print("Reading file: ", blurr_intensity_path)
+                    if do_image:
+                        print("Full image production for intensity frame: ", i)
+                        print(R"Observation frequency $\nu=$", k)
 
-                    h5f = h5py.File(blurr_intensity_path, 'r')
+                        blurr_intensity_path = (current_model_file +
+                                                action["var"] + "_blurr_" + "{:.5e}".format(current_freqeuncy))
 
-                    thin_blurr_image = h5f['thin_blurr_image'][:]
-                    Absorbtion_Image = h5f["thick_blurr_image"][:]
+                        lim0 = 25
 
-                    h5f.close()
+                        print("Reading file: ", blurr_intensity_path)
 
-                    thin_intensity = [thin_blurr_image]
-                    thick_intensity = [Absorbtion_Image]
-                    print("SHAPE: ",radii_I0_Thin.shape)
-                    thin_radii = [radii_I0_Thin[i,:]]
-                    thick_radii = [radii_FullAbsorption_Thick[i, :]]
+                        h5f = h5py.File(blurr_intensity_path, 'r')
 
-                    fig, (ax0, ax1) = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
+                        thin_blurr_image = h5f['thin_blurr_image'][:]
+                        Absorbtion_Image = h5f["thick_blurr_image"][:]
 
-                    astroPloting.fullImage(fig,ax0,ax1,lim0,thin_intensity, thick_intensity,
-                                           thin_radii, thick_radii, theta,blurr_policy=True)
+                        h5f.close()
 
-                    ax0.text(-9, 8.5, astroModels.var_label[action["var"]]
-                             + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-                             + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="w")
+                        thin_intensity = [thin_blurr_image]
+                        thick_intensity = [Absorbtion_Image]
+                        print("SHAPE: ", radii_I0_Thin.shape)
+                        thin_radii = [radii_I0_Thin[i, :]]
+                        thick_radii = [radii_FullAbsorption_Thick[i, :]]
 
-                    pltname = (image_path + '_FullImage_' + str(i) + "_Nu_"
-                               + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
-                    plt.savefig(pltname, bbox_inches='tight')
-                    print("Jpeg Created:  " + pltname)
-                    plt.close()
+                        fig, (ax0, ax1) = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
 
-                    # Get total jansky
+                        astroPloting.fullImage(fig, ax0, ax1, lim0, thin_intensity, thick_intensity,
+                                               thin_radii, thick_radii, theta, blurr_policy=True)
 
+                        ax0.text(-9, 8.5, astroModels.var_label[action["var"]]
+                                 + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
+                                 + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="w")
+
+                        pltname = (image_path + '_FullImage_' + str(i) + "_Nu_"
+                                   + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+                        plt.savefig(pltname, bbox_inches='tight')
+                        print("Jpeg Created:  " + pltname)
+                        plt.close()
+                    else:
+                        print("Freuquency {} marked for skipping...".format("{:.5e}".format(current_freqeuncy)))
                     k += action['step']
-            j += 1  # marker for which brightparams to use
+                j += 1  # marker for which brightparams to use
+            else:
+                print(model + " marked for skipping...")
+
         # histograms
         print(line)
         print("Creating Histograms")
@@ -1196,7 +1224,8 @@ class BigRuns:
 
         fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.histogram(ax,hist_flux_peaks_thins,"Flux Peak location (GHz)","Optically Thin Assumption Frequency")
+        astroPloting.histogram(ax, hist_flux_peaks_thins, "Flux Peak location (GHz)",
+                               "Optically Thin Assumption Frequency")
 
         figname = peak_hist_thin_path + "_FluxPeakThin.jpeg"
         plt.savefig(figname, bbox_inches='tight')
@@ -1217,8 +1246,8 @@ class BigRuns:
         # Thin Bar__________________
         fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.bar(ax,bar_xaxis,hist_flux_peaks_thins,"Optical Thin Assumption Peak Flux per model",
-                         "Observation Frequency (GHz)",self.all_model_names)
+        astroPloting.bar(ax, bar_xaxis, hist_flux_peaks_thins, "Optical Thin Assumption Peak Flux per model",
+                         "Observation Frequency (GHz)", self.all_model_names)
 
         figname = peak_hist_thin_path + "_FluxPeakPerThinModel.jpeg"
         plt.savefig(figname, bbox_inches='tight')
@@ -1229,8 +1258,8 @@ class BigRuns:
 
         fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.bar(ax,bar_xaxis,hist_flux_peaks_thicks,"Optical Thin Assumption Peak Flux per model",
-                         "Observation Frequency (GHz)",self.all_model_names)
+        astroPloting.bar(ax, bar_xaxis, hist_flux_peaks_thicks, "Optical Thin Assumption Peak Flux per model",
+                         "Observation Frequency (GHz)", self.all_model_names)
 
         figname = peak_hist_thick_path + "_FluxPeakPerThickModel.jpeg"
         plt.savefig(figname, bbox_inches='tight')
@@ -1252,8 +1281,8 @@ class BigRuns:
         # Conv Bar______________________
         fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.bar(ax,bar_xaxis,hist_convs,"Convergence for cumulative on I2",
-                         "Observation Frequency (GHz)",self.all_model_names)
+        astroPloting.bar(ax, bar_xaxis, hist_convs, "Convergence for cumulative on I2",
+                         "Observation Frequency (GHz)", self.all_model_names)
         figname = conv_hist_path + "_convHistPerModel.jpeg"
         plt.savefig(figname, bbox_inches='tight')
         print("Image '{}' Created".format(figname))
@@ -1262,8 +1291,8 @@ class BigRuns:
         """230 total flux Thin___________________________________________________________"""
         fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.bar(ax, bar_xaxis,thin_total_flux, "Total Flux at 230GHz",
-                         "Optically Thin Assumption Frequency",self.all_model_names)
+        astroPloting.bar(ax, bar_xaxis, thin_total_flux, "Total Flux at 230GHz",
+                         "Optically Thin Assumption Frequency", self.all_model_names)
 
         figname = total_flux_path + "_thin.jpeg"
         plt.savefig(figname, bbox_inches='tight')
@@ -1281,7 +1310,7 @@ class BigRuns:
         print("Image '{}' Created".format(figname))
         plt.close()
 
-    def smallModelRun(self,models:list[str],action,save_path):
+    def smallModelRun(self, models: list[str], action, save_path):
         for model in models:
             print("Running " + model)
             print(line)
@@ -1290,7 +1319,7 @@ class BigRuns:
             thin_total_flux = np.load(self.sub_paths["meta"] + "thin_total_flux.npy")
             thick_total_flux = np.load(self.sub_paths["meta"] + "thick_total_flux.npy")
 
-            current_geo_model = fileloading.totalModelNametoGridModel(model,self.run_type)
+            current_geo_model = fileloading.totalModelNametoGridModel(model, self.run_type)
             fileloading.loadGeoModel(current_geo_model, self.run)
             lband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
             rtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
@@ -1427,7 +1456,6 @@ class BigRuns:
                     print("Image '{}' Created".format(pltname))
                     plt.close()
 
-
                     '''RadVSVarphiType2Intensities________________________________________________________________'''
                     # fig, dum = plt.subplots(1, 2, figsize=dim, dpi=400)
                     # ax0 = plt.subplot(1, 2, 1)
@@ -1451,5 +1479,3 @@ class BigRuns:
 def fmt(x, pos):
     x = x / 1e9
     return '{:.2f}'.format(x)
-
-

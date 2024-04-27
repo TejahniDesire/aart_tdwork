@@ -15,13 +15,23 @@ from astropy import units as u
 import numpy as np
 
 
-def blurrIntensity(brightparams,thin_image,absorb_image):
+def blurrIntensity(BH_mass,thin_image,absorb_image,blur_kernal):
+    """
+
+    Args:
+        BH_mass: Black Hole mass in grams (without astropy units)
+        thin_image: I0 + I1 + I2
+        absorb_image: All passes included
+        blur_kernal: In muas
+
+    Returns:
+
+    """
     dx = params.dx0
-    one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)  # one Mass length unit = 1 r_g
+    one_M = ilp.rg_func(BH_mass * u.g).to(u.m)  # one Mass length unit = 1 r_g
     mass_to_uas = np.arctan(one_M.value / dBH) / muas_to_rad  # dBH is in units of meters
-    muas_blurr = 20
     # muas_blurr = 10
-    rg_blurr = muas_blurr / mass_to_uas
+    rg_blurr = blur_kernal / mass_to_uas
 
     sig = rg_blurr / (dx * (2 * np.sqrt(
         2 * np.log(2))))  # We have 20 uas FWHM resolution. dx = uas/pixels. so 20/dx is FWHM in pixel units.

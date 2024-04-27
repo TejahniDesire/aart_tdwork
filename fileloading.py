@@ -321,10 +321,10 @@ def writeDocString(filename:str, text:str):
     doc_string_file.close()
 
 
-def doListAnalysis(model_name,do_list):
+def doListAnalysis(current_model_name, do_list):
     do = False
     if do_list is not None:
-        if model_name in do_list:
+        if current_model_name in do_list:
             do = True
 
     return do
@@ -340,6 +340,29 @@ def crossContinousDoAnalysis(current_model_name, do_list, file_name, isContinuou
     do = doListAnalysis(current_model_name, do_list)
     continueCondition = continousAnalysis(file_name,isContinuous)
     return do or continueCondition
+
+
+def blurrListAnalysis(blurr_list, done_list, frequency):
+    """
+
+    Args:
+        blurr_list: list of intensity points to blurr at
+        done_list: list of bool values indicating which blurr points have already been done
+        frequency: current frequency
+
+    Returns: updated blurr list, extra True value if condition met
+
+    """
+    first_false = np.argmin(done_list)
+    do_blurr = False
+
+    if (blurr_list is not None) and (blurr_list[first_false] >= frequency):
+        done_list[first_false] = True
+        do_blurr = True
+
+    return do_blurr,done_list
+
+
 
 
 
