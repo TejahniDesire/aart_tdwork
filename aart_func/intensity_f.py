@@ -214,7 +214,7 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys
         0: ilp.thermal_profile,
         1: ilp.power_profile
     }
-    si_thin[rs>=isco], si_thick[rs>=isco], tau[rs>=isco], full_profiles[:,rs>=isco], = emissionmodel[
+    si_thin[rs>=isco], si_thick[rs>=isco], tau[rs>=isco], full_profiles[:,rs>=isco] = emissionmodel[
         funckeys["emodelkey"]](coords_inner,redshift_inner,CosAng_inner,brightparams,funckeys)
     si_thin[rs<isco], si_thick[rs<isco], tau[rs<isco], full_profiles[:,rs<isco] = emissionmodel[
         funckeys["emodelkey"]](coords_outter,redshift_outter,CosAng_outter,brightparams,funckeys)
