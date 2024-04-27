@@ -38,7 +38,7 @@ def total_jy_normal_func(fitparams,lband,rtray,bp,y):
     return y - thick_total_flux
 
 
-def totalIntensity230Point(lband,rtray,brightparams:dict,already230=False,blurr_policy=False):
+def totalIntensity230Point(lband,rtray,brightparams:dict,already230=False,blurr_policy=False,blur_kernal=None):
     if already230:
         bp = brightparams
     else:
@@ -70,7 +70,7 @@ def totalIntensity230Point(lband,rtray,brightparams:dict,already230=False,blurr_
     # tau0 = h5f['tau0'][:]
 
     if blurr_policy:
-        thin_image, absorb_image = intensityBlurr.blurrIntensity(brightparams,thin_image,absorb_image)
+        thin_image, absorb_image = intensityBlurr.blurrIntensity(brightparams,thin_image,absorb_image,blur_kernal)
 
     h5f.close()
 

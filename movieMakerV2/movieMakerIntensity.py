@@ -298,7 +298,7 @@ def blurr_intensity_movie(action, sub_path, model: str, intent_grid_type: int,
     # total jy at 230GHz
 
     thin_total_230flux, thick_total_230flux = normalizingBrightparams.totalIntensity230Point(
-        lband, rtray, brightparams, already230=False, blurr_policy=True)
+        lband, rtray, brightparams, already230=False, blurr_policy=True,blur_kernal=blur_kernal)
 
     intermodel_data = {
         "thin_total_flux": thin_total_230flux,
