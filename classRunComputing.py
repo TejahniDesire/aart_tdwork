@@ -512,13 +512,12 @@ class BigRuns:
         dim = [10, 8]
         for model in self.all_model_names:
 
-            fluxVNu_path = self.sub_paths["fluxPath"] + model + "/clean/"
-            radVNu_path = self.sub_paths["radPath"] + model + "/clean/"
-            image_path = self.sub_paths["imagePath"] + model + "/clean/"
-            Optical_depth_path = self.sub_paths["opticalDepth"] + model + "/clean/"
-
-            radVVarphi_path = self.sub_paths["RadVVarphi"] + model + "/clean/"
-            fluxVRadii_path = self.sub_paths["fluxVRadii"] + model + "/clean/"
+            fluxVNu_path = self.sub_paths["fluxPath"] + model
+            radVNu_path = self.sub_paths["radPath"] + model
+            image_path = self.sub_paths["imagePath"] + model
+            Optical_depth_path = self.sub_paths["opticalDepth"] + model
+            radVVarphi_path = self.sub_paths["RadVVarphi"] + model
+            fluxVRadii_path = self.sub_paths["fluxVRadii"] + model
 
             file_creation = [fluxVNu_path, radVNu_path, image_path, Optical_depth_path, radVVarphi_path,
                              fluxVRadii_path]
@@ -526,9 +525,22 @@ class BigRuns:
             preform_model = fileloading.crossContinousDoAnalysis(
                 model, do_list, fluxVNu_path, isContinuous)
 
+
             if preform_model:
                 print(line)
                 print("Graphing " + model)
+                # File Creation
+
+                for i in range(len(file_creation)):
+                    fileloading.creatSubDirectory(file_creation[i], kill_policy=False)
+
+                fluxVNu_path +="/clean/"
+                radVNu_path += "/clean/"
+                image_path += "/clean/"
+                Optical_depth_path += "/clean/"
+                radVVarphi_path += "/clean/"
+                fluxVRadii_path += "/clean/"
+
                 for i in range(len(file_creation)):
                     fileloading.creatSubDirectory(file_creation[i], kill_policy=True)
 
@@ -1012,10 +1024,10 @@ class BigRuns:
             current_geo_model = model[0:len(model) - amount_to_subtract]
             fileloading.loadGeoModel(current_geo_model, self.run)
 
-            fluxVNu_path = self.sub_paths["fluxPath"] + model + "blurr" + str(blur_kernal) + "/"
-            radVNu_path = self.sub_paths["radPath"] + model + "blurr" + str(blur_kernal) + "/"
-            image_path = self.sub_paths["imagePath"] + model + "blurr" + str(blur_kernal) + "/"
-            Optical_depth_path = self.sub_paths["opticalDepth"] + model + "blurr" + str(blur_kernal) + "/"
+            fluxVNu_path = self.sub_paths["fluxPath"] + model
+            radVNu_path = self.sub_paths["radPath"] + model
+            image_path = self.sub_paths["imagePath"] + model
+            Optical_depth_path = self.sub_paths["opticalDepth"] + model
 
             file_creation = [fluxVNu_path, radVNu_path, image_path, Optical_depth_path]
 
@@ -1024,6 +1036,14 @@ class BigRuns:
 
             if preform_model:
                 print(" Creating Graphs for " + model)
+
+                for i in range(len(file_creation)):
+                    fileloading.creatSubDirectory(file_creation[i], kill_policy=False)
+
+                fluxVNu_path += "/blurr" + str(blur_kernal) + "/"
+                radVNu_path += "/blurr" + str(blur_kernal) + "/"
+                image_path += "/blurr" + str(blur_kernal) + "/"
+                Optical_depth_path += "/blurr" + str(blur_kernal) + "/"
 
                 for i in range(len(file_creation)):
                     fileloading.creatSubDirectory(file_creation[i], kill_policy=True)
