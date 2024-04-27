@@ -358,7 +358,7 @@ def blurrListAnalysis(blurr_list, done_list, current_frequency):
     do_blurr = False
 
     if (((blurr_list is not None) and (current_frequency >= blurr_list[first_false]))
-            and done_list[first_false is not True]): # if all done, min gives first argument
+            and (done_list[first_false] is not True)): # if all done, min gives first argument
         done_list[first_false] = True
         do_blurr = True
 
