@@ -541,6 +541,8 @@ class BigRuns:
                 radVVarphi_path += "/clean/"
                 fluxVRadii_path += "/clean/"
 
+                file_creation = [fluxVNu_path, radVNu_path, image_path, Optical_depth_path]
+
                 for i in range(len(file_creation)):
                     fileloading.creatSubDirectory(file_creation[i], kill_policy=True)
 
@@ -1045,6 +1047,8 @@ class BigRuns:
                 image_path += "/blurr" + str(blur_kernal) + "/"
                 Optical_depth_path += "/blurr" + str(blur_kernal) + "/"
 
+                file_creation = [fluxVNu_path, radVNu_path, image_path, Optical_depth_path]
+
                 for i in range(len(file_creation)):
                     fileloading.creatSubDirectory(file_creation[i], kill_policy=True)
 
@@ -1074,7 +1078,7 @@ class BigRuns:
                 # ___________________________________________________________________
 
                 '''Data Readind----------------------------------'''
-                data_path = self.sub_paths["intensityPath"] + model + "blurr" + str(blur_kernal) + "/"+ "numpy/"
+                data_path = self.sub_paths["intensityPath"] + model + "/blurr" + str(blur_kernal) + "/"+ "numpy/"
 
                 x_variable = np.load(data_path + "blurr_x_variable.npy")
                 janksys_thick = np.load(data_path + "blurr_janksys_thick.npy")
