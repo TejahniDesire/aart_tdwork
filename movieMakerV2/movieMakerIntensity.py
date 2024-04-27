@@ -25,7 +25,7 @@ speed = 8
 line = "\n__________________________________________________\n"
 
 
-def intensity_movie(action, sub_path, model: str, intent_grid_type, brightparams,frequency_list):
+def intensity_movie(action, sub_path, model: str, intent_grid_type, brightparams,frequency_list=None):
     """
         sub_paths = {
         "GeoDoth5Path"

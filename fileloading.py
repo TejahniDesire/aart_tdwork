@@ -343,11 +343,11 @@ def crossContinousDoAnalysis(current_model_name, do_list, file_name, isContinuou
         return continousAnalysis(file_name,isContinuous)
 
 
-def frequencyListAnalysis(blurr_list, done_list, current_frequency):
+def frequencyListAnalysis(frequency_list, done_list, current_frequency):
     """
 
     Args:
-        blurr_list: list of intensity points to blurr at
+        frequency_list: list of intensity points to blurr at
         done_list: list of bool values indicating which blurr points have already been done
         current_frequency: current frequency
 
@@ -355,14 +355,17 @@ def frequencyListAnalysis(blurr_list, done_list, current_frequency):
 
     """
     first_false = np.argmin(done_list)
-    do_blurr = False
+    do_image = False
 
-    if (((blurr_list is not None) and (current_frequency >= blurr_list[first_false]))
+    if (((frequency_list is not None) and (current_frequency >= frequency_list[first_false]))
             and (not done_list[first_false])):  # if all done, min gives first argument
         done_list[first_false] = True
-        do_blurr = True
+        do_image = True
 
-    return do_blurr,done_list
+    if frequency_list is None:
+        do_image = True
+
+    return do_image,done_list
 
 
 
