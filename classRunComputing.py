@@ -781,10 +781,10 @@ class BigRuns:
         # histograms
         print(line)
         print("Creating Histograms")
-        peak_hist_thin_path = self.sub_paths["peakHistThin"]
-        peak_hist_thick_path = self.sub_paths["peakHistThick"]
-        conv_hist_path = self.sub_paths["convHist"]
-        total_flux_path = self.sub_paths["totalFlux"]
+        peak_hist_thin_path = self.sub_paths["peakHistThin"] + "clean"
+        peak_hist_thick_path = self.sub_paths["peakHistThick"] + "clean"
+        conv_hist_path = self.sub_paths["convHist"] + "clean"
+        total_flux_path = self.sub_paths["totalFlux"] + "clean"
 
         bar_xaxis = np.arange(len(self.all_model_names))
         bar_labels = self.all_model_names
@@ -906,7 +906,7 @@ class BigRuns:
                 run_type_arg = self.run_type
 
             parent_model_path = self.sub_paths["intensityPath"] + current_total_name + "/"
-            current_model_file = parent_model_path + "blurr/"
+            current_model_file =  parent_model_path + "blurr" + str(blur_kernal) + "/"
 
             preform_model = fileloading.crossContinousDoAnalysis(
                 current_total_name, do_list, current_model_file, isContinuous)
@@ -946,7 +946,7 @@ class BigRuns:
             current_bp = self.all_model_brightparams[i]
 
             parent_model_path = self.sub_paths["intensityPath"] + current_total_name + "/"
-            current_model_file = parent_model_path + "blurr/"
+            current_model_file =  parent_model_path + "blurr" + str(blur_kernal) + "/"
 
             preform_model = fileloading.crossContinousDoAnalysis(
                 current_total_name, do_list, current_model_file, isContinuous)
@@ -1019,13 +1019,14 @@ class BigRuns:
 
             file_creation = [fluxVNu_path, radVNu_path, image_path, Optical_depth_path]
 
-            for i in range(len(file_creation)):
-                fileloading.creatSubDirectory(file_creation[i], kill_policy=True)
-
             preform_model = fileloading.crossContinousDoAnalysis(
                 model, do_list, fluxVNu_path, isContinuous)
 
             if preform_model:
+                print(" Creating Graphs for " + model)
+
+                for i in range(len(file_creation)):
+                    fileloading.creatSubDirectory(file_creation[i], kill_policy=True)
 
                 fluxVNu_path += "Blurr" + str(blur_kernal) + "_"
                 radVNu_path += "Blurr" + str(blur_kernal) + "_"
@@ -1053,7 +1054,7 @@ class BigRuns:
                 # ___________________________________________________________________
 
                 '''Data Readind----------------------------------'''
-                data_path = self.sub_paths["intensityPath"] + model + "/blurr/numpy/"
+                data_path = self.sub_paths["intensityPath"] + model + "blurr" + str(blur_kernal) + "/"+ "numpy/"
 
                 x_variable = np.load(data_path + "blurr_x_variable.npy")
                 janksys_thick = np.load(data_path + "blurr_janksys_thick.npy")
@@ -1214,10 +1215,10 @@ class BigRuns:
         # histograms
         print(line)
         print("Creating Histograms")
-        peak_hist_thin_path = self.sub_paths["peakHistThin"]
-        peak_hist_thick_path = self.sub_paths["peakHistThick"]
-        conv_hist_path = self.sub_paths["convHist"]
-        total_flux_path = self.sub_paths["totalFlux"]
+        peak_hist_thin_path = self.sub_paths["peakHistThin"] + "blurr" + str(blur_kernal)
+        peak_hist_thick_path = self.sub_paths["peakHistThick"] + "blurr" + str(blur_kernal)
+        conv_hist_path = self.sub_paths["convHist"] + "blurr" + str(blur_kernal)
+        total_flux_path = self.sub_paths["totalFlux"]+ "blurr" + str(blur_kernal)
 
         bar_xaxis = np.arange(len(self.all_model_names))
         """Flux Peaks_____________________________________________________________________"""

@@ -390,18 +390,17 @@ def blurrImageAnalysis(action, sub_path, model: str, brightparams,blurr_frequenc
         done_list = np.full(len(blurr_frequency_list),False)
 
     for i in range(num_iterations):
+        print('Reading intensity.h5 for Model ' + model + ' number: ' + str(i))
         print(line)
         print(line)
 
         brightparams[action["var"]] = action["start"] + i * action["step"]
         current_freqeuncy = brightparams[action["var"]]
 
-        print('Reading intensity.h5 for Model ' + model + ' number: ' + str(i))
-
         do_blurr, done_list = fileloading.blurrListAnalysis(blurr_frequency_list, done_list, current_freqeuncy)
 
         if do_blurr:
-
+            print('Reading intensity.h5 for Model ' + model + ' number: ' + str(i))
             x_variable[i] = current_freqeuncy
             intensity_path = current_model_file + action["var"] + "_blurr_" + "{:.5e}".format(current_freqeuncy)
 

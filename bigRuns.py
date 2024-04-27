@@ -54,27 +54,6 @@ bigRun = classRunComputing.BigRuns(
 #     do_list=do_list,
 #     isContinuous=False
 # )
-#
-bigRun.blurrIntensityGrid(
-    run.getAction(),
-    do_list,
-    blurr_frequency_list=blurr_frequency_list,
-    blur_kernal=blurr_kernal[0]
-)
-bigRun.blurrIntensityGrid(
-    run.getAction(),
-    do_list,
-    blurr_frequency_list=blurr_frequency_list,
-    blur_kernal=blurr_kernal[1]
-)
-
-bigRun.blurrIntensityGrid(
-    run.getAction(),
-    do_list,
-    blurr_frequency_list=blurr_frequency_list,
-    blur_kernal=blurr_kernal[2]
-)
-
 
 """ Intensity Grid Analysis_________________________________________________________"""
 # bigRun.intensityGridAnalysis(
@@ -88,29 +67,49 @@ bigRun.blurrIntensityGrid(
 #     do_list=do_list,
 #     isContinuous=False
 # )
+""" Blurr Intensity Grid Creation_________________________________________________________"""
+# bigRun.blurrIntensityGrid(
+#     run.getAction(),
+#     do_list,
+#     blurr_frequency_list=blurr_frequency_list,
+#     blur_kernal=blurr_kernal[0]
+# )
+# bigRun.blurrIntensityGrid(
+#     run.getAction(),
+#     do_list,
+#     blurr_frequency_list=blurr_frequency_list,
+#     blur_kernal=blurr_kernal[1]
+# )
+#
+# bigRun.blurrIntensityGrid(
+#     run.getAction(),
+#     do_list,
+#     blurr_frequency_list=blurr_frequency_list,
+#     blur_kernal=blurr_kernal[2]
+# )
 
-""" Blurring intensity grid_________________________________________________________"""
-bigRun.blurrIntensityGridAnalysis(
-    run.getAction(),
-    do_list=do_list,
-    blurr_frequency_list=blurr_frequency_list,
-    blur_kernal=blurr_kernal[0]
-)
-
-bigRun.blurrIntensityGridAnalysis(
-    run.getAction(),
-    do_list=do_list,
-    blurr_frequency_list=blurr_frequency_list,
-    blur_kernal=blurr_kernal[1]
-)
-
-bigRun.blurrIntensityGridAnalysis(
-    run.getAction(),
-    do_list=do_list,
-    blurr_frequency_list=blurr_frequency_list,
-    blur_kernal=blurr_kernal[2]
-)
-
+""" Blurring intensity analysis grid_________________________________________________________"""
+# bigRun.blurrIntensityGridAnalysis(
+#     run.getAction(),
+#     do_list=do_list,
+#     blurr_frequency_list=blurr_frequency_list,
+#     blur_kernal=blurr_kernal[0]
+# )
+#
+# bigRun.blurrIntensityGridAnalysis(
+#     run.getAction(),
+#     do_list=do_list,
+#     blurr_frequency_list=blurr_frequency_list,
+#     blur_kernal=blurr_kernal[1]
+# )
+#
+# bigRun.blurrIntensityGridAnalysis(
+#     run.getAction(),
+#     do_list=do_list,
+#     blurr_frequency_list=blurr_frequency_list,
+#     blur_kernal=blurr_kernal[2]
+# )
+#
 
 """ Blurr Graph Creation_________________________________________________________"""
 bigRun.blurrGraphCreation(

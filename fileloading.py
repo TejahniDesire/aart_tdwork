@@ -308,6 +308,8 @@ def totalModelNametoGridModel(model,run_type):
     return model[0:len(model) - subtract_amount]
 
 
+
+
 def writeDocString(filename:str, text:str):
     doc_string_file = filename
     cmd = "touch " + doc_string_file

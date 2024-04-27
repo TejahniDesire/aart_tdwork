@@ -391,12 +391,14 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     tau1 = np.sum(tau1[mask2] * full_intensity[mask2])/sum(full_intensity[mask2])
     tau2 = np.sum(tau2[mask2] * full_intensity[mask2])/sum(full_intensity[mask2])
 
-    cosAngReturn2Full = cosAngReturn2Full.reshape(N0, N0).T
-    cosAngReturn1Full = cosAngReturn1Full.reshape(N0, N0).T
-    cosAngReturn0Full = cosAngReturn0Full.reshape(N0, N0).T
-    I1_temp_thick = I1_temp_thick.reshape(N0, N0).T
-    I2_temp_thick = I2_temp_thick.reshape(N0, N0).T
-    I0_temp_thick = I0_temp_thick.reshape(N0, N0).T 
+    # cosAngReturn2Full = cosAngReturn2Full.reshape(N0, N0).T
+    # cosAngReturn1Full = cosAngReturn1Full.reshape(N1, N1).T
+    # cosAngReturn0Full = cosAngReturn0Full.reshape(N2, N2).T
+    #
+    I0_temp_thick = I0_temp_thick.reshape(N0, N0).T
+    I2_temp_thick = I2_temp_thick.reshape(N1, N1).T
+    I1_temp_thick = I1_temp_thick.reshape(N2, N2).T
+
     I0_temp_thin = I0_temp_thin.reshape(N0, N0).T
     I1_temp_thin = I1_temp_thin.reshape(N1, N1).T
     I2_temp_thin = I2_temp_thin.reshape(N2, N2).T
@@ -446,7 +448,6 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     h5f.create_dataset('full_profiles2', data=full_profiles2)
     h5f.create_dataset('full_profiles1', data=full_profiles1)
     h5f.create_dataset('full_profiles0', data=full_profiles0)
-    h5f.create_dataset('full_profiles_unit', data=full_profiles_unit)
     #
     # h5f.create_dataset('cosAngReturn2', data=cosAngReturn2Full)
     # h5f.create_dataset('cosAngReturn1', data=cosAngReturn1Full)
