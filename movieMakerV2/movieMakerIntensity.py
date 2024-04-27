@@ -104,21 +104,11 @@ def intensity_movie(action, sub_path, model: str, intent_grid_type, brightparams
 
     return intermodel_data
 
-freq_points = [86e9, 230e9, 345e9]
-
-
-
-
-
-
-
-
-
-
 
 """________________________________________________________________________________________________________"""
 
-def imageAnalysis(action, sub_path, model: str, brightparams,frequency_list):
+
+def imageAnalysis(action, sub_path, model: str, brightparams,frequency_list=None):
     parent_model_path = sub_path["intensityPath"] + model + "/"
     current_model_file = parent_model_path + "clean/"
     num_of_theta_points = image_tools.num_of_theta_points  # array size for radii calcs

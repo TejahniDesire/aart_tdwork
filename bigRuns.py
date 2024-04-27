@@ -49,12 +49,12 @@ bigRun = classRunComputing.BigRuns(
 
 """ Intensity Grid Creation_________________________________________________________"""
 # #
-bigRun.creatIntensityGrid(
-    run.getAction(),
-    do_list=do_list,
-    isContinuous=isContinuous,
-    frequency_list=[230e9]
-)
+# bigRun.creatIntensityGrid(
+#     run.getAction(),
+#     do_list=do_list,
+#     isContinuous=isContinuous,
+#     frequency_list=[230e9]
+# )
 
 """ Intensity Grid Analysis_________________________________________________________"""
 bigRun.intensityGridAnalysis(
