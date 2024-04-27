@@ -502,7 +502,7 @@ def thermal_profile(coords, redshift, cosAng, bp=kw_brightparams, fk=kw_funckeys
                            str(acoeff_I_fluid.unit), str(tau_curve.unit)]
     # print("b_0: ", b_0)
     # print("p: ", p_b)
-    return specific_intensity_thin, specific_intensity_thick, tau, full_profiles, full_profiles_units
+    return specific_intensity_thin, specific_intensity_thick, tau, full_profiles
 
 
 def rest_frame_thermal_profile(coords, cosAng=None, bp=kw_brightparams, fk=kw_funckeys):

@@ -176,7 +176,6 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys
     # full_profiles = np.zeros(shape=(7,rs.shape[0]))
     full_profiles = np.zeros(shape=(8, rs.shape[0]))
     tau = np.zeros(rs.shape[0])
-    cosAngReturn = np.zeros(rs.shape[0])
     redshift_sign = redshift_sign[mask]
 
     x_aux=rs*np.cos(phi)
