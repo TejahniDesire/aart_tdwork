@@ -331,7 +331,7 @@ def blurr_intensity_movie(action, sub_path, model: str, intent_grid_type: int,
 
         if do_blurr:
             print('Reading intensity.h5 for Model ' + model + ' number: ' + str(i))
-            clean_intensity_path = clean_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
+            clean_intensity_path = clean_model_file + action["var"] + "_" + "{:.5e}".format(current_freqeuncy)
 
             # Read File
             h5f = h5py.File(clean_intensity_path, 'r')

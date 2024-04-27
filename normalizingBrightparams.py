@@ -70,7 +70,7 @@ def totalIntensity230Point(lband,rtray,brightparams:dict,already230=False,blurr_
     # tau0 = h5f['tau0'][:]
 
     if blurr_policy:
-        thin_image, absorb_image = intensityBlurr.blurrIntensity(brightparams,thin_image,absorb_image,blur_kernal)
+        thin_image, absorb_image = intensityBlurr.blurrIntensity(brightparams["mass"],thin_image,absorb_image,blur_kernal)
 
     h5f.close()
 
