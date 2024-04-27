@@ -443,6 +443,8 @@ def blurrImageAnalysis(action, sub_path, model: str, brightparams,blurr_frequenc
 
             janksys_thick[L, 0] = ilp.total_jy(Absorbtion_Image, brightparams["nu0"], brightparams["mass"]).value
 
+            L += 1
+
         else:
             print("Freuquency {} marked for skipping...".format("{:.5e}".format(current_freqeuncy)))
 
