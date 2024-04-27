@@ -194,11 +194,11 @@ def imageAnalysis(action, sub_path, model: str, brightparams,frequency_list=None
                 print("Frequency = " + str(brightparams[action["var"]]) + " for power law saving at "
                       + "{:.5e}".format(frequency_list[m]))
 
-                np.save(final_data_path + "_full_profiles0_{}GHz".format("{:.5e}".format(freq_points[m])),
+                np.save(final_data_path + "_full_profiles0_{}GHz".format("{:.5e}".format(frequency_list[m])),
                         full_profiles0)
-                np.save(final_data_path + "_full_profiles1_{}GHz".format("{:.5e}".format(freq_points[m])),
+                np.save(final_data_path + "_full_profiles1_{}GHz".format("{:.5e}".format(frequency_list[m])),
                         full_profiles1)
-                np.save(final_data_path + "_full_profiles2_{}GHz".format("{:.5e}".format(freq_points[m])),
+                np.save(final_data_path + "_full_profiles2_{}GHz".format("{:.5e}".format(frequency_list[m])),
                         full_profiles2)
                 # np.save(final_data_path + "_full_profiles_unit_{}GHz".format("{:.5e}".format(freq_points[m])),
                 #         full_profiles_unit)
