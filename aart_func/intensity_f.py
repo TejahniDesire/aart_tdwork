@@ -399,9 +399,10 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     """Full Profile Reshaping_________________________"""
     num_of_profiles = full_profiles2.shape[0]
 
-    full_profiles2resized = np.ndarray((num_of_profiles, mask2.shape))
-    full_profiles1resized = np.ndarray((num_of_profiles, mask1.shape))
-    full_profiles0resized = np.ndarray((num_of_profiles, mask0.shape))
+    print("Mask Shape: ", mask2.shape)
+    full_profiles2resized = np.ndarray((num_of_profiles, mask2.shape[0]))
+    full_profiles1resized = np.ndarray((num_of_profiles, mask1.shape[0]))
+    full_profiles0resized = np.ndarray((num_of_profiles, mask0.shape[0]))
     for i in range(num_of_profiles):
         full_profiles2resized[i, mask2] = full_profiles2[i, :]
         full_profiles1resized[i, mask1] = full_profiles1[i, :]
