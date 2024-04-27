@@ -1181,6 +1181,7 @@ class BigRuns:
                     done_list = np.full(len(blurr_frequency_list), False)
 
                 k = action["start"]
+                L = 0
                 print("Constructing Full images for " + model)
                 for i in range(num_of_intensity_points):
                     brightparams = self.all_model_brightparams[j]
@@ -1192,7 +1193,7 @@ class BigRuns:
                                                                         current_freqeuncy)
 
                     if do_image:
-                        print("Full image production for intensity frame: ", i)
+                        print("Full image production for intensity frame: ", L)
                         print(R"Observation frequency $\nu=$", k)
 
                         blurr_intensity_path = (current_model_file +
@@ -1212,8 +1213,8 @@ class BigRuns:
                         thin_intensity = [thin_blurr_image]
                         thick_intensity = [Absorbtion_Image]
                         print("SHAPE: ", radii_I0_Thin.shape)
-                        thin_radii = [radii_I0_Thin[i, :]]
-                        thick_radii = [radii_FullAbsorption_Thick[i, :]]
+                        thin_radii = [radii_I0_Thin[L, :]]
+                        thick_radii = [radii_FullAbsorption_Thick[L, :]]
 
                         fig, (ax0, ax1) = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
 
@@ -1221,17 +1222,18 @@ class BigRuns:
                                                thin_radii, thick_radii, theta, blurr_policy=True)
 
                         ax0.text(-9, 8.5, astroModels.var_label[action["var"]]
-                                 + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
+                                 + str(round(x_variable[L] / astroModels.scale_label[action["var"]], 2))
                                  + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="w")
 
-                        pltname = (image_path + '_FullImage_' + str(i) + "_Nu_"
-                                   + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+                        pltname = (image_path + '_FullImage_' + str(L) + "_Nu_"
+                                   + str(round(x_variable[L] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
                         plt.savefig(pltname, bbox_inches='tight')
                         print("Jpeg Created:  " + pltname)
                         plt.close()
                     else:
                         print("Freuquency {} marked for skipping...".format("{:.5e}".format(current_freqeuncy)))
                     k += action['step']
+                    L += 1
                 j += 1  # marker for which brightparams to use
             else:
                 print(model + " marked for skipping...")
