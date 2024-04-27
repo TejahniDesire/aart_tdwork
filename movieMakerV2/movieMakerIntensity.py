@@ -414,14 +414,14 @@ def blurrImageAnalysis(action, sub_path, model: str, brightparams,blurr_frequenc
 
             h5f = h5py.File(intensity_path, 'r')
 
-            I0 = h5f['thin_blurr_image'][:]
+            Thin_Image = h5f['thin_blurr_image'][:]
             Absorbtion_Image = h5f["thick_blurr_image"][:]
 
             h5f.close()
 
             # Thin Radii Calcs------------------------------------------------------------------------------------------
 
-            radii_Thin_i, theta = tls.radii_of_thetaV2(I0, params.dx0)
+            radii_Thin_i, theta = tls.radii_of_thetaV2(Thin_Image, params.dx0)
 
             r0_thin = tls.curve_params(theta, radii_Thin_i)
 
@@ -439,7 +439,7 @@ def blurrImageAnalysis(action, sub_path, model: str, brightparams,blurr_frequenc
             radii_cumulative_Thick = np.vstack((radii_cumulative_Thick, radii_FullAbsorption_Thick_i))
 
             # Total Flux Calcualtions
-            janksys_thin[L, 0] = ilp.total_jy(I0, brightparams["nu0"], brightparams["mass"]).value
+            janksys_thin[L, 0] = ilp.total_jy(Thin_Image, brightparams["nu0"], brightparams["mass"]).value
 
             janksys_thick[L, 0] = ilp.total_jy(Absorbtion_Image, brightparams["nu0"], brightparams["mass"]).value
 
@@ -453,8 +453,8 @@ def blurrImageAnalysis(action, sub_path, model: str, brightparams,blurr_frequenc
     fileloading.creatSubDirectory(final_data_path, "final image path for {}".format(model), kill_policy=False)
 
     # Remove Row of Zeros
-    # radii_cumulative_Thin = np.delete(radii_cumulative_Thin, 0, 0)
-    # radii_cumulative_Thick = np.delete(radii_cumulative_Thick, 0, 0)
+    radii_cumulative_Thin = np.delete(radii_cumulative_Thin, 0, 0)
+    radii_cumulative_Thick = np.delete(radii_cumulative_Thick, 0, 0)
 
     # Saving Data--------------------------------------------------------------------------------------------------------
     np.save(final_data_path + "blurr_x_variable", x_variable)
