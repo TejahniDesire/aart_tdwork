@@ -107,25 +107,42 @@ def intensity_movie(action, sub_path, model: str, intent_grid_type, brightparams
 freq_points = [86e9, 230e9, 345e9]
 
 
+
+
+
+
+
+
+
+
+
+"""________________________________________________________________________________________________________"""
+
 def imageAnalysis(action, sub_path, model: str, brightparams,frequency_list):
     parent_model_path = sub_path["intensityPath"] + model + "/"
     current_model_file = parent_model_path + "clean/"
     num_of_theta_points = image_tools.num_of_theta_points  # array size for radii calcs
-    num_iterations = int((action["stop"] - action["start"]) / action["step"])
 
     final_data_path = current_model_file + "numpy/"
     fileloading.creatSubDirectory(final_data_path, "final image path for {}".format(model), kill_policy=False)
 
+    num_iterations = int((action["stop"] - action["start"]) / action["step"])
+    if frequency_list is None:
+        len_of_freq_list = num_iterations
+    else:
+        len_of_freq_list = len(frequency_list)
+
     """GRAPHS________________________________________________________________________________________________________"""
+
     x_variable = np.zeros(num_iterations)  # counter for independant variable
 
     # flux_________________________________
-    janksys_thick = np.ndarray([num_iterations, 4])  # [I0, I1, I2, FullImage]
-    janksys_thin = np.ndarray([num_iterations, 4])  # [I0, I1, I2, total]
+    janksys_thick = np.ndarray([len_of_freq_list, 4])  # [I0, I1, I2, FullImage]
+    janksys_thin = np.ndarray([len_of_freq_list, 4])  # [I0, I1, I2, total]
 
     # Average Radius over all Theta_________________________________
-    mean_radii_Thin = np.ndarray([num_iterations, 4])  # [I0, I1, I2, FullImage]
-    mean_radii_Thick = np.ndarray([num_iterations, 4])  # [I0, I1, I2, FullImage]
+    mean_radii_Thin = np.ndarray([len_of_freq_list, 4])  # [I0, I1, I2, FullImage]
+    mean_radii_Thick = np.ndarray([len_of_freq_list, 4])  # [I0, I1, I2, FullImage]
 
     # First layer of Radius as a function of theta_________________________________
     radii_Full_Thin = np.zeros(num_of_theta_points)
@@ -139,47 +156,53 @@ def imageAnalysis(action, sub_path, model: str, brightparams,frequency_list):
     radii_I2_Thick = np.zeros(num_of_theta_points)
 
     # Optical Depth_________________________________
-    mean_optical_depth_I0 = np.zeros(num_iterations)
-    mean_optical_depth_I1 = np.zeros(num_iterations)
-    mean_optical_depth_I2 = np.zeros(num_iterations)
+    mean_optical_depth_I0 = np.zeros(len_of_freq_list)
+    mean_optical_depth_I1 = np.zeros(len_of_freq_list)
+    mean_optical_depth_I2 = np.zeros(len_of_freq_list)
 
-    did230 = False
-    did_freq_points = [False, False, False]
+    done_list = None
+    if frequency_list is not None:
+        done_list = np.full(len(frequency_list),False)
 
+    L = 0
     for i in range(num_iterations):
         print(line)
         print(line)
         print('Reading intensity.h5 for Model ' + model + ' number: ' + str(i))
 
         brightparams[action["var"]] = action["start"] + i * action["step"]
-        x_variable[i] = brightparams[action["var"]]
+        current_freqeuncy = brightparams[action["var"]]
 
-        intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
+        do_image, done_list = fileloading.frequencyListAnalysis(frequency_list, done_list, current_freqeuncy)
 
-        h5f = h5py.File(intensity_path, 'r')
+        if do_image:
+            print('Creating intensity.h5 for Model ' + model + ' number: ' + str(L))
+            x_variable[L] = brightparams[action["var"]]
 
-        I0 = h5f['bghts0'][:]
-        I1 = h5f['bghts1'][:]
-        I2 = h5f['bghts2'][:]
+            intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
 
-        I0_Absorb = h5f['bghts0_absorbtion'][:]
-        I1_Absorb = h5f['bghts1_absorbtion'][:]
-        I2_Absorb = h5f['bghts2_absorbtion'][:]
-        Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+            h5f = h5py.File(intensity_path, 'r')
 
-        tau2 = h5f['tau2'][()]
-        tau1 = h5f['tau1'][()]
-        tau0 = h5f['tau0'][()]
+            I0 = h5f['bghts0'][:]
+            I1 = h5f['bghts1'][:]
+            I2 = h5f['bghts2'][:]
 
-        for m in range(len(freq_points)):
-            if (not did_freq_points[m]) and brightparams[action["var"]] >= freq_points[m]:
-                did_freq_points[m] = True
+            I0_Absorb = h5f['bghts0_absorbtion'][:]
+            I1_Absorb = h5f['bghts1_absorbtion'][:]
+            I2_Absorb = h5f['bghts2_absorbtion'][:]
+            Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+
+            tau2 = h5f['tau2'][()]
+            tau1 = h5f['tau1'][()]
+            tau0 = h5f['tau0'][()]
+
+            for m in range(len(frequency_list)):
                 full_profiles0 = h5f['full_profiles0'][:]
                 full_profiles1 = h5f['full_profiles1'][:]
                 full_profiles2 = h5f['full_profiles2'][:]
                 # full_profiles_unit = h5f['full_profiles_unit'][:]
                 print("Frequency = " + str(brightparams[action["var"]]) + " for power law saving at "
-                      + "{:.5e}".format(freq_points[m]))
+                      + "{:.5e}".format(frequency_list[m]))
 
                 np.save(final_data_path + "_full_profiles0_{}GHz".format("{:.5e}".format(freq_points[m])),
                         full_profiles0)
@@ -189,70 +212,73 @@ def imageAnalysis(action, sub_path, model: str, brightparams,frequency_list):
                         full_profiles2)
                 # np.save(final_data_path + "_full_profiles_unit_{}GHz".format("{:.5e}".format(freq_points[m])),
                 #         full_profiles_unit)
-        h5f.close()
+            h5f.close()
 
-        # Thin Radii Calcs----------------------------------------------------------------------------------------------
+            # Thin Radii Calcs----------------------------------------------------------------------------------------------
 
-        radii_I0_Thin_i, theta = tls.radii_of_thetaV2(I0, params.dx0)
-        radii_I1_Thin_i, theta = tls.radii_of_thetaV2(I1, params.dx0)
-        radii_I2_Thin_i, theta = tls.radii_of_thetaV2(I2, params.dx0)
-        radii_Full_Thick_i, theta = tls.radii_of_thetaV2(I0 + I1 + I2, params.dx0)
+            radii_I0_Thin_i, theta = tls.radii_of_thetaV2(I0, params.dx0)
+            radii_I1_Thin_i, theta = tls.radii_of_thetaV2(I1, params.dx0)
+            radii_I2_Thin_i, theta = tls.radii_of_thetaV2(I2, params.dx0)
+            radii_Full_Thick_i, theta = tls.radii_of_thetaV2(I0 + I1 + I2, params.dx0)
 
-        # profs = scipy.ndimage.convolve1d(profs, np.ones(navg_ang), axis=0) / navg_ang
+            # profs = scipy.ndimage.convolve1d(profs, np.ones(navg_ang), axis=0) / navg_ang
 
-        r0_thin = tls.curve_params(theta, radii_I0_Thin_i)
-        r1_thin = tls.curve_params(theta, radii_I1_Thin_i)
-        r2_thin = tls.curve_params(theta, radii_I2_Thin_i)
-        full_thin = tls.curve_params(theta, radii_Full_Thick_i)
+            r0_thin = tls.curve_params(theta, radii_I0_Thin_i)
+            r1_thin = tls.curve_params(theta, radii_I1_Thin_i)
+            r2_thin = tls.curve_params(theta, radii_I2_Thin_i)
+            full_thin = tls.curve_params(theta, radii_Full_Thick_i)
 
-        mean_radii_Thin[i, 0] = r0_thin
-        mean_radii_Thin[i, 1] = r1_thin
-        mean_radii_Thin[i, 2] = r2_thin
-        mean_radii_Thin[i, 3] = full_thin
+            mean_radii_Thin[L, 0] = r0_thin
+            mean_radii_Thin[L, 1] = r1_thin
+            mean_radii_Thin[L, 2] = r2_thin
+            mean_radii_Thin[L, 3] = full_thin
 
-        radii_I0_Thin = np.vstack((radii_I0_Thin, radii_I0_Thin_i))
-        radii_I1_Thin = np.vstack((radii_I1_Thin, radii_I1_Thin_i))
-        radii_I2_Thin = np.vstack((radii_I2_Thin, radii_I2_Thin_i))
-        radii_Full_Thin = np.vstack((radii_Full_Thin, radii_Full_Thick_i))
+            radii_I0_Thin = np.vstack((radii_I0_Thin, radii_I0_Thin_i))
+            radii_I1_Thin = np.vstack((radii_I1_Thin, radii_I1_Thin_i))
+            radii_I2_Thin = np.vstack((radii_I2_Thin, radii_I2_Thin_i))
+            radii_Full_Thin = np.vstack((radii_Full_Thin, radii_Full_Thick_i))
 
-        # Thick Radii Calcs---------------------------------------------------------------------------------------------
-        radii_I0_Thick_i, theta = tls.radii_of_thetaV2(I0_Absorb, params.dx0)
-        radii_I1_Thick_i, theta = tls.radii_of_thetaV2(I1_Absorb, params.dx0)
-        radii_I2_Thick_i, theta = tls.radii_of_thetaV2(I2_Absorb, params.dx0)
-        radii_FullAbsorption_Thick_i, theta = tls.radii_of_thetaV2(Absorbtion_Image, params.dx0)
+            # Thick Radii Calcs---------------------------------------------------------------------------------------------
+            radii_I0_Thick_i, theta = tls.radii_of_thetaV2(I0_Absorb, params.dx0)
+            radii_I1_Thick_i, theta = tls.radii_of_thetaV2(I1_Absorb, params.dx0)
+            radii_I2_Thick_i, theta = tls.radii_of_thetaV2(I2_Absorb, params.dx0)
+            radii_FullAbsorption_Thick_i, theta = tls.radii_of_thetaV2(Absorbtion_Image, params.dx0)
 
-        r0_thick = tls.curve_params(theta, radii_I0_Thick_i)
-        r1_thick = tls.curve_params(theta, radii_I1_Thick_i)
-        r2_thick = tls.curve_params(theta, radii_I2_Thick_i)
-        full_thick = tls.curve_params(theta, radii_FullAbsorption_Thick_i)
+            r0_thick = tls.curve_params(theta, radii_I0_Thick_i)
+            r1_thick = tls.curve_params(theta, radii_I1_Thick_i)
+            r2_thick = tls.curve_params(theta, radii_I2_Thick_i)
+            full_thick = tls.curve_params(theta, radii_FullAbsorption_Thick_i)
 
-        mean_radii_Thick[i, 0] = r0_thick
-        mean_radii_Thick[i, 1] = r1_thick
-        mean_radii_Thick[i, 2] = r2_thick
-        mean_radii_Thick[i, 3] = full_thick
+            mean_radii_Thick[L, 0] = r0_thick
+            mean_radii_Thick[L, 1] = r1_thick
+            mean_radii_Thick[L, 2] = r2_thick
+            mean_radii_Thick[L, 3] = full_thick
 
-        radii_I0_Thick = np.vstack((radii_I0_Thick, radii_I0_Thick_i))
-        radii_I1_Thick = np.vstack((radii_I1_Thick, radii_I1_Thick_i))
-        radii_I2_Thick = np.vstack((radii_I2_Thick, radii_I2_Thick_i))
-        radii_FullAbsorption_Thick = np.vstack((radii_FullAbsorption_Thick, radii_FullAbsorption_Thick_i))
+            radii_I0_Thick = np.vstack((radii_I0_Thick, radii_I0_Thick_i))
+            radii_I1_Thick = np.vstack((radii_I1_Thick, radii_I1_Thick_i))
+            radii_I2_Thick = np.vstack((radii_I2_Thick, radii_I2_Thick_i))
+            radii_FullAbsorption_Thick = np.vstack((radii_FullAbsorption_Thick, radii_FullAbsorption_Thick_i))
 
-        # Total Flux Calcualtions
-        janksys_thin[i, 0] = ilp.total_jy(I0, brightparams["nu0"], brightparams["mass"]).value
-        janksys_thin[i, 1] = ilp.total_jy(I1, brightparams["nu0"], brightparams["mass"]).value
-        janksys_thin[i, 2] = ilp.total_jy(I2, brightparams["nu0"], brightparams["mass"]).value
-        janksys_thin[i, 3] = ilp.total_jy(I0 + I1 + I2, brightparams["nu0"], brightparams["mass"]).value
+            # Total Flux Calcualtions
+            janksys_thin[L, 0] = ilp.total_jy(I0, brightparams["nu0"], brightparams["mass"]).value
+            janksys_thin[L, 1] = ilp.total_jy(I1, brightparams["nu0"], brightparams["mass"]).value
+            janksys_thin[L, 2] = ilp.total_jy(I2, brightparams["nu0"], brightparams["mass"]).value
+            janksys_thin[L, 3] = ilp.total_jy(I0 + I1 + I2, brightparams["nu0"], brightparams["mass"]).value
 
-        janksys_thick[i, 0] = ilp.total_jy(I0_Absorb, brightparams["nu0"], brightparams["mass"]).value
-        janksys_thick[i, 1] = ilp.total_jy(I1_Absorb, brightparams["nu0"], brightparams["mass"]).value
-        janksys_thick[i, 2] = ilp.total_jy(I2_Absorb, brightparams["nu0"], brightparams["mass"]).value
-        janksys_thick[i, 3] = ilp.total_jy(Absorbtion_Image, brightparams["nu0"], brightparams["mass"]).value
+            janksys_thick[L, 0] = ilp.total_jy(I0_Absorb, brightparams["nu0"], brightparams["mass"]).value
+            janksys_thick[L, 1] = ilp.total_jy(I1_Absorb, brightparams["nu0"], brightparams["mass"]).value
+            janksys_thick[L, 2] = ilp.total_jy(I2_Absorb, brightparams["nu0"], brightparams["mass"]).value
+            janksys_thick[L, 3] = ilp.total_jy(Absorbtion_Image, brightparams["nu0"], brightparams["mass"]).value
 
-        # Optical Depth-------------------------------------------------------------------------------------------------
+            # Optical Depth-------------------------------------------------------------------------------------------------
 
-        mean_optical_depth_I0[i] = tau0
-        mean_optical_depth_I1[i] = tau1
-        mean_optical_depth_I2[i] = tau2
-        # (\Sum \tau * I) / (\Sum I),
+            mean_optical_depth_I0[L] = tau0
+            mean_optical_depth_I1[L] = tau1
+            mean_optical_depth_I2[L] = tau2
+            # (\Sum \tau * I) / (\Sum I),
+            L += 1
+        else:
+            print('Skipping clean analysis for model ' + model + ' number: ' + str(i) + "...")
 
     # Remove Row of Zeros
     radii_Full_Thin = np.delete(radii_Full_Thin, 0, 0)
@@ -314,13 +340,6 @@ def blurr_intensity_movie(action, sub_path, model: str, intent_grid_type: int,
     # size = 500  # array size for radii calcs
     num_iterations = int((action["stop"] - action["start"]) / action["step"])
 
-    """GRAPHS________________________________________________________________________________________________________"""
-    x_variable = np.zeros(num_iterations)  # counter for independant variable
-
-    # # Intensity images
-    # I_thins = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
-    # I_thicks = np.ndarray([num_iterations, 3])  # [I0, I1, I2]
-    # #
     done_list = None
     if blurr_frequency_list is not None:
         done_list = np.full(len(blurr_frequency_list),False)
