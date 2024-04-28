@@ -401,8 +401,13 @@ class BigRuns:
                     print("Creating Intensity Movie for Model ", current_total_name)
                     print(long_line)
 
+                    if do_list is None:
+                        kill_policy = True
+                    else:
+                        kill_policy = False
                     fileloading.creatSubDirectory(current_model_file,
-                                                  "for {} intensities".format(current_total_name), kill_policy=True)
+                                                  "for {} intensities".format(current_total_name),
+                                                  kill_policy=kill_policy)
 
                     if not self.already_normalized_brightparams:
                         print("\n" + "Normalizing " + current_total_name + "\n")
@@ -537,7 +542,6 @@ class BigRuns:
                 print(line)
                 print("Graphing " + model)
                 # File Creation
-
                 for i in range(len(file_creation)):
                     fileloading.creatSubDirectory(file_creation[i], kill_policy=False)
 
@@ -550,8 +554,13 @@ class BigRuns:
 
                 file_creation = [fluxVNu_path, radVNu_path, image_path, Optical_depth_path]
 
+                if do_list is None:
+                    kill_policy = True
+                else:
+                    kill_policy = False
+
                 for i in range(len(file_creation)):
-                    fileloading.creatSubDirectory(file_creation[i], kill_policy=True)
+                    fileloading.creatSubDirectory(file_creation[i], kill_policy=kill_policy)
 
                 fluxVNu_path += "Clean_"
                 radVNu_path += "Clean_"
@@ -1057,8 +1066,14 @@ class BigRuns:
 
                 file_creation = [fluxVNu_path, radVNu_path, image_path, Optical_depth_path]
 
+                if do_list is None:
+                    kill_policy = True
+                else:
+                    kill_policy = False
+
+
                 for i in range(len(file_creation)):
-                    fileloading.creatSubDirectory(file_creation[i], kill_policy=True)
+                    fileloading.creatSubDirectory(file_creation[i], kill_policy=kill_policy)
 
                 fluxVNu_path += "Blurr" + str(blur_kernal) + "_"
                 radVNu_path += "Blurr" + str(blur_kernal) + "_"
