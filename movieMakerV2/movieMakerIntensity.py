@@ -166,7 +166,7 @@ def imageAnalysis(action, sub_path, model: str, brightparams,frequency_list=None
         do_image, done_list = fileloading.frequencyListAnalysis(frequency_list, done_list, current_freqeuncy)
 
         if do_image:
-            print('Creating intensity.h5 for Model ' + model + ' number: ' + str(L))
+            print('Analyzing intensity.h5 for Model ' + model + ' number: ' + str(L))
             x_variable[L] = brightparams[action["var"]]
 
             intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])

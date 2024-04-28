@@ -32,7 +32,7 @@ do_list = None
 isContinuous= False
 
 
-run.setisNormalized(False)
+run.setisNormalized(True)
 bigRun = classRunComputing.BigRuns(
     run.getRunName(),
     run.getBrightparams(),
@@ -47,12 +47,12 @@ bigRun.createGeoGrid()
 
 """ Intensity Grid Creation_________________________________________________________"""
 #
-bigRun.creatIntensityGrid(
-    run.getAction(),
-    do_list=do_list,
-    isContinuous=isContinuous,
-    frequency_list=None
-)
+# bigRun.creatIntensityGrid(
+#     run.getAction(),
+#     do_list=do_list,
+#     isContinuous=isContinuous,
+#     frequency_list=None
+# )
 
 """ Intensity Grid Analysis_________________________________________________________"""
 bigRun.intensityGridAnalysis(
