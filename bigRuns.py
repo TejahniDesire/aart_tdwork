@@ -69,11 +69,21 @@ bigRun = classRunComputing.BigRuns(
 #     isContinuous=isContinuous,
 # )
 """ Clean Graph Creation_________________________________________________________"""
-bigRun.graphCreation(
+# bigRun.graphCreation(
+#     run.getAction(),
+#     do_list=do_list,
+#     isContinuous=False
+# )
+
+""" Radial Profiles_________________________________________________________"""
+
+bigRun.creatRadialProfiles(
     run.getAction(),
-    do_list=do_list,
-    isContinuous=False
+    do_list,
+    isContinuous=isContinuous,
+    frequency_list=frequency_list
 )
+
 """ Blurr Intensity Grid Creation_________________________________________________________"""
 
 blurr_frequency_list = [86e9,230e9,345e9]
@@ -163,5 +173,5 @@ bigRun.blurrGraphCreation(
     blurr_frequency_list=blurr_frequency_list,
     blur_kernal=blurr_kernal[3]
 )
-""" _________________________________________________________"""
+
 

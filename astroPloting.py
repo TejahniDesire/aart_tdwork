@@ -253,8 +253,7 @@ def opticalDepth(ax,xaxis,mean_optical_depth,
     ax.legend()
 
 
-
-def IntensityVSRadiiType1(fig,ax0,ax1,limit,thin_intensity, thick_intensity,rmax,blurr_policy=False):
+def IntensityVSRadii(fig,ax0,ax1,limit,thin_intensity, thick_intensity,rmax,blurr_policy=False):
     """
 
     Args:
@@ -298,7 +297,7 @@ def IntensityVSRadiiType1(fig,ax0,ax1,limit,thin_intensity, thick_intensity,rmax
             axes_0[J].get_xaxis().set_ticks([])
             axes_1[J].get_xaxis().set_ticks([])
         x = np.linspace(0, rmax - 1, rsize) * params.dx0
-        ptheta = [0, np.pi/2, np.pi]  # for frame 33
+        ptheta = [0, np.pi/2, np.pi]
         colors = ['tab:blue', 'tab:green', 'tab:red']
         parg = []
         for L in range(len(ptheta)):
@@ -346,91 +345,6 @@ def IntensityVSRadiiType1(fig,ax0,ax1,limit,thin_intensity, thick_intensity,rmax
                                  label="Brightnes Temperature (K)",
                                  ax=axes_1[J]
                                  )
-
-
-def IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax,blurr_policy=False):
-    """
-
-    Args:
-        thin_intensity: [I0,I1,I2,I0 + I1 + I2]
-        thick_intensity:
-        rmax:
-
-    Returns:
-
-    """
-    rsize = image_tools.num_of_radial_points
-
-    peak012, interp012 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
-    peak0, interp0 = image_tools.radii_of_thetaV2_data(thin_intensity[0])
-    peak1, interp1 = image_tools.radii_of_thetaV2_data(thin_intensity[1])
-    peak2, interp2 = image_tools.radii_of_thetaV2_data(thin_intensity[2])
-    # peakAbsorb, interpAbsorb = image_tools.radii_of_thetaV2_data(thick_intensity[3])
-
-    peaks = [peak0,peak1,peak2,peak012]
-    interps = [interp0,interp1,interp2,interp012]
-
-
-
-    # ptheta = [0, np.pi / 2, np.pi]
-    ptheta = 4.29403619  # for frame 33
-    colors = ['tab:blue', 'tab:green', 'tab:red','tab:purple']
-    ring_colors = ['tab:blue', 'tab:green', 'tab:red','tab:purple']
-
-    model = ["for Thin Assumption", "for Full Solution"]
-    nrings = ['0','1','2','Cumulative']
-    for J in range(len(peaks)):
-        # if J == 0:
-        #     axes_0[J].get_xaxis().set_ticks([])
-        #     axes_1[J].get_xaxis().set_ticks([])
-        x = np.linspace(0, rmax - 1, rsize) * params.dx0
-        parg = image_tools.rad_to_arg(ptheta)
-        ax0.plot(x, interps[J][parg], linewidth=2, color=ring_colors[J],
-                 label=R"$n= $" + nrings[J] + R", $\varphi = $" + f"{ptheta:.2f}")
-        ax0.axvline(peaks[J][parg], color=ring_colors[J])
-
-    ax0.set_xlim([2, 6])
-    ax0.legend()
-    ax0.set_xlabel(R"$R_g$")
-    ax0.set_ylabel(R"Flux Value")
-    if not blurr_policy:
-        vmax = np.nanmax(thin_intensity[3]) * 1.2
-        im1 = ax1.imshow(thin_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
-    else:
-        vmax = np.nanmax(thin_intensity[0]) * 1.2
-        im1 = ax1.imshow(thin_intensity[0], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
-
-    ax1.set_xlim(-10, 10)  # units of M
-    ax1.set_ylim(-10, 10)
-
-    ax1.set_xlabel(r"$\alpha$" + " " + r"($M$)")
-    ax1.set_ylabel(r"$\beta$" + " " + r"($M$)")
-
-    # Plot lines
-    rline1 = np.array([0, 10])
-    theta1 = np.array([0, 0])
-
-    alpha1 = rline1 * np.cos(theta1)
-    beta1 = rline1 * np.sin(theta1)
-
-    rline = np.array([0, 10])
-    theta = np.array([ptheta, ptheta])
-
-    alpha = rline * np.cos(theta)
-    beta = rline * np.sin(theta)
-
-    ax1.plot(alpha, beta, color='red', linestyle='--')
-
-    colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format='%.1e', ticks=[
-        vmax * .8,
-        vmax * .6,
-        vmax * .4,
-        vmax * .2,
-        vmax * .05
-    ],
-                             label="Brightnes Temperature (K)",
-                             ax=ax1
-                             )
 
 
 def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False,plot_intensites=False):
@@ -501,7 +415,6 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False,plot_inten
                              label="Brightnes Temperature (K)",
                              ax=ax1
                              )
-
 
 
 def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_radii,theta,blurr_policy=False):
@@ -624,114 +537,6 @@ def fullImage(fig,ax0,ax1,limit,thin_intensity,thick_intensity,thin_radii,thick_
     ax1.plot(thick_alpha0, thick_beta0, color='tab:red', linestyle='-', linewidth=line0_thickness, label=R'n=0')
     ax1.legend()
 
-#
-# def parameterLaws():
-#     fig = plt.subplots(4, 1, sharex='col', figsize=(5, 15), height_ratios=[1, 1, 1, 2])
-#     # [r, theta_e.value, n.value, b_field.value, b_nu_fluid.value,
-#     #                                   acoeff_I_fluid.value, tau_curve.value, specific_intensity_thin_packed.value,
-#     #                                  specific_intensity_thick_packed.value], axis=0)
-#     ax = [None, None, None, None]
-#
-#     # Feducial ORange
-#     # 	1.23e4, # n_th0
-#     # 	8.1e9, # t_e0
-#     # 	-.7, # p_dens
-#     # 	-.84 # p_temp
-#
-#     # Steeper Blue
-#     # 	2.9726e+05, # n_th0
-#     # 	-.7, # p_dens
-#     # 	-1.6 # p_temp
-#
-#     # Shallower RED
-#     # 	2.1526e+04, # n_th0
-#     # 	-.7, # p_dens
-#     # 	-.3 # p_temp
-#
-#     i = 0
-#     n = 3000
-#
-#     # Subplot 1-----------------------------------------
-#     ax[0] = plt.subplot(4, 1, 1)
-#     ax[0].plot(bp0s["bp_shallowT230"][0, :], bp0s["bp_shallowT230"][1, :], 'tab:red')
-#     ax[0].plot(bp0s["bp_fiducial230"][0, :], bp0s["bp_fiducial230"][1, :], 'tab:orange')
-#     ax[0].plot(bp0s["bp_steeperT230"][0, :], bp0s["bp_steeperT230"][1, :], 'tab:blue')
-#
-#     ax[0].set_ylabel(R'$\theta_e$', fontsize=18)
-#     ax[0].set_yscale('log')
-#
-#     # Subplot 2-----------------------------------------
-#     ax[1] = plt.subplot(4, 1, 2)
-#     ax[1].plot(bp0s["bp_shallowT230"][0, :], bp0s["bp_shallowT230"][2, :], 'tab:red')
-#     ax[1].plot(bp0s["bp_fiducial230"][0, :], bp0s["bp_fiducial230"][2, :], 'tab:orange')
-#     ax[1].plot(bp0s["bp_steeperT230"][0, :], bp0s["bp_steeperT230"][2, :], 'tab:blue')
-#
-#     ax[1].set_ylabel('Density ({})'.format(R'$cm^{-3}$'), fontsize=18)
-#     ax[1].set_yscale('log')
-#
-#     # Subplot 3-----------------------------------------
-#     ax[2] = plt.subplot(4, 1, 3)
-#
-#     ax[2].plot(bp0s["bp_shallowT230"][0, :], bp0s["bp_shallowT230"][3, :], 'tab:red', linewidth=7)
-#     ax[2].plot(bp0s["bp_fiducial230"][0, :], bp0s["bp_fiducial230"][3, :], 'tab:orange', linewidth=5)
-#     ax[2].plot(bp0s["bp_steeperT230"][0, :], bp0s["bp_steeperT230"][3, :], 'tab:blue', linewidth=2)
-#
-#     ax[2].set_yscale('log')
-#     ax[2].set_ylabel('B (Gauss)', fontsize=18)
-#
-#     # Subplot 4-----------------------------------------
-#     ax[3] = plt.subplot(4, 1, 4)
-#
-#     ax[3].plot(bp0s["bp_shallowT230"][0, i::n], bp0s["bp_shallowT230"][7, i::n], 'tab:red', label="Model 3")
-#     ax[3].plot(bp0s["bp_fiducial230"][0, i::n], bp0s["bp_fiducial230"][7, i::n], 'tab:orange', label="Model 1")
-#     ax[3].plot(bp0s["bp_steeperT230"][0, i::n], bp0s["bp_steeperT230"][7, i::n], 'tab:blue', label="Model 2")
-#
-#     ax[3].plot(bp0s["bp_shallowT86"][0, i::n], bp0s["bp_shallowT86"][7, i::n], 'tab:red', linewidth=3, label="Model 3",
-#                linestyle=(0, (1, 5)))
-#     ax[3].plot(bp0s["bp_fiducial86"][0, i::n], bp0s["bp_fiducial86"][7, i::n], 'tab:orange', linewidth=3,
-#                label="Model 1", linestyle=(0, (1, 5)))
-#     ax[3].plot(bp0s["bp_steeperT86"][0, i::n], bp0s["bp_steeperT86"][7, i::n], 'tab:blue', linewidth=3, label="Model 2",
-#                linestyle=(0, (1, 5)))
-#
-#     ax[3].plot(bp0s["bp_shallowT345"][0, i::n], bp0s["bp_shallowT345"][7, i::n], 'tab:red', label="Model 3",
-#                linestyle='-.')
-#     ax[3].plot(bp0s["bp_fiducial345"][0, i::n], bp0s["bp_fiducial345"][7, i::n], 'tab:orange', label="Model 1",
-#                linestyle='-.')
-#     ax[3].plot(bp0s["bp_steeperT345"][0, i::n], bp0s["bp_steeperT345"][7, i::n], 'tab:blue', label="Model 2",
-#                linestyle='-.')
-#
-#     ax[3].set_ylabel(R'$J_\nu$ ($erg \cdot cm^{-3} \cdot Hz^{-1} \cdot s^{-1}$)', fontsize=18)
-#     ax[3].set_yscale('log')
-#     ax[3].set_xscale('log')
-#     ax[3].minorticks_on()
-#     ax[3].xaxis.set_major_formatter(ticker.FormatStrFormatter("%.0f"))
-#     ax[3].xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.0f'))
-#     ax[3].set_xlabel('Radial Distance ({})'.format(R'$R_g$'), fontsize=18)
-#     ax[3].set_xlim([2, 35])
-#
-#     lines = [
-#         Line2D([0], [0], marker='o', markerfacecolor='tab:orange', color='w', markersize=12),
-#         Line2D([0], [0], marker='o', markerfacecolor='tab:blue', color='w', markersize=12),
-#         Line2D([0], [0], marker='o', markerfacecolor='tab:red', color='w', markersize=12),
-#         Line2D([0, 1], [0, 1], linestyle=(0, (1, 5)), color='k'),
-#         Line2D([0, 1], [0, 1], linestyle='-', color='k'),
-#         Line2D([0, 1], [0, 1], linestyle='-.', color='k')
-#     ]
-#     labels = [
-#         "Model 1",
-#         "Model 2",
-#         "Model 3",
-#         R'$\nu = 86$GHz',
-#         R'$\nu = 230$GHz',
-#         R'$\nu = 345$GHz'
-#     ]
-#
-#     ax[3].legend(lines, labels)
-#     ax[3].set_ylim([1e-31, 1e-18])
-#     ax[3].tick_params('x', length=10, width=1, which='major', labelrotation=90)
-#
-#     plt.savefig(fig_path + "emission_profiles.png", bbox_inches='tight')
-
 
 def fmt(x, pos):
     x = x / 1e9
@@ -759,3 +564,89 @@ def surfacePlot(X,Y,Z,ax,xlabel,ylabel,zlabel,father_model,father_value):
     ax.view_init(20, 80)
     ax.title.set_text("All Models of a = .3, " + father_model + "=" + str(father_value))
     # ax.set_xlim([np.min(X) * 1 / 10, np.max(X) * 10])
+
+
+
+def DONOTUSE_IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax,blurr_policy=False):
+    """
+
+    Args:
+        thin_intensity: [I0,I1,I2,I0 + I1 + I2]
+        thick_intensity:
+        rmax:
+
+    Returns:
+
+    """
+    rsize = image_tools.num_of_radial_points
+
+    peak012, interp012 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+    peak0, interp0 = image_tools.radii_of_thetaV2_data(thin_intensity[0])
+    peak1, interp1 = image_tools.radii_of_thetaV2_data(thin_intensity[1])
+    peak2, interp2 = image_tools.radii_of_thetaV2_data(thin_intensity[2])
+    # peakAbsorb, interpAbsorb = image_tools.radii_of_thetaV2_data(thick_intensity[3])
+
+    peaks = [peak0,peak1,peak2,peak012]
+    interps = [interp0,interp1,interp2,interp012]
+
+
+
+    # ptheta = [0, np.pi / 2, np.pi]
+    ptheta = 4.29403619  # for frame 33
+    colors = ['tab:blue', 'tab:green', 'tab:red','tab:purple']
+    ring_colors = ['tab:blue', 'tab:green', 'tab:red','tab:purple']
+
+    model = ["for Thin Assumption", "for Full Solution"]
+    nrings = ['0','1','2','Cumulative']
+    for J in range(len(peaks)):
+        # if J == 0:
+        #     axes_0[J].get_xaxis().set_ticks([])
+        #     axes_1[J].get_xaxis().set_ticks([])
+        x = np.linspace(0, rmax - 1, rsize) * params.dx0
+        parg = image_tools.rad_to_arg(ptheta)
+        ax0.plot(x, interps[J][parg], linewidth=2, color=ring_colors[J],
+                 label=R"$n= $" + nrings[J] + R", $\varphi = $" + f"{ptheta:.2f}")
+        ax0.axvline(peaks[J][parg], color=ring_colors[J])
+
+    ax0.set_xlim([2, 6])
+    ax0.legend()
+    ax0.set_xlabel(R"$R_g$")
+    ax0.set_ylabel(R"Flux Value")
+    if not blurr_policy:
+        vmax = np.nanmax(thin_intensity[3]) * 1.2
+        im1 = ax1.imshow(thin_intensity[3], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+    else:
+        vmax = np.nanmax(thin_intensity[0]) * 1.2
+        im1 = ax1.imshow(thin_intensity[0], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
+
+    ax1.set_xlim(-10, 10)  # units of M
+    ax1.set_ylim(-10, 10)
+
+    ax1.set_xlabel(r"$\alpha$" + " " + r"($M$)")
+    ax1.set_ylabel(r"$\beta$" + " " + r"($M$)")
+
+    # Plot lines
+    rline1 = np.array([0, 10])
+    theta1 = np.array([0, 0])
+
+    alpha1 = rline1 * np.cos(theta1)
+    beta1 = rline1 * np.sin(theta1)
+
+    rline = np.array([0, 10])
+    theta = np.array([ptheta, ptheta])
+
+    alpha = rline * np.cos(theta)
+    beta = rline * np.sin(theta)
+
+    ax1.plot(alpha, beta, color='red', linestyle='--')
+
+    colorbar0 = fig.colorbar(im1, fraction=0.046, pad=0.04, format='%.1e', ticks=[
+        vmax * .8,
+        vmax * .6,
+        vmax * .4,
+        vmax * .2,
+        vmax * .05
+    ],
+                             label="Brightnes Temperature (K)",
+                             ax=ax1
+                             )

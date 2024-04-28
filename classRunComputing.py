@@ -469,6 +469,44 @@ class BigRuns:
         else:
             print("Not all Models are being analyzed, skipping saving of intermodel data")
 
+    def creatRadialProfiles(self, action, do_list=None, isContinuous=False, frequency_list=None):
+
+        k = 0
+        print(line)
+        print(line)
+        print(line)
+        print("Creating radial profiles for " + self.run)
+
+        for i in range(len(self.all_model_brightparams)):
+            # String Names
+            current_total_name = self.all_model_names[i]
+            # ________________________________
+            current_bp = self.all_model_brightparams[i]
+
+            # File Creation_____________________________
+            parent_model_path = self.sub_paths["intensityPath"] + current_total_name + "/"
+            current_model_file = parent_model_path + "clean/"
+            final_data_path = current_model_file + "numpy/"
+
+            preform_model = fileloading.crossContinousDoAnalysis(
+                current_total_name, do_list, final_data_path, isContinuous)
+
+            if preform_model:
+                fileloading.creatSubDirectory(final_data_path,
+                                              "final image path for {}".format(current_total_name), kill_policy=False)
+
+                # __________________________________________
+
+                print("Analyzing Intensity Movie for Model ", current_total_name)
+                print(long_line)
+                movieMakerIntensity.profileAnalysis(action,
+                                                    self.sub_paths,
+                                                    current_total_name,
+                                                    current_bp,
+                                                    frequency_list)
+            else:
+                print(current_total_name + " marked for skipping...")
+
     def intensityGridAnalysis(self, action, do_list=None, isContinuous=False,average=True):
         print(line)
         print(line)
