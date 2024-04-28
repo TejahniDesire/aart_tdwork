@@ -29,13 +29,18 @@ import fileloading
 
 run = runDataClass.run2
 # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC23","ModelC31","ModelC32","ModelC33"]
-do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
+# do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = ["ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
-# do_list = ["ModelC22"]
+
 # do_list = ["ModelC21","ModelC23"]
 isContinuous= False
-blurr_frequency_list = [86e9,230e9,345e9]
-blurr_kernal = [1,5,10,20]
+# blurr_frequency_list = [86e9,230e9,345e9]
+# blurr_kernal = [1,5,10,20]
+
+
+frequency_list = [86e9,230e9,345e9]
+do_list = ["ModelC22"]
+
 
 bigRun = classRunComputing.BigRuns(
     run.getRunName(),
@@ -63,14 +68,14 @@ bigRun.intensityGridAnalysis(
     run.getAction(),
     do_list=do_list,
     isContinuous=isContinuous,
-    frequency_list=None
+    frequency_list=frequency_list
 )
 """ Clean Graph Creation_________________________________________________________"""
-bigRun.graphCreation(
-    run.getAction(),
-    do_list=do_list,
-    isContinuous=False
-)
+# bigRun.graphCreation(
+#     run.getAction(),
+#     do_list=do_list,
+#     isContinuous=False
+# )
 """ Blurr Intensity Grid Creation_________________________________________________________"""
 # bigRun.blurrIntensityGrid(
 #     run.getAction(),
