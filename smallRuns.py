@@ -59,8 +59,7 @@ bigRun.intensityGridAnalysis(
     run.getAction(),
     do_list=do_list,
     isContinuous=isContinuous,
-    frequency_list=None,
-    average=True
+    average=False
 )
 """ Clean Graph Creation_________________________________________________________"""
 bigRun.graphCreation(
