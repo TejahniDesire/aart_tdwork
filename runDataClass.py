@@ -48,6 +48,9 @@ class runData:
         """
         self.action=action
 
+    def setActionKey(self,key,value):
+        self.action[key] = value
+
     def setisNormalized(self,isnormalized):
         self.isNormalized = isnormalized
 
