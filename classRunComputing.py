@@ -1071,7 +1071,6 @@ class BigRuns:
                 else:
                     kill_policy = False
 
-
                 for i in range(len(file_creation)):
                     fileloading.creatSubDirectory(file_creation[i], kill_policy=kill_policy)
 

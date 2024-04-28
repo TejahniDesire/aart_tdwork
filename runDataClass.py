@@ -220,3 +220,7 @@ class SingleModelData:
         else:
             return np.load(self.blurr_data_paths[item],allow_pickle=True)
 
+    def get_intensity_name(self,frequency):
+        parent_model_path = self.sub_paths["intensityPath"] + self.model_name + "/"
+        current_model_file = parent_model_path + "clean/"
+        return current_model_file + "nu0" + "_" + "{:.5e}".format(frequency)
