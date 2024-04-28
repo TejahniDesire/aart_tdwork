@@ -154,6 +154,7 @@ soloRun2.setAction(
             "images": True
     }
 )
+soloRun2.setisNormalized(True)
 
 
 class SingleModelData:
