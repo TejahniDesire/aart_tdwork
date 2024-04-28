@@ -167,9 +167,9 @@ def imageAnalysis(action, sub_path, model: str, brightparams,frequency_list=None
 
         if do_image:
             print('Analyzing intensity.h5 for Model ' + model + ' number: ' + str(L))
-            x_variable[L] = brightparams[action["var"]]
+            x_variable[L] = current_freqeuncy
 
-            intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(brightparams[action["var"]])
+            intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(current_freqeuncy)
 
             h5f = h5py.File(intensity_path, 'r')
 
@@ -192,7 +192,7 @@ def imageAnalysis(action, sub_path, model: str, brightparams,frequency_list=None
                     full_profiles1 = h5f['full_profiles1'][:]
                     full_profiles2 = h5f['full_profiles2'][:]
                     # full_profiles_unit = h5f['full_profiles_unit'][:]
-                    print("Frequency = " + str(brightparams[action["var"]]) + " for power law saving at "
+                    print("Frequency = " + str(current_freqeuncy) + " for power law saving at desired frequency = "
                           + "{:.5e}".format(frequency_list[m]))
 
                     np.save(final_data_path + "_full_profiles0_{}GHz".format("{:.5e}".format(frequency_list[m])),
