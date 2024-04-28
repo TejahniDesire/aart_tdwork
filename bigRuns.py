@@ -32,7 +32,8 @@ run = runDataClass.run2
 # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = ["ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
-do_list = None
+# do_list = None
+do_list = ["ModelC22"]
 
 isContinuous= False
 
@@ -88,7 +89,7 @@ bigRun.creatRadialProfiles(
 
 blurr_frequency_list = [86e9,230e9,345e9]
 blurr_kernal = [1,5,10,20]
-do_list = ["ModelC22"]
+
 bigRun.blurrIntensityGrid(
     run.getAction(),
     do_list,
