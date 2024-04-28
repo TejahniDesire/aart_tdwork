@@ -51,7 +51,7 @@ bigRun = classRunComputing.BigRuns(
 )
 """ Geo Model_________________________________________________________"""
 
-bigRun.createGeoGrid()
+# bigRun.createGeoGrid()
 
 """ Intensity Grid Creation_________________________________________________________"""
 #
