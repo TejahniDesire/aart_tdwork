@@ -971,17 +971,22 @@ class BigRuns:
                 print(
                     "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(intermodel_data["thin_total_flux"]))
                 print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"]) + "\n")
-                all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
-                all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
+                if do_list is None:
+                    all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
+                    all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
+                else:
+                    print("Not all Models are being analyzed, skipping collection of intermodel data")
             else:
                 print(current_total_name + " marked for skipping...")
         # Numpy saving________________________________________________
+        if do_list is None:
+            all_230_total_jy_thin_numpy_name = self.sub_paths["meta"] + "blurr_thin_total_flux"
+            all_230_total_jy_thick_numpy_name = self.sub_paths["meta"] + "blurr_thick_total_flux"
 
-        all_230_total_jy_thin_numpy_name = self.sub_paths["meta"] + "blurr_thin_total_flux"
-        all_230_total_jy_thick_numpy_name = self.sub_paths["meta"] + "blurr_thick_total_flux"
-
-        np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
-        np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
+            np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
+            np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
+        else:
+            print("Not all Models are being analyzed, skipping saving of intermodel data")
 
     def blurrIntensityGridAnalysis(self, action, do_list=None, isContinuous=False, blurr_frequency_list=None,
                                    blur_kernal=20):

@@ -35,9 +35,6 @@ run = runDataClass.run2
 do_list = None
 
 isContinuous= False
-# blurr_frequency_list = [86e9,230e9,345e9]
-blurr_kernal = [1,5,10,20]
-
 
 frequency_list = [86e9,230e9,345e9]
 # do_list = ["ModelC22"]
@@ -58,19 +55,19 @@ bigRun.createGeoGrid()
 
 """ Intensity Grid Creation_________________________________________________________"""
 #
-bigRun.creatIntensityGrid(
-    run.getAction(),
-    do_list=do_list,
-    isContinuous=isContinuous,
-    frequency_list=None
-)
+# bigRun.creatIntensityGrid(
+#     run.getAction(),
+#     do_list=do_list,
+#     isContinuous=isContinuous,
+#     frequency_list=None
+# )
 
 """ Intensity Grid Analysis_________________________________________________________"""
-bigRun.intensityGridAnalysis(
-    run.getAction(),
-    do_list=do_list,
-    isContinuous=isContinuous,
-)
+# bigRun.intensityGridAnalysis(
+#     run.getAction(),
+#     do_list=do_list,
+#     isContinuous=isContinuous,
+# )
 """ Clean Graph Creation_________________________________________________________"""
 bigRun.graphCreation(
     run.getAction(),
@@ -78,60 +75,64 @@ bigRun.graphCreation(
     isContinuous=False
 )
 """ Blurr Intensity Grid Creation_________________________________________________________"""
-# bigRun.blurrIntensityGrid(
-#     run.getAction(),
-#     do_list,
-#     blurr_frequency_list=blurr_frequency_list,
-#     blur_kernal=blurr_kernal[0]
-# )
-# bigRun.blurrIntensityGrid(
-#     run.getAction(),
-#     do_list,
-#     blurr_frequency_list=blurr_frequency_list,
-#     blur_kernal=blurr_kernal[1]
-# )
-#
-# bigRun.blurrIntensityGrid(
-#     run.getAction(),
-#     do_list,
-#     blurr_frequency_list=blurr_frequency_list,
-#     blur_kernal=blurr_kernal[2]
-# )
-#
-# bigRun.blurrIntensityGrid(
-#     run.getAction(),
-#     do_list,
-#     blurr_frequency_list=blurr_frequency_list,
-#     blur_kernal=blurr_kernal[3]
-# )
+
+blurr_frequency_list = [86e9,230e9,345e9]
+blurr_kernal = [1,5,10,20]
+do_list = ["ModelC22"]
+bigRun.blurrIntensityGrid(
+    run.getAction(),
+    do_list,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[0]
+)
+bigRun.blurrIntensityGrid(
+    run.getAction(),
+    do_list,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[1]
+)
+
+bigRun.blurrIntensityGrid(
+    run.getAction(),
+    do_list,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[2]
+)
+
+bigRun.blurrIntensityGrid(
+    run.getAction(),
+    do_list,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[3]
+)
 """ Blurring intensity analysis grid_________________________________________________________"""
-# bigRun.blurrIntensityGridAnalysis(
-#     run.getAction(),
-#     do_list=do_list,
-#     blurr_frequency_list=blurr_frequency_list,
-#     blur_kernal=blurr_kernal[0]
-# )
-#
-# bigRun.blurrIntensityGridAnalysis(
-#     run.getAction(),
-#     do_list=do_list,
-#     blurr_frequency_list=blurr_frequency_list,
-#     blur_kernal=blurr_kernal[1]
-# )
-#
-# bigRun.blurrIntensityGridAnalysis(
-#     run.getAction(),
-#     do_list=do_list,
-#     blurr_frequency_list=blurr_frequency_list,
-#     blur_kernal=blurr_kernal[2]
-# )
-#
-# bigRun.blurrIntensityGridAnalysis(
-#     run.getAction(),
-#     do_list=do_list,
-#     blurr_frequency_list=blurr_frequency_list,
-#     blur_kernal=blurr_kernal[3]
-# )
+bigRun.blurrIntensityGridAnalysis(
+    run.getAction(),
+    do_list=do_list,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[0]
+)
+
+bigRun.blurrIntensityGridAnalysis(
+    run.getAction(),
+    do_list=do_list,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[1]
+)
+
+bigRun.blurrIntensityGridAnalysis(
+    run.getAction(),
+    do_list=do_list,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[2]
+)
+
+bigRun.blurrIntensityGridAnalysis(
+    run.getAction(),
+    do_list=do_list,
+    blurr_frequency_list=blurr_frequency_list,
+    blur_kernal=blurr_kernal[3]
+)
 
 
 """ Blurr Graph Creation_________________________________________________________"""
