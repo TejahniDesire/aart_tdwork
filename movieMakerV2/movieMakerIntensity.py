@@ -187,22 +187,20 @@ def imageAnalysis(action, sub_path, model: str, brightparams,frequency_list=None
             tau0 = h5f['tau0'][()]
 
             if frequency_list is not None:
-                for m in range(len(frequency_list)):
-                    full_profiles0 = h5f['full_profiles0'][:]
-                    full_profiles1 = h5f['full_profiles1'][:]
-                    full_profiles2 = h5f['full_profiles2'][:]
-                    # full_profiles_unit = h5f['full_profiles_unit'][:]
-                    print("Frequency = " + str(current_freqeuncy) + " for power law saving at desired frequency = "
-                          + "{:.5e}".format(frequency_list[m]))
+                full_profiles0 = h5f['full_profiles0'][:]
+                full_profiles1 = h5f['full_profiles1'][:]
+                full_profiles2 = h5f['full_profiles2'][:]
+                # full_profiles_unit = h5f['full_profiles_unit'][:]
+                print("Frequency = " + str(current_freqeuncy) + " for power law saving at desired frequency = "
+                      + "{:.5e}".format(frequency_list[L]))
 
-                    np.save(final_data_path + "_full_profiles0_{}GHz".format("{:.5e}".format(frequency_list[m])),
-                            full_profiles0)
-                    np.save(final_data_path + "_full_profiles1_{}GHz".format("{:.5e}".format(frequency_list[m])),
-                            full_profiles1)
-                    np.save(final_data_path + "_full_profiles2_{}GHz".format("{:.5e}".format(frequency_list[m])),
-                            full_profiles2)
-                    # np.save(final_data_path + "_full_profiles_unit_{}GHz".format("{:.5e}".format(freq_points[m])),
-                    #         full_profiles_unit)
+                np.save(final_data_path + "_full_profiles0_{}GHz".format("{:.5e}".format(frequency_list[L])),
+                        full_profiles0)
+                np.save(final_data_path + "_full_profiles1_{}GHz".format("{:.5e}".format(frequency_list[L])),
+                        full_profiles1)
+                np.save(final_data_path + "_full_profiles2_{}GHz".format("{:.5e}".format(frequency_list[L])),
+                        full_profiles2)
+
             h5f.close()
 
             # Thin Radii Calcs----------------------------------------------------------------------------------------------
