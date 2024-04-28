@@ -96,7 +96,7 @@ run2 = runData("run2",
                [(["a"], [str(.001)]),(["a"], [str(.5)]),(["a"], [str(15/16)])],
                ["ModelA", "ModelB","ModelC"],
                )
-run2.setisNormalized(False)
+run2.setisNormalized(True)
 # testRun1______________________________________________________________________
 
 testRun1 = runData("testRun1",

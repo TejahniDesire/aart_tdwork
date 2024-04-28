@@ -36,7 +36,7 @@ do_list = None
 
 isContinuous= False
 # blurr_frequency_list = [86e9,230e9,345e9]
-# blurr_kernal = [1,5,10,20]
+blurr_kernal = [1,5,10,20]
 
 
 frequency_list = [86e9,230e9,345e9]

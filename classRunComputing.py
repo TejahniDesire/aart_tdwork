@@ -518,9 +518,10 @@ class BigRuns:
         # current_intensity_model = intensity_models[i][1]
         # full_current_model_name = current_geo_model + current_intensity_model_name.replace("Model", "")
         j = 0
-        hist_flux_peaks_thins = []
-        hist_flux_peaks_thicks = []
-        hist_convs = []
+        if do_list is None:
+            hist_flux_peaks_thins = []
+            hist_flux_peaks_thicks = []
+            hist_convs = []
         dim = [10, 8]
         for model in self.all_model_names:
 
@@ -531,12 +532,17 @@ class BigRuns:
             radVVarphi_path = self.sub_paths["RadVVarphi"] + model
             fluxVRadii_path = self.sub_paths["fluxVRadii"] + model
 
-            file_creation = [fluxVNu_path, radVNu_path, image_path, Optical_depth_path, radVVarphi_path,
-                             fluxVRadii_path]
+            file_creation = [
+                fluxVNu_path,
+                radVNu_path,
+                image_path,
+                Optical_depth_path,
+                radVVarphi_path,
+                fluxVRadii_path
+            ]
 
             preform_model = fileloading.crossContinousDoAnalysis(
                 model, do_list, fluxVNu_path, isContinuous)
-
 
             if preform_model:
                 print(line)
@@ -552,7 +558,14 @@ class BigRuns:
                 radVVarphi_path += "/clean/"
                 fluxVRadii_path += "/clean/"
 
-                file_creation = [fluxVNu_path, radVNu_path, image_path, Optical_depth_path]
+                file_creation = [
+                    fluxVNu_path,
+                    radVNu_path,
+                    image_path,
+                    Optical_depth_path,
+                    radVVarphi_path,
+                    fluxVRadii_path
+                ]
 
                 if do_list is None:
                     kill_policy = True
@@ -639,9 +652,10 @@ class BigRuns:
                 flux_peak_thick = action["start"] + action["step"] * np.argmax(janksys_thick[:, 3])
                 flux_peak_thick = flux_peak_thick / astroModels.scale_label[action['var']]
 
-                hist_flux_peaks_thins += [flux_peak_thin]
-                hist_flux_peaks_thicks += [flux_peak_thick]
-                hist_convs += [conv_1]
+                if do_list is None:
+                    hist_flux_peaks_thins += [flux_peak_thin]
+                    hist_flux_peaks_thicks += [flux_peak_thick]
+                    hist_convs += [conv_1]
 
                 poi = {
                     "r_outer": r_outer,
@@ -805,111 +819,117 @@ class BigRuns:
                         plt.close()
 
                         k += action['step']
-                j += 1  # marker for which brightparams to use
             else:
                 print(model + " marked for skipping...")
+
+            j += 1  # marker for which brightparams to use
+
         # histograms
-        print(line)
-        print("Creating Histograms")
-        peak_hist_thin_path = self.sub_paths["peakHistThin"] + "clean"
-        peak_hist_thick_path = self.sub_paths["peakHistThick"] + "clean"
-        conv_hist_path = self.sub_paths["convHist"] + "clean"
-        total_flux_path = self.sub_paths["totalFlux"] + "clean"
+        if do_list is None:
+            print(line)
+            print("Creating Histograms")
+            peak_hist_thin_path = self.sub_paths["peakHistThin"] + "clean"
+            peak_hist_thick_path = self.sub_paths["peakHistThick"] + "clean"
+            conv_hist_path = self.sub_paths["convHist"] + "clean"
+            total_flux_path = self.sub_paths["totalFlux"] + "clean"
 
-        bar_xaxis = np.arange(len(self.all_model_names))
-        bar_labels = self.all_model_names
-        for i in range(len(bar_xaxis)):
-            bar_labels[i] = bar_labels[i].replace("Model", "")
-        """Flux Peaks_____________________________________________________________________"""
-        # Thin_________________
+            bar_xaxis = np.arange(len(self.all_model_names))
+            bar_labels = self.all_model_names
+            for i in range(len(bar_xaxis)):
+                bar_labels[i] = bar_labels[i].replace("Model", "")
+            """Flux Peaks_____________________________________________________________________"""
+            # Thin_________________
 
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.histogram(ax, hist_flux_peaks_thins, "Flux Peak location (GHz)",
-                               "Optically Thin Assumption Frequency")
+            astroPloting.histogram(ax, hist_flux_peaks_thins, "Flux Peak location (GHz)",
+                                   "Optically Thin Assumption Frequency")
 
-        figname = peak_hist_thin_path + "FluxPeakThin.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
+            figname = peak_hist_thin_path + "FluxPeakThin.jpeg"
+            plt.savefig(figname, bbox_inches='tight')
+            print("Image '{}' Created".format(figname))
+            plt.close()
 
-        # Thick_______________
+            # Thick_______________
 
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.histogram(ax, hist_flux_peaks_thicks, "Flux Peak location (GHz)", "Full Solution Frequency")
+            astroPloting.histogram(ax, hist_flux_peaks_thicks, "Flux Peak location (GHz)", "Full Solution Frequency")
 
-        figname = peak_hist_thick_path + "FluxPeakThick.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
+            figname = peak_hist_thick_path + "FluxPeakThick.jpeg"
+            plt.savefig(figname, bbox_inches='tight')
+            print("Image '{}' Created".format(figname))
+            plt.close()
 
-        # Thin Bar__________________
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+            # Thin Bar__________________
+            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.bar(ax, bar_xaxis, hist_flux_peaks_thins, "Optical Thin Assumption Peak Flux per model",
-                         "Observation Frequency (GHz)", bar_labels)
+            astroPloting.bar(ax, bar_xaxis, hist_flux_peaks_thins, "Optical Thin Assumption Peak Flux per model",
+                             "Observation Frequency (GHz)", bar_labels)
 
-        figname = peak_hist_thin_path + "FluxPeakPerThinModel.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
+            figname = peak_hist_thin_path + "FluxPeakPerThinModel.jpeg"
+            plt.savefig(figname, bbox_inches='tight')
+            print("Image '{}' Created".format(figname))
+            plt.close()
 
-        # Thick Bar_______________
+            # Thick Bar_______________
 
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.bar(ax, bar_xaxis, hist_flux_peaks_thicks, "Optical Thin Assumption Peak Flux per model",
-                         "Observation Frequency (GHz)", bar_labels)
+            astroPloting.bar(ax, bar_xaxis, hist_flux_peaks_thicks, "Optical Thin Assumption Peak Flux per model",
+                             "Observation Frequency (GHz)", bar_labels)
 
-        figname = peak_hist_thick_path + "FluxPeakPerThickModel.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
-        # Thick Bar
+            figname = peak_hist_thick_path + "FluxPeakPerThickModel.jpeg"
+            plt.savefig(figname, bbox_inches='tight')
+            print("Image '{}' Created".format(figname))
+            plt.close()
+            # Thick Bar
 
-        """Conv_____________________________________________________________________"""
-        # Conv Hist ______________________
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+            """Conv_____________________________________________________________________"""
+            # Conv Hist ______________________
+            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.histogram(ax, hist_convs, "Flux Peak location (GHz)", "Full Solution Frequency")
+            astroPloting.histogram(ax, hist_convs, "Flux Peak location (GHz)", "Full Solution Frequency")
 
-        figname = conv_hist_path + "convHistFreqPerObservationFreq.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
+            figname = conv_hist_path + "convHistFreqPerObservationFreq.jpeg"
+            plt.savefig(figname, bbox_inches='tight')
+            print("Image '{}' Created".format(figname))
+            plt.close()
 
-        # Conv Bar______________________
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+            # Conv Bar______________________
+            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.bar(ax, bar_xaxis, hist_convs, "Convergence for cumulative on I2",
-                         "Observation Frequency (GHz)", bar_labels)
-        figname = conv_hist_path + "convHistPerModel.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
+            astroPloting.bar(ax, bar_xaxis, hist_convs, "Convergence for cumulative on I2",
+                             "Observation Frequency (GHz)", bar_labels)
+            figname = conv_hist_path + "convHistPerModel.jpeg"
+            plt.savefig(figname, bbox_inches='tight')
+            print("Image '{}' Created".format(figname))
+            plt.close()
 
-        """230 total flux Thin___________________________________________________________"""
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+            """230 total flux Thin___________________________________________________________"""
+            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.bar(ax, bar_xaxis, thin_total_flux, "Total Flux at 230GHz",
-                         "Optically Thin Assumption Frequency", bar_labels)
+            astroPloting.bar(ax, bar_xaxis, thin_total_flux, "Total Flux at 230GHz",
+                             "Optically Thin Assumption Frequency", bar_labels)
 
-        figname = total_flux_path + "thin.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
+            figname = total_flux_path + "thin.jpeg"
+            plt.savefig(figname, bbox_inches='tight')
+            print("Image '{}' Created".format(figname))
+            plt.close()
 
-        """230 total flux Thick___________________________________________________________"""
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
+            """230 total flux Thick___________________________________________________________"""
+            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-        astroPloting.bar(ax, bar_xaxis, thick_total_flux, "Total Flux at 230GHz",
-                         "Full Solution Frequency", bar_labels)
+            astroPloting.bar(ax, bar_xaxis, thick_total_flux, "Total Flux at 230GHz",
+                             "Full Solution Frequency", bar_labels)
 
-        figname = total_flux_path + "thick.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
+            figname = total_flux_path + "thick.jpeg"
+            plt.savefig(figname, bbox_inches='tight')
+            print("Image '{}' Created".format(figname))
+            plt.close()
+        else:
+            print("Not all models were computed, skipping Histogram creation...")
+
 
     """ Blurr _______________________________________________________________________________________________________"""
     def blurrIntensityGrid(self, action, do_list=None, isContinuous=False,
@@ -1255,274 +1275,114 @@ class BigRuns:
                     else:
                         print("Freuquency {} marked for skipping...".format("{:.5e}".format(current_freqeuncy)))
                     k += action['step']
-                j += 1  # marker for which brightparams to use
+
             else:
                 print(model + " marked for skipping...")
 
-        # histograms
-        print(line)
-        print("Creating Histograms")
-        peak_hist_thin_path = self.sub_paths["peakHistThin"] + "blurr" + str(blur_kernal)
-        peak_hist_thick_path = self.sub_paths["peakHistThick"] + "blurr" + str(blur_kernal)
-        conv_hist_path = self.sub_paths["convHist"] + "blurr" + str(blur_kernal)
-        total_flux_path = self.sub_paths["totalFlux"]+ "blurr" + str(blur_kernal)
+            j += 1  # marker for which brightparams to use
 
-        bar_xaxis = np.arange(len(self.all_model_names))
-        """Flux Peaks_____________________________________________________________________"""
-        # Thin_________________
-
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
-
-        astroPloting.histogram(ax, hist_flux_peaks_thins, "Flux Peak location (GHz)",
-                               "Optically Thin Assumption Frequency")
-
-        figname = peak_hist_thin_path + "_FluxPeakThin.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
-
-        # Thick_______________
-
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
-
-        astroPloting.histogram(ax, hist_flux_peaks_thicks, "Flux Peak location (GHz)", "Full Solution Frequency")
-
-        figname = peak_hist_thick_path + "_FluxPeakThick.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
-
-        # Thin Bar__________________
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
-
-        astroPloting.bar(ax, bar_xaxis, hist_flux_peaks_thins, "Optical Thin Assumption Peak Flux per model",
-                         "Observation Frequency (GHz)", self.all_model_names)
-
-        figname = peak_hist_thin_path + "_FluxPeakPerThinModel.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
-
-        # Thick Bar_______________
-
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
-
-        astroPloting.bar(ax, bar_xaxis, hist_flux_peaks_thicks, "Optical Thin Assumption Peak Flux per model",
-                         "Observation Frequency (GHz)", self.all_model_names)
-
-        figname = peak_hist_thick_path + "_FluxPeakPerThickModel.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
-        # Thick Bar
-
-        """Conv_____________________________________________________________________"""
-        # Conv Hist ______________________
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
-
-        astroPloting.histogram(ax, hist_convs, "Flux Peak location (GHz)", "Full Solution Frequency")
-
-        figname = conv_hist_path + "_convHistFreqPerObservationFreq.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
-
-        # Conv Bar______________________
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
-
-        astroPloting.bar(ax, bar_xaxis, hist_convs, "Convergence for cumulative on I2",
-                         "Observation Frequency (GHz)", self.all_model_names)
-        figname = conv_hist_path + "_convHistPerModel.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
-
-        """230 total flux Thin___________________________________________________________"""
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
-
-        astroPloting.bar(ax, bar_xaxis, thin_total_flux, "Total Flux at 230GHz",
-                         "Optically Thin Assumption Frequency", self.all_model_names)
-
-        figname = total_flux_path + "_thin.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
-
-        """230 total flux Thick___________________________________________________________"""
-        fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
-
-        astroPloting.bar(ax, bar_xaxis, thick_total_flux, "Total Flux at 230GHz",
-                         "Full Solution Frequency", self.all_model_names)
-
-        figname = total_flux_path + "_thick.jpeg"
-        plt.savefig(figname, bbox_inches='tight')
-        print("Image '{}' Created".format(figname))
-        plt.close()
-
-    def smallModelRun(self, models: list[str], action, save_path):
-        for model in models:
-            print("Running " + model)
+        if do_list is None:
+            # histograms
             print(line)
-            print(line)
-            print("Initializing Graph Creation")
-            thin_total_flux = np.load(self.sub_paths["meta"] + "thin_total_flux.npy")
-            thick_total_flux = np.load(self.sub_paths["meta"] + "thick_total_flux.npy")
+            print("Creating Histograms")
+            peak_hist_thin_path = self.sub_paths["peakHistThin"] + "blurr" + str(blur_kernal)
+            peak_hist_thick_path = self.sub_paths["peakHistThick"] + "blurr" + str(blur_kernal)
+            conv_hist_path = self.sub_paths["convHist"] + "blurr" + str(blur_kernal)
+            total_flux_path = self.sub_paths["totalFlux"]+ "blurr" + str(blur_kernal)
 
-            current_geo_model = fileloading.totalModelNametoGridModel(model, self.run_type)
-            fileloading.loadGeoModel(current_geo_model, self.run)
-            lband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
-            rtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
+            bar_xaxis = np.arange(len(self.all_model_names))
+            """Flux Peaks_____________________________________________________________________"""
+            # Thin_________________
 
-            # Construct Shadows___________________________________________________________________
+            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-            a = params.spin_case
-            inc = params.i_case * np.pi / 180  # inclination angle
-            rh = 1 + np.sqrt(1 - a ** 2)  # event horizon
-            # angles to sample
-            varphis = np.linspace(-180, 179, 360) * np.pi / 180
+            astroPloting.histogram(ax, hist_flux_peaks_thins, "Flux Peak location (GHz)",
+                                   "Optically Thin Assumption Frequency")
 
-            # generate inner shadow (n=0) curve with kgeo
-            data_inner = kgeo.equatorial_lensing.rho_of_req(a, inc, rh, mbar=0, varphis=varphis)
-            (_, rhos_inner, alphas_inner, betas_inner) = data_inner
+            figname = peak_hist_thin_path + "_FluxPeakThin.jpeg"
+            plt.savefig(figname, bbox_inches='tight')
+            print("Image '{}' Created".format(figname))
+            plt.close()
 
-            r_inner = image_tools.curve_params(varphis, rhos_inner)
+            # Thick_______________
 
-            # generate outer shadow (n=inf) curve with kgeo
-            data_outer = kgeo.equatorial_lensing.rho_of_req(a, inc, rh, mbar=5, varphis=varphis)
-            (_, rhos_outer, alphas_outer, betas_outer) = data_outer
+            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-            r_outer = image_tools.curve_params(varphis, rhos_outer)
-            # ___________________________________________________________________
+            astroPloting.histogram(ax, hist_flux_peaks_thicks, "Flux Peak location (GHz)", "Full Solution Frequency")
 
-            '''Data Readind----------------------------------'''
-            data_path = self.sub_paths["intensityPath"] + model + "/" + "numpy/"
+            figname = peak_hist_thick_path + "_FluxPeakThick.jpeg"
+            plt.savefig(figname, bbox_inches='tight')
+            print("Image '{}' Created".format(figname))
+            plt.close()
 
-            x_variable = np.load(data_path + "x_variable.npy")
-            janksys_thick = np.load(data_path + "janksys_thick.npy")
-            janksys_thin = np.load(data_path + "janksys_thin.npy")
-            mean_radii_Thin = np.load(data_path + "mean_radii_Thin.npy")
-            mean_radii_Thick = np.load(data_path + "mean_radii_Thick.npy")
-            radii_I0_Thin = np.load(data_path + "radii_I0_Thin.npy")
-            radii_I1_Thin = np.load(data_path + "radii_I1_Thin.npy")
-            radii_I2_Thin = np.load(data_path + "radii_I2_Thin.npy")
-            radii_Full_Thin = np.load(data_path + "radii_Full_Thin.npy")
-            radii_FullAbsorption_Thick = np.load(data_path + "radii_FullAbsorption_Thick.npy")
-            radii_I0_Thick = np.load(data_path + "radii_I0_Thick.npy")
-            radii_I1_Thick = np.load(data_path + "radii_I1_Thick.npy")
-            radii_I2_Thick = np.load(data_path + "radii_I2_Thick.npy")
-            theta = np.load(data_path + "theta.npy")
-            mean_optical_depth_I0 = np.load(data_path + "mean_optical_depth_I0.npy")
-            mean_optical_depth_I1 = np.load(data_path + "mean_optical_depth_I1.npy")
-            mean_optical_depth_I2 = np.load(data_path + "mean_optical_depth_I2.npy")
+            # Thin Bar__________________
+            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-            num_of_intensity_points = int((action["stop"] - action["start"]) / action["step"])
-            print("Number of Intensity Points: ", num_of_intensity_points)
+            astroPloting.bar(ax, bar_xaxis, hist_flux_peaks_thins, "Optical Thin Assumption Peak Flux per model",
+                             "Observation Frequency (GHz)", self.all_model_names)
 
-            print("Constructing Full images for " + model)
-            if action["images"]:
-                k = action["start"]
-                for i in range(num_of_intensity_points):
-                    print(self.all_model_names)
-                    brightparams = self.all_model_brightparams[self.all_model_names.index(model)]
-                    brightparams["nu0"] = k
-                    print("Full image production for intensity frame: ", i)
-                    print(R"Observation frequency $\nu=$", k)
+            figname = peak_hist_thin_path + "_FluxPeakPerThinModel.jpeg"
+            plt.savefig(figname, bbox_inches='tight')
+            print("Image '{}' Created".format(figname))
+            plt.close()
 
-                    current_intensity_file = (self.sub_paths["intensityPath"] + model + "/" + action["var"]
-                                              + "_" + "{:.5e}".format(brightparams[action["var"]]))
+            # Thick Bar_______________
 
-                    print("Reading file: ", current_intensity_file)
+            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-                    h5f = h5py.File(current_intensity_file, 'r')
+            astroPloting.bar(ax, bar_xaxis, hist_flux_peaks_thicks, "Optical Thin Assumption Peak Flux per model",
+                             "Observation Frequency (GHz)", self.all_model_names)
 
-                    I0 = h5f['bghts0'][:]  # This implies I0 is 1 pass
-                    I1 = h5f['bghts1'][:]
-                    I2 = h5f['bghts2'][:]
+            figname = peak_hist_thick_path + "_FluxPeakPerThickModel.jpeg"
+            plt.savefig(figname, bbox_inches='tight')
+            print("Image '{}' Created".format(figname))
+            plt.close()
+            # Thick Bar
 
-                    I2_Absorb = h5f['bghts2_absorbtion'][:]
-                    I1_Absorb = h5f['bghts1_absorbtion'][:]
-                    I0_Absorb = h5f['bghts0_absorbtion'][:]
-                    Absorbtion_Image = h5f['bghts_full_absorbtion'][:]
+            """Conv_____________________________________________________________________"""
+            # Conv Hist ______________________
+            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-                    h5f.close()
+            astroPloting.histogram(ax, hist_convs, "Flux Peak location (GHz)", "Full Solution Frequency")
 
-                    thin_intensity = [I0, I1, I2, I0 + I1 + I2]
-                    thick_intensity = [I0_Absorb, I1_Absorb, I2_Absorb, Absorbtion_Image]
-                    rmax = I0.shape[0] * .4
+            figname = conv_hist_path + "_convHistFreqPerObservationFreq.jpeg"
+            plt.savefig(figname, bbox_inches='tight')
+            print("Image '{}' Created".format(figname))
+            plt.close()
 
-                    dim = [15, 7]
-                    '''IntensityVSRadiiType1________________________________________________________________'''
-                    fig, dum = plt.subplots(2, 2, figsize=dim, dpi=400)
-                    ax0 = plt.subplot(2, 2, 1)
-                    ax1 = plt.subplot(2, 2, 2)
-                    ax2 = plt.subplot(2, 2, 3)
-                    ax3 = plt.subplot(2, 2, 4)
+            # Conv Bar______________________
+            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-                    astroPloting.IntensityVSRadiiType1(fig, ax0, ax1, ax2, ax3, params.limits, thin_intensity,
-                                                       thick_intensity, rmax)
-                    #
-                    # ax1.text(2, 1.01, astroModels.var_label[action["var"]]
-                    #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-                    #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
+            astroPloting.bar(ax, bar_xaxis, hist_convs, "Convergence for cumulative on I2",
+                             "Observation Frequency (GHz)", self.all_model_names)
+            figname = conv_hist_path + "_convHistPerModel.jpeg"
+            plt.savefig(figname, bbox_inches='tight')
+            print("Image '{}' Created".format(figname))
+            plt.close()
 
-                    pltname = (save_path['intVRad'] + 'IntVRad_' + str(i) + "_Nu_"
-                               + str(round(k / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
-                    plt.savefig(pltname, bbox_inches='tight')
-                    print("Image '{}' Created".format(pltname))
-                    plt.close()
+            """230 total flux Thin___________________________________________________________"""
+            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-                    '''IntensityVSRadiiType2________________________________________________________________'''
-                    fig, dum = plt.subplots(1, 2, figsize=dim, dpi=400)
-                    ax0 = plt.subplot(1, 2, 1)
-                    ax1 = plt.subplot(1, 2, 2)
+            astroPloting.bar(ax, bar_xaxis, thin_total_flux, "Total Flux at 230GHz",
+                             "Optically Thin Assumption Frequency", self.all_model_names)
 
-                    astroPloting.IntensityVSRadiiType2(fig, ax0, ax1, params.limits, thin_intensity, rmax)
+            figname = total_flux_path + "_thin.jpeg"
+            plt.savefig(figname, bbox_inches='tight')
+            print("Image '{}' Created".format(figname))
+            plt.close()
 
-                    # ax0.text(2, 1.01, astroModels.var_label[action["var"]]
-                    #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-                    #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
+            """230 total flux Thick___________________________________________________________"""
+            fig, ax = plt.subplots(1, 1, figsize=dim, dpi=400)
 
-                    pltname = (save_path['intVRad2'] + 'IntVRad_' + str(i) + "_Nu_"
-                               + str(round(k / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
-                    plt.savefig(pltname, bbox_inches='tight')
-                    print("Image '{}' Created".format(pltname))
-                    plt.close()
+            astroPloting.bar(ax, bar_xaxis, thick_total_flux, "Total Flux at 230GHz",
+                             "Full Solution Frequency", self.all_model_names)
 
-                    '''RadVSVarphiType2________________________________________________________________'''
-                    fig, dum = plt.subplots(1, 2, figsize=dim, dpi=400)
-                    ax0 = plt.subplot(1, 2, 1)
-                    ax1 = plt.subplot(1, 2, 2)
-
-                    astroPloting.radiiVSVarphi(fig, ax0, ax1, params.limits, thin_intensity)
-
-                    # ax0.text(2, 1.01, astroModels.var_label[action["var"]]
-                    #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-                    #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
-
-                    pltname = (save_path['radVVarphi'] + 'radVVarphu_' + str(i) + "_Nu_"
-                               + str(round(k / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
-                    plt.savefig(pltname, bbox_inches='tight')
-                    print("Image '{}' Created".format(pltname))
-                    plt.close()
-
-                    '''RadVSVarphiType2Intensities________________________________________________________________'''
-                    # fig, dum = plt.subplots(1, 2, figsize=dim, dpi=400)
-                    # ax0 = plt.subplot(1, 2, 1)
-                    # ax1 = plt.subplot(1, 2, 2)
-                    #
-                    # astroPloting.radiiVSVarphi(fig, ax0, ax1, params.limits, thin_intensity,plot_intensites=True)
-                    #
-                    # # ax0.text(2, 1.01, astroModels.var_label[action["var"]]
-                    # #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-                    # #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
-                    #
-                    # pltname = (save_path['radVVarphi'] + 'radVVarphuIntesities_' + str(i) + "_Nu_"
-                    #            + str(round(k / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
-                    # plt.savefig(pltname, bbox_inches='tight')
-                    # print("Image '{}' Created".format(pltname))
-                    # plt.close()
-
-                    k += action['step']
+            figname = total_flux_path + "_thick.jpeg"
+            plt.savefig(figname, bbox_inches='tight')
+            print("Image '{}' Created".format(figname))
+            plt.close()
+        else:
+            print("Not all models were computed, skipping Histogram creation...")
 
 
 def fmt(x, pos):
