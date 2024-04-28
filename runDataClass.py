@@ -165,7 +165,7 @@ class SingleModelData:
         self.clean_data_paths = {
             "x_variable": data_path + "x_variable.npy",
             "janksys_thick": data_path + "janksys_thick.npy",
-            "janksys_thin" : data_path + "janksys_thin.npy",
+            "janksys_thin": data_path + "janksys_thin.npy",
             "mean_radii_Thin": data_path + "mean_radii_Thin.npy",
             "mean_radii_Thick": data_path + "mean_radii_Thick.npy",
             "radii_I0_Thin": data_path + "radii_I0_Thin.npy",
