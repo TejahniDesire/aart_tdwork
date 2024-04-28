@@ -429,39 +429,45 @@ class BigRuns:
                         "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(
                             intermodel_data["thin_total_flux"]))
                     print("Total flux at 230GHz for Full Solution: " + str(intermodel_data["thick_total_flux"]) + "\n")
-                    all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
-                    all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
+                    if do_list is None:
+                        all_230_total_jy_thin += [intermodel_data["thin_total_flux"]]
+                        all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
+                    else:
+                        print("Not all Models are being analyzed, skipping collection of intermodel data")
                 else:
                     print("{} marked for skipping...".format(current_total_name))
                 k += 1
-        if not self.already_normalized_brightparams:
-            file_paths = [
-                self.sub_paths["runWideNumpy"] + "all_intensity_model_brightparams",
-                self.sub_paths["runWideNumpy"] + "all_intensity_model_names",
-                self.sub_paths["runWideNumpy"] + "all_model_brightparams",
-                self.sub_paths["runWideNumpy"] + "all_model_names",
-                self.sub_paths["runWideNumpy"] + "total_models_count"
-            ]
-            arrays = [
-                self.all_intensity_model_brightparams,
-                self.all_intensity_model_names,
-                self.all_model_brightparams,
-                self.all_model_names,
-                self.total_models_count
-            ]
-            k = 0
-            for file in file_paths:
-                np.save(file, arrays[k])
-                k += 1
+        if do_list is None:
+            if not self.already_normalized_brightparams:
+                file_paths = [
+                    self.sub_paths["runWideNumpy"] + "all_intensity_model_brightparams",
+                    self.sub_paths["runWideNumpy"] + "all_intensity_model_names",
+                    self.sub_paths["runWideNumpy"] + "all_model_brightparams",
+                    self.sub_paths["runWideNumpy"] + "all_model_names",
+                    self.sub_paths["runWideNumpy"] + "total_models_count"
+                ]
+                arrays = [
+                    self.all_intensity_model_brightparams,
+                    self.all_intensity_model_names,
+                    self.all_model_brightparams,
+                    self.all_model_names,
+                    self.total_models_count
+                ]
+                k = 0
+                for file in file_paths:
+                    np.save(file, arrays[k])
+                    k += 1
 
-        self.already_normalized_brightparams = True
-        # Numpy saving________________________________________________
+            self.already_normalized_brightparams = True
+            # Numpy saving________________________________________________
 
-        all_230_total_jy_thin_numpy_name = self.sub_paths["meta"] + "thin_total_flux"
-        all_230_total_jy_thick_numpy_name = self.sub_paths["meta"] + "thick_total_flux"
+            all_230_total_jy_thin_numpy_name = self.sub_paths["meta"] + "thin_total_flux"
+            all_230_total_jy_thick_numpy_name = self.sub_paths["meta"] + "thick_total_flux"
 
-        np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
-        np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
+            np.save(all_230_total_jy_thin_numpy_name, np.array(all_230_total_jy_thin))
+            np.save(all_230_total_jy_thick_numpy_name, np.array(all_230_total_jy_thick))
+        else:
+            print("Not all Models are being analyzed, skipping saving of intermodel data")
 
     def intensityGridAnalysis(self, action, do_list=None, isContinuous=False,average=True):
         print(line)
