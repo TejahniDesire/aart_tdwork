@@ -191,8 +191,8 @@ def imageAnalysis(action, sub_path, model: str, brightparams,frequency_list=None
                 full_profiles1 = h5f['full_profiles1'][:]
                 full_profiles2 = h5f['full_profiles2'][:]
                 # full_profiles_unit = h5f['full_profiles_unit'][:]
-                print("Frequency = " + str(current_freqeuncy) + " for power law saving at desired frequency = "
-                      + "{:.5e}".format(frequency_list[L]))
+                print("Frequency = " + str(current_freqeuncy/230e9) +
+                      " GHz for power law saving at desired frequency = " + str(frequency_list[L]/230e9)) + "GHz"
 
                 np.save(final_data_path + "_full_profiles0_{}GHz".format("{:.5e}".format(frequency_list[L])),
                         full_profiles0)
