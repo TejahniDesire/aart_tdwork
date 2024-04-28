@@ -28,11 +28,11 @@ import fileloading
 
 
 run = runDataClass.run2
-run.setActionKey("images",False)
+# run.setActionKey("images",True)
 # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC23","ModelC31","ModelC32","ModelC33"]
-do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
+# do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = ["ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
-
+do_list = None
 
 isContinuous= False
 # blurr_frequency_list = [86e9,230e9,345e9]
