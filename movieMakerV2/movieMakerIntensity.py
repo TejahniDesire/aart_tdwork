@@ -1,21 +1,16 @@
-import os.path
 import sys
 import EZPaths
-import astroModels
+from Movie_Maker import astroModels
 import bigRunComputing
 import fileloading
 import image_tools
 import normalizingBrightparams
-import scipy.ndimage as ndimage
 
 sys.path.append(EZPaths.aartPath)
 import subprocess
-import scipy
-from matplotlib import ticker
 from aart_func import *
 import params
 from params import *  # The file params.py contains all the relevant parameters for the simulations
-from astropy import units as u
 import image_tools as tls
 import numpy as np
 from movieMakerV2 import intensityBlurr
