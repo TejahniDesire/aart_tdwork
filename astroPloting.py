@@ -360,10 +360,10 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False,plot_inten
                                                                        give_intensities=True,average=average)
         intent_at_peaks = [intent_at_peaks0, intent_at_peaks1, intent_at_peaks2, intent_at_peaks3]
     else:
-        peak0, theta0 = image_tools.radii_of_thetaV2(thin_intensity[0])
-        peak1, theta1 = image_tools.radii_of_thetaV2(thin_intensity[1])
-        peak2, theta2 = image_tools.radii_of_thetaV2(thin_intensity[2])
-        peak3, theta3 = image_tools.radii_of_thetaV2(thin_intensity[3])
+        peak0, theta0 = image_tools.radii_of_thetaV2(thin_intensity[0],average=average)
+        peak1, theta1 = image_tools.radii_of_thetaV2(thin_intensity[1],average=average)
+        peak2, theta2 = image_tools.radii_of_thetaV2(thin_intensity[2],average=average)
+        peak3, theta3 = image_tools.radii_of_thetaV2(thin_intensity[3],average=average)
 
     peaks = [peak0,peak1,peak2,peak3]
 
