@@ -159,7 +159,7 @@ soloRun2.setisNormalized(True)
 
 class SingleModelData:
 
-    def __init__(self,sub_paths:dict,run:str,model:str,frequency_points):
+    def __init__(self,sub_paths:dict,run:str,model:str,frequency_points=None):
         freq_points = frequency_points
         self.sub_paths = sub_paths
         self.run = run
@@ -186,13 +186,14 @@ class SingleModelData:
             "mean_optical_depth_I1": data_path + "mean_optical_depth_I1.npy",
             "mean_optical_depth_I2": data_path + "mean_optical_depth_I2.npy",
         }
-        for i in range(len(freq_points)):
-            keys = [str(i) + "full_profiles0", str(i) + "full_profiles1", str(i) + "full_profiles2"]
-            L = 0
-            for key in keys:
-                self.clean_data_paths[key] = data_path + ("_full_profiles" + str(L) +
-                                                          "_{}GHz.npy").format("{:.5e}".format(freq_points[i]))
-                L += 1
+        if freq_points is not None:
+            for i in range(len(freq_points)):
+                keys = [str(i) + "full_profiles0", str(i) + "full_profiles1", str(i) + "full_profiles2"]
+                L = 0
+                for key in keys:
+                    self.clean_data_paths[key] = data_path + ("_full_profiles" + str(L) +
+                                                              "_{}GHz.npy").format("{:.5e}".format(freq_points[i]))
+                    L += 1
 
         data_path = self.sub_paths["intensityPath"] + model + "/blurr/numpy/"
 
