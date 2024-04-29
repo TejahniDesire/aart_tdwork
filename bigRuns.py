@@ -33,7 +33,7 @@ run = runDataClass.run2
 # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = ["ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = None
-do_list = ["ModelC22"]
+do_list =None
 # run.setAction(
 #     {
 #         "var": "nu0",
@@ -73,20 +73,20 @@ bigRun = classRunComputing.BigRuns(
 average = True
 
 """ Intensity Grid Analysis_________________________________________________________"""
-bigRun.intensityGridAnalysis(
-    run.getAction(),
-    do_list=do_list,
-    isContinuous=isContinuous,
-    average=average
-)
-
-""" Clean Graph Creation_________________________________________________________"""
-# bigRun.graphCreation(
+# bigRun.intensityGridAnalysis(
 #     run.getAction(),
 #     do_list=do_list,
-#     isContinuous=False,
+#     isContinuous=isContinuous,
 #     average=average
 # )
+
+""" Clean Graph Creation_________________________________________________________"""
+bigRun.graphCreation(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=False,
+    average=average
+)
 
 """ Radial Profiles_________________________________________________________"""
 
