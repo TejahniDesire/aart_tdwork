@@ -194,20 +194,36 @@ cmd_args = [
 # ]
 
 # # HIGHER PTEMP
-brightparams = [
-	230e9, # nu0
-	(MMkg * u.kg).to(u.g).value, # mass
-	.5, # scale_height
-	50.0 * (np.pi / 180), # theta_b
-	1.0, # beta
-	10.0, # Rie
-	0, # Bchoice
-	2, # rb
-	8248.16518597441, # n_th0
-	1.2428e+11, # t_e0
-	-.7, # p_dens
-	-1 # p_temp
-]
+# brightparams = [
+# 	230e9, # nu0
+# 	(MMkg * u.kg).to(u.g).value, # mass
+# 	.5, # scale_height
+# 	50.0 * (np.pi / 180), # theta_b
+# 	1.0, # beta
+# 	10.0, # Rie
+# 	0, # Bchoice
+# 	2, # rb
+# 	8248.16518597441, # n_th0
+# 	1.2428e+11, # t_e0
+# 	-.7, # p_dens
+# 	-1 # p_temp
+# ]
+brightparams = {
+    "p_mag": -1.5,
+    "p_temp": -1,
+    "p_dens": -.7,
+    "n_th0": 1.9e4,
+    "t_e0": 1e11,
+    "b_0": 5,
+    "theta_b": 50.0 * (np.pi / 180),  # NONE VARRYING________________________________________
+    "mass": (MMkg * u.kg).to(u.g).value,
+    "nu0": 230e9,
+    "scale_height": .5,
+    "rb_0": 5,
+    "beta": 1.0,  # Legacy _____________________________________
+    "r_ie": 10.0,
+    "nscale": .4
+}
 
 
 
