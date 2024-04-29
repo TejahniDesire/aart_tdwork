@@ -396,6 +396,7 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False,plot_inten
 
     ax0.legend()
     ax0.set_ylim(2.5,6)
+    ax0.set_xlim(0,2*np.pi)
 
     if not blurr_policy:
         vmax = np.nanmax(thin_intensity[3]) * 1.2
