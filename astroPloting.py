@@ -18,18 +18,8 @@ import astroModels
 import fileloading
 from movieMakerV2 import movieMakerIntensity
 from astropy import units as u
+from graphValues import *
 
-n0_color = "#d55e00"
-n1_color = "#0072b2"
-n2_color = "#009e73"
-cumu_color = "#cc79a7"
-
-
-RingStyle ={
-    "label": ['n=0','n=1','n=2','total'],
-    "color": [n0_color,n1_color,n2_color,cumu_color],
-    "linewidth": [3,3,3,4]
-}
 
 def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
                    poi, conv_1_style, r_outer_style,flux_peak_style, action,blurr_policy=False):
@@ -309,7 +299,7 @@ def IntensityVSRadii(fig,ax0,ax1,limit,thin_intensity, thick_intensity,rmax,blur
             axes_1[J].get_xaxis().set_ticks([])
         x = np.linspace(0, rmax - 1, rsize) * params.dx0
         ptheta = [0, np.pi/2, np.pi]
-        colors = ['tab:blue', 'tab:green', 'tab:red']
+        colors = [RingStyle["color"][0],RingStyle["color"][1],RingStyle["color"][2],RingStyle["color"][3]]
         parg = []
         for L in range(len(ptheta)):
             parg += [image_tools.rad_to_arg(ptheta[L])]
@@ -358,12 +348,16 @@ def IntensityVSRadii(fig,ax0,ax1,limit,thin_intensity, thick_intensity,rmax,blur
                                  )
 
 
-def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False,plot_intensites=False):
+def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False,plot_intensites=False,average=True):
     if plot_intensites:
-        peak0, theta0, intent_at_peaks0 = image_tools.radii_of_thetaV2(thin_intensity[0],give_intensities=True)
-        peak1, theta1, intent_at_peaks1 = image_tools.radii_of_thetaV2(thin_intensity[1],give_intensities=True)
-        peak2, theta2, intent_at_peaks2 = image_tools.radii_of_thetaV2(thin_intensity[2],give_intensities=True)
-        peak3, theta3, intent_at_peaks3 = image_tools.radii_of_thetaV2(thin_intensity[3],give_intensities=True)
+        peak0, theta0, intent_at_peaks0 = image_tools.radii_of_thetaV2(thin_intensity[0],
+                                                                       give_intensities=True,average=average)
+        peak1, theta1, intent_at_peaks1 = image_tools.radii_of_thetaV2(thin_intensity[1],
+                                                                       give_intensities=True,average=average)
+        peak2, theta2, intent_at_peaks2 = image_tools.radii_of_thetaV2(thin_intensity[2],
+                                                                       give_intensities=True,average=average)
+        peak3, theta3, intent_at_peaks3 = image_tools.radii_of_thetaV2(thin_intensity[3],
+                                                                       give_intensities=True,average=average)
         intent_at_peaks = [intent_at_peaks0, intent_at_peaks1, intent_at_peaks2, intent_at_peaks3]
     else:
         peak0, theta0 = image_tools.radii_of_thetaV2(thin_intensity[0])
@@ -605,10 +599,9 @@ def DONOTUSE_IntensityVSRadiiType2(fig,ax0,ax1,limit,thin_intensity,rmax,blurr_p
 
     # ptheta = [0, np.pi / 2, np.pi]
     ptheta = 4.29403619  # for frame 33
-    colors = ['tab:blue', 'tab:green', 'tab:red','tab:purple']
-    ring_colors = ['tab:blue', 'tab:green', 'tab:red','tab:purple']
 
-    model = ["for Thin Assumption", "for Full Solution"]
+    ring_colors = [RingStyle["color"][0], RingStyle["color"][1], RingStyle["color"][2], RingStyle["color"][3]]
+
     nrings = ['0','1','2','Cumulative']
     for J in range(len(peaks)):
         # if J == 0:

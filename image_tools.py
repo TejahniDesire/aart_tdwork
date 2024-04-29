@@ -68,8 +68,6 @@ def radii_of_thetaV2(I0, dx=None,give_intensities=False,navg_ang=10,average=True
     profile = interp(coords)
     if average:
         profile = convolve1d(profile, np.ones(navg_ang), axis=0)
-    else:
-        print("No Averaging")
     peak = np.argmax(profile, 1)
 
     if dx is None:
