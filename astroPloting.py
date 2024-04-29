@@ -375,6 +375,7 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False,plot_inten
     linestyles = ['-',':','--','-.']
     alphas = []
     betas = []
+
     for i in range(len(peaks)):
         # if J == 0:
         #     axes_0[J].get_xaxis().set_ticks([])
@@ -394,6 +395,7 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False,plot_inten
     ax0.set_xlabel(R"$\varphi$")
 
     ax0.legend()
+    ax0.set_ylim(2.5,6)
 
     if not blurr_policy:
         vmax = np.nanmax(thin_intensity[3]) * 1.2
