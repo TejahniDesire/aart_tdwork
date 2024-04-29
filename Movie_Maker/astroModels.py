@@ -1,15 +1,14 @@
+import sys
+import subprocess
+
+aartpath = '/home/td6241/repositories/aart' #insert path to aart repo
+sys.path.append(aartpath)
+
 import matplotlib.pyplot as plt
 import numpy as np
 from aart_func import *
 from params import *  # The file params.py contains all the relevant parameters for the simulations
 from astropy import units as u
-import kgeo
-import image_tools as tls
-import subprocess
-import scipy.interpolate
-from matplotlib import ticker
-import importlib
-from functools import partial
 
 bp_run2 = {
     "p_mag": [-2,-1.5,-1],

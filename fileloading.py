@@ -1,3 +1,9 @@
+import sys
+import subprocess
+
+aartpath = '/home/td6241/repositories/aart' #insert path to aart repo
+sys.path.append(aartpath)
+
 import shutil
 import subprocess
 import EZPaths
