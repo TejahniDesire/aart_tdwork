@@ -1,6 +1,10 @@
 import sys
 import subprocess
 
+import astroModels
+import bigRunComputing
+import fileloading
+
 aartpath = '/home/td6241/repositories/aart' #insert path to aart repo
 sys.path.append(aartpath)
 
@@ -278,28 +282,28 @@ ring_radii_n2_array = np.zeros(thetapointsamount)
 for i in range(int((action[2]-action[1])/action[3])):
 	brightparams[action[0]] = action[1] + b * action[3]
 	print('Creating Data Set: ' + str(b))
-	for k in range(len(brightparams)):
-		args = args + '--' + cmd_args[k] + ' ' + str(brightparams[k]) + ' '
-
 	x_variable.append(brightparams[action[0]])
 
+	args = bigRunComputing.createIntensityArgs(brightparams)
 	subprocess.run(['python3 ' + aartpath + '/radialintensity.py' + args], shell=True)
-	fnrays='./Results/Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_Rie_{}_Bchoi_{}_rb_{}_nth0_{}_te0_{}_pdens_{}_ptemp_{}.h5'.format(
-    spin_case,
-    i_case,
-    "{:.1e}".format(brightparams[0]),
-    "{:.1e}".format(brightparams[1]), 
-    float(brightparams[2]),
-    "{:.3e}".format(brightparams[3]), 
-    float(brightparams[4]),
-    float(brightparams[5]), 
-    float(brightparams[6]),
-    float(brightparams[7]),
-    "{:.1e}".format(brightparams[8]),
-    "{:.1e}".format(brightparams[9]),
-    float(brightparams[10]),
-    float(brightparams[11])
-	)
+	fnrays= fileloading.intensityNameNoUnits(brightparams, astroModels.funckeys)
+	#
+	# 	'./Results/Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_Rie_{}_Bchoi_{}_rb_{}_nth0_{}_te0_{}_pdens_{}_ptemp_{}.h5'.format(
+    # spin_case,
+    # i_case,
+    # "{:.1e}".format(brightparams[0]),
+    # "{:.1e}".format(brightparams[1]),
+    # float(brightparams[2]),
+    # "{:.3e}".format(brightparams[3]),
+    # float(brightparams[4]),
+    # float(brightparams[5]),
+    # float(brightparams[6]),
+    # float(brightparams[7]),
+    # "{:.1e}".format(brightparams[8]),
+    # "{:.1e}".format(brightparams[9]),
+    # float(brightparams[10]),
+    # float(brightparams[11])
+	# ))
 	
 	doth5_files += [fnrays]
 
