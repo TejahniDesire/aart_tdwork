@@ -256,3 +256,6 @@ class SingleModelData:
         parent_model_path = self.sub_paths["intensityPath"] + self.model_name + "/"
         current_model_file = parent_model_path + "clean/"
         return current_model_file + "nu0" + "_" + "{:.5e}".format(frequency)
+
+    def get_sub_paths(self):
+        return self.sub_paths
