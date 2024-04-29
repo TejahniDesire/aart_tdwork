@@ -827,12 +827,12 @@ class BigRuns:
                         # Get total jansky
                         # VARPHI__________________________________________________-
 
-                        '''IntensityVSRadiiType1________________________________________________________________'''
+                        '''IntensityVSRadii________________________________________________________________'''
                         fig, dum = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
                         ax0 = plt.subplot(1, 2, 1)
                         ax1 = plt.subplot(1, 2, 2)
 
-                        astroPloting.IntensityVSRadiiType1(fig, ax0, ax1, params.limits, thin_intensity,
+                        astroPloting.IntensityVSRadii(fig, ax0, ax1, params.limits, thin_intensity,
                                                            thick_intensity, rmax)
                         #
                         # ax1.text(2, 1.01, astroModels.var_label[action["var"]]
