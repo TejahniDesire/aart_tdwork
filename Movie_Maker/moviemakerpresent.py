@@ -82,7 +82,7 @@ def curve_params(varphi, rho):
     
 
 '''Reading of the lensing bands----------------------------------'''
-fnbands="./Results/LensingBands_a_%s_i_%s.h5"%(spin_case,i_case)
+fnbands="/scratch/gpfs/td6241/aart/rawResults/LensingBands_a_%s_i_%s.h5"%(spin_case,i_case)
 
 print("Reading file: ",fnbands)
 
@@ -118,7 +118,7 @@ h5f.close()
 
 
 '''Reading Analytical Ray-tracing----------------------------------'''
-fnrays="./Results/Rays_a_%s_i_%s.h5"%(spin_case,i_case)
+fnrays="/scratch/gpfs/td6241/aart/rawResults/Rays_a_%s_i_%s.h5"%(spin_case,i_case)
 
 print("Reading file: ",fnrays)
 
