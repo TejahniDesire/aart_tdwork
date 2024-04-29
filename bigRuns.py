@@ -70,7 +70,7 @@ bigRun = classRunComputing.BigRuns(
 #     isContinuous=isContinuous,
 #     frequency_list=None
 # )
-average =True
+average =False
 
 """ Intensity Grid Analysis_________________________________________________________"""
 bigRun.intensityGridAnalysis(
