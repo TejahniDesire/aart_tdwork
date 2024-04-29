@@ -71,6 +71,7 @@ bigRun = classRunComputing.BigRuns(
 #     frequency_list=None
 # )
 average =False
+
 """ Intensity Grid Analysis_________________________________________________________"""
 bigRun.intensityGridAnalysis(
     run.getAction(),
