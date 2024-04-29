@@ -164,6 +164,7 @@ class SingleModelData:
         self.sub_paths = sub_paths
         self.run = run
         self.model_name = model
+        self.average = True
 
         data_path = self.sub_paths["intensityPath"] + model + "/clean/numpy/"
         self.clean_data_paths = {
@@ -217,6 +218,33 @@ class SingleModelData:
 
     def set_give_policy(self,policy:bool):
         self.give_clean = policy
+
+    def set_average_policy(self,truth):
+        self.average= truth
+        data_path = self.sub_paths["intensityPath"] + self.model_name + "/clean/numpy/"
+
+        if not self.average:
+            data_path += "FalseAvg_"
+
+        self.clean_data_paths = {
+            "x_variable": data_path + "x_variable.npy",
+            "janksys_thick": data_path + "janksys_thick.npy",
+            "janksys_thin": data_path + "janksys_thin.npy",
+            "mean_radii_Thin": data_path + "mean_radii_Thin.npy",
+            "mean_radii_Thick": data_path + "mean_radii_Thick.npy",
+            "radii_I0_Thin": data_path + "radii_I0_Thin.npy",
+            "radii_I1_Thin": data_path + "radii_I1_Thin.npy",
+            "radii_I2_Thin": data_path + "radii_I2_Thin.npy",
+            "radii_Full_Thin": data_path + "radii_Full_Thin.npy",
+            "radii_FullAbsorption_Thick":data_path + "radii_FullAbsorption_Thick.npy",
+            "radii_I0_Thick": data_path + "radii_I0_Thick.npy",
+            "radii_I1_Thick": data_path + "radii_I1_Thick.npy",
+            "radii_I2_Thick": data_path + "radii_I2_Thick.npy",
+            "theta":data_path + "theta.npy",
+            "mean_optical_depth_I0": data_path + "mean_optical_depth_I0.npy",
+            "mean_optical_depth_I1": data_path + "mean_optical_depth_I1.npy",
+            "mean_optical_depth_I2": data_path + "mean_optical_depth_I2.npy",
+        }
 
     def __getitem__(self, item):
         if self.give_clean:

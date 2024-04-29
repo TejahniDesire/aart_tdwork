@@ -164,7 +164,10 @@ def imageAnalysis(action, sub_path, model: str, brightparams,average=True):
     num_of_theta_points = image_tools.num_of_theta_points  # array size for radii calcs
 
     final_data_path = current_model_file + "numpy/"
+
     fileloading.creatSubDirectory(final_data_path, "final image path for {}".format(model), kill_policy=False)
+    if not average:
+        final_data_path += "FalseAvg_"
 
     num_iterations = int((action["stop"] - action["start"]) / action["step"])
 

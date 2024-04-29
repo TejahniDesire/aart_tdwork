@@ -34,7 +34,15 @@ run = runDataClass.run2
 # do_list = ["ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = None
 do_list = ["ModelC21","ModelC22","ModelC23"]
-
+run.setAction(
+    {
+        "var": "nu0",
+        "start": 670e9,
+        "stop": 700e9,
+        "step": 20e9,
+        "images": True
+    }
+)
 isContinuous= False
 
 frequency_list = [86e9,230e9,345e9]
@@ -64,11 +72,12 @@ bigRun = classRunComputing.BigRuns(
 # )
 
 """ Intensity Grid Analysis_________________________________________________________"""
-# bigRun.intensityGridAnalysis(
-#     run.getAction(),
-#     do_list=do_list,
-#     isContinuous=isContinuous,
-# )
+bigRun.intensityGridAnalysis(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=isContinuous,
+    average=False
+)
 """ Clean Graph Creation_________________________________________________________"""
 bigRun.graphCreation(
     run.getAction(),
