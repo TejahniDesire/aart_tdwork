@@ -1,7 +1,7 @@
 import sys
 import subprocess
 
-aartpath = '/home/tej/Desktop/Code_Stuff/Repositories/aart' #insert path to aart repo
+aartpath = '/home/td6241/repositories/aart' #insert path to aart repo
 sys.path.append(aartpath)
 
 from matplotlib import ticker
