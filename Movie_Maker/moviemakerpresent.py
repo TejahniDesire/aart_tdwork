@@ -199,10 +199,10 @@ brightparams = [
 	10.0, # Rie
 	0, # Bchoice
 	2, # rb
-	2.1526e+04, # n_th0
+	8248.16518597441, # n_th0
 	1.2428e+11, # t_e0
 	-.7, # p_dens
-	-.3 # p_temp
+	-1 # p_temp
 ]
 
 
