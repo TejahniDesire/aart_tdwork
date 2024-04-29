@@ -33,7 +33,7 @@ run = runDataClass.run2
 # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = ["ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = None
-do_list = ["ModelC21","ModelC22","ModelC23"]
+do_list = ["ModelC22"]
 run.setAction(
     {
         "var": "nu0",
@@ -70,7 +70,7 @@ bigRun = classRunComputing.BigRuns(
 #     isContinuous=isContinuous,
 #     frequency_list=None
 # )
-average = False
+average = True
 """ Intensity Grid Analysis_________________________________________________________"""
 bigRun.intensityGridAnalysis(
     run.getAction(),
