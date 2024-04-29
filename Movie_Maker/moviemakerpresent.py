@@ -194,20 +194,20 @@ cmd_args = [
 # ]
 
 # # HIGHER PTEMP
-# brightparams = [
-# 	230e9, # nu0
-# 	(MMkg * u.kg).to(u.g).value, # mass
-# 	.5, # scale_height
-# 	50.0 * (np.pi / 180), # theta_b
-# 	1.0, # beta
-# 	10.0, # Rie
-# 	0, # Bchoice
-# 	2, # rb
-# 	8248.16518597441, # n_th0
-# 	1.2428e+11, # t_e0
-# 	-.7, # p_dens
-# 	-1 # p_temp
-# ]
+brightparamsLEG = [
+	230e9, # nu0
+	(MMkg * u.kg).to(u.g).value, # mass
+	.5, # scale_height
+	50.0 * (np.pi / 180), # theta_b
+	1.0, # beta
+	10.0, # Rie
+	0, # Bchoice
+	2, # rb
+	8248.16518597441, # n_th0
+	1.2428e+11, # t_e0
+	-.7, # p_dens
+	-1 # p_temp
+]
 brightparams = {
     "p_mag": -1.5,
     "p_temp": -1,
@@ -229,7 +229,7 @@ brightparams = {
 
 
 # [Var, Unit Magnitude, Units]
-label=np.zeros([len(brightparams),3], dtype=object)
+label=np.zeros([len(brightparamsLEG),3], dtype=object)
 label[:,0] = [
 	r"$\nu= $",
 	'BlkHole Mass= ',
@@ -297,8 +297,9 @@ ring_radii_n2_array = np.zeros(thetapointsamount)
 
 for i in range(int((action[2]-action[1])/action[3])):
 	brightparams[action[0]] = action[1] + b * action[3]
+	brightparams["nu0"] = action[1] + b * action[3]
 	print('Creating Data Set: ' + str(b))
-	x_variable.append(brightparams[action[0]])
+	x_variable.append(brightparamsLEG[action[0]])
 
 	args = bigRunComputing.createIntensityArgs(brightparams)
 	subprocess.run(['python3 ' + aartpath + '/radialintensity.py' + args], shell=True)
@@ -334,10 +335,10 @@ for i in range(int((action[2]-action[1])/action[3])):
 
 	h5f.close()
 
-	jansky_variable_total.append(ilp.total_jy(I0 + I1 + I2, brightparams[0], brightparams[1]).value)
-	jansky_variable_n0.append(ilp.total_jy(I0, brightparams[0], brightparams[1]).value)
-	jansky_variable_n1.append(ilp.total_jy(I1, brightparams[0], brightparams[1]).value)
-	jansky_variable_n2.append(ilp.total_jy(I2, brightparams[0], brightparams[1]).value)
+	jansky_variable_total.append(ilp.total_jy(I0 + I1 + I2, brightparamsLEG[0], brightparamsLEG[1]).value)
+	jansky_variable_n0.append(ilp.total_jy(I0, brightparamsLEG[0], brightparamsLEG[1]).value)
+	jansky_variable_n1.append(ilp.total_jy(I1, brightparamsLEG[0], brightparamsLEG[1]).value)
+	jansky_variable_n2.append(ilp.total_jy(I2, brightparamsLEG[0], brightparamsLEG[1]).value)
 
 
 	theta = np.arange( 2 * np.pi + 1, step=(2*np.pi + 1)/thetapointsamount)
@@ -379,7 +380,7 @@ for i in range(int((action[2]-action[1])/action[3])):
 	h5f.close()
 
 	#image-------------------------
-	one_M = ilp.rg_func(brightparams[1] * u.g).to(u.m)
+	one_M = ilp.rg_func(brightparamsLEG[1] * u.g).to(u.m)
 	M2uas = np.arctan(one_M.value / dBH)/muas_to_rad 	# Mass to micro arcseconds
 
 	# if b == 0:
@@ -481,18 +482,18 @@ movie_name  = 'Present_BHMovie_var_{}_start_{}_stop_{}_steps_{}_a_{}_i_{}_nu_{}_
 	"{:.3e}".format(action[3]), # steps
 	spin_case, # Spin
 	i_case, # Observing angle
-	"{:.1e}".format(brightparams[0]), # Nu 
-	"{:.1e}".format(brightparams[1]), # blkhole mass
-	brightparams[2], # scale height
-    "{:.3e}".format(brightparams[3]), # theta b
-	"{:.1e}".format(brightparams[4]), # beta
-	"{:.1e}".format(brightparams[5]), # Rie
-	"{:.1e}".format(brightparams[6]), # Bchoice
-    "{:.1e}".format(brightparams[7]), # rb
-	"{:.1e}".format(brightparams[8]), # nth0
-	"{:.1e}".format(brightparams[9]), # te0
-	"{:.1e}".format(brightparams[10]), # pdens
-	"{:.1e}".format(brightparams[11]) # ptemp
+	"{:.1e}".format(brightparamsLEG[0]), # Nu
+	"{:.1e}".format(brightparamsLEG[1]), # blkhole mass
+	brightparamsLEG[2], # scale height
+    "{:.3e}".format(brightparamsLEG[3]), # theta b
+	"{:.1e}".format(brightparamsLEG[4]), # beta
+	"{:.1e}".format(brightparamsLEG[5]), # Rie
+	"{:.1e}".format(brightparamsLEG[6]), # Bchoice
+    "{:.1e}".format(brightparamsLEG[7]), # rb
+	"{:.1e}".format(brightparamsLEG[8]), # nth0
+	"{:.1e}".format(brightparamsLEG[9]), # te0
+	"{:.1e}".format(brightparamsLEG[10]), # pdens
+	"{:.1e}".format(brightparamsLEG[11]) # ptemp
 	) 
 
 if os.path.isfile('./' + movie_name):
