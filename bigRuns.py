@@ -83,7 +83,8 @@ bigRun.intensityGridAnalysis(
 bigRun.graphCreation(
     run.getAction(),
     do_list=do_list,
-    isContinuous=False
+    isContinuous=False,
+    average= False
 )
 
 """ Radial Profiles_________________________________________________________"""

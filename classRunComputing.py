@@ -532,7 +532,7 @@ class BigRuns:
             else:
                 print(current_total_name + " marked for skipping...")
 
-    def graphCreation(self, action, do_list=None, isContinuous=False):
+    def graphCreation(self, action, do_list=None, isContinuous=False,average=True):
         """
 
         Args:
@@ -627,6 +627,14 @@ class BigRuns:
                 radVVarphi_path += "Clean_"
                 fluxVRadii_path += "Clean_"
 
+                if not average:
+                    fluxVNu_path += "FalseAvg_"
+                    radVNu_path += "FalseAvg_"
+                    image_path += "FalseAvg_"
+                    Optical_depth_path += "FalseAvg_"
+                    radVVarphi_path += "FalseAvg_"
+                    fluxVRadii_path += "FalseAvg_"
+
                 if self.run_type == 0:
                     amount_to_subtract = 1
                 else:
@@ -659,6 +667,9 @@ class BigRuns:
 
                 '''Data Readind----------------------------------'''
                 data_path = self.sub_paths["intensityPath"] + model + "/clean/numpy/"
+
+                if not average:
+                    data_path += "FalseAvg_"
 
                 x_variable = np.load(data_path + "x_variable.npy")
                 janksys_thick = np.load(data_path + "janksys_thick.npy")
