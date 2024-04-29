@@ -19,6 +19,17 @@ import fileloading
 from movieMakerV2 import movieMakerIntensity
 from astropy import units as u
 
+n0_color = "#d55e00"
+n1_color = "#0072b2"
+n2_color = "#009e73"
+cumu_color = "#cc79a7"
+
+
+RingStyle ={
+    "label": ['n=0','n=1','n=2','total'],
+    "color": [n0_color,n1_color,n2_color,cumu_color],
+    "linewidth": [3,3,3,4]
+}
 
 def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
                    poi, conv_1_style, r_outer_style,flux_peak_style, action,blurr_policy=False):
@@ -363,7 +374,8 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False,plot_inten
     peaks = [peak0,peak1,peak2,peak3]
 
     thetas = [theta0,theta1,theta2,theta3]
-    colors = ['tab:red','tab:orange','tab:blue','tab:purple']
+
+    colors = [RingStyle["color"][0],RingStyle["color"][1],RingStyle["color"][2],RingStyle["color"][3]]
     labels = [R"$n= 0$",R"$n= 1$",R"$n= 2$",R"$Cumulative$"]
     linewidths = [3,2,1,4]
     linestyles = ['-',':','--','-.']
