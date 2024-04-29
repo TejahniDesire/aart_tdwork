@@ -845,7 +845,7 @@ class BigRuns:
                         ax1 = plt.subplot(1, 2, 2)
 
                         astroPloting.IntensityVSRadii(fig, ax0, ax1, params.limits, thin_intensity,
-                                                           thick_intensity, rmax)
+                                                      thick_intensity, rmax)
                         #
                         # ax1.text(2, 1.01, astroModels.var_label[action["var"]]
                         #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
@@ -862,7 +862,7 @@ class BigRuns:
                         ax0 = plt.subplot(1, 2, 1)
                         ax1 = plt.subplot(1, 2, 2)
 
-                        astroPloting.radiiVSVarphi(fig, ax0, ax1, params.limits, thin_intensity)
+                        astroPloting.radiiVSVarphi(fig, ax0, ax1, params.limits, thin_intensity,average=average)
 
                         # ax0.text(2, 1.01, astroModels.var_label[action["var"]]
                         #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
