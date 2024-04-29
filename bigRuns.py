@@ -33,7 +33,7 @@ run = runDataClass.run2
 # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = ["ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = None
-do_list = ["ModelC22"]
+do_list = ["ModelC21","ModelC22","ModelC23"]
 
 isContinuous= False
 
@@ -70,20 +70,20 @@ bigRun = classRunComputing.BigRuns(
 #     isContinuous=isContinuous,
 # )
 """ Clean Graph Creation_________________________________________________________"""
-# bigRun.graphCreation(
-#     run.getAction(),
-#     do_list=do_list,
-#     isContinuous=False
-# )
+bigRun.graphCreation(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=False
+)
 
 """ Radial Profiles_________________________________________________________"""
 
-bigRun.creatRadialProfiles(
-    run.getAction(),
-    ["ModelC21","ModelC23"],
-    isContinuous=isContinuous,
-    frequency_list=frequency_list
-)
+# bigRun.creatRadialProfiles(
+#     run.getAction(),
+#     ["ModelC21","ModelC23"],
+#     isContinuous=isContinuous,
+#     frequency_list=frequency_list
+# )
 
 """ Blurr Intensity Grid Creation_________________________________________________________"""
 #
