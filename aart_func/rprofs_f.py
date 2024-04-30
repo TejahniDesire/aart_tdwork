@@ -7,6 +7,7 @@ from astropy import constants as const
 from astropy import units as u
 from lmfit import Parameters, minimize, fit_report
 from scipy.special import gamma
+import EZPaths
 
 # All r in units of Rg
 # Constants
@@ -14,7 +15,7 @@ from scipy.special import gamma
 # TODO Units of the images pixel value
 # TODO find values to change j coeff peak to occur between 3-20rg
 
-inoisy_path = "/home/tej/Desktop/Code_Stuff/Repositories/aart/"
+inoisy_path = EZPaths.aartPath
 # Constants
 G = const.G.cgs
 c = const.c.cgs
