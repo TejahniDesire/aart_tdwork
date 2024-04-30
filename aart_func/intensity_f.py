@@ -378,9 +378,10 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     full_temp = ilp.brightness_temp(full_intensity*ilp.specific_int_units, brightparams["nu0"])
 
     # Optical Depth Averaging
-    tau0 = np.sum(tau0[mask2] * full_intensity[mask2])/sum(full_intensity[mask2])
-    tau1 = np.sum(tau1[mask2] * full_intensity[mask2])/sum(full_intensity[mask2])
+    tau0 = np.sum(tau0[mask0] * full_intensity[mask0])/sum(full_intensity[mask0])
+    tau1 = np.sum(tau1[mask1] * full_intensity[mask1])/sum(full_intensity[mask1])
     tau2 = np.sum(tau2[mask2] * full_intensity[mask2])/sum(full_intensity[mask2])
+    tauTotal = np.sum((tau0 + tau1 + tau2) * full_intensity)/sum(full_intensity)
 
     I0_temp_thick = I0_temp_thick.reshape(N0, N0).T
     I2_temp_thick = I2_temp_thick.reshape(N1, N1).T
@@ -422,6 +423,7 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     h5f.create_dataset('tau2', data=tau2)
     h5f.create_dataset('tau1', data=tau1)
     h5f.create_dataset('tau0', data=tau0)
+    h5f.create_dataset('tauTotal',tauTotal)
     h5f.create_dataset('full_profiles2', data=full_profiles2resized)
     h5f.create_dataset('full_profiles1', data=full_profiles1resized)
     h5f.create_dataset('full_profiles0', data=full_profiles0resized)

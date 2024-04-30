@@ -1,11 +1,14 @@
 import sys
 import subprocess
 
+
+
 aartpath = '/home/td6241/repositories/aart' #insert path to aart repo
 sys.path.append(aartpath)
 
 import fileloading
 import astroModels
+import image_tools
 
 from matplotlib import ticker
 from aart_func import *
@@ -339,6 +342,151 @@ for i in range(int((action[2]-action[1])/action[3])):
 	ring_radii_n2.append(r2)
 	b = b + 1
 
+
+num_iterations = int((action["stop"] - action["start"]) / action["step"])
+num_of_theta_points = image_tools.num_of_theta_points
+"""GRAPHS________________________________________________________________________________________________________"""
+
+x_variable = np.zeros(num_iterations)  # counter for independant variable
+
+# flux_________________________________
+janksys_thick = np.ndarray([num_iterations, 4])  # [I0, I1, I2, FullImage]
+janksys_thin = np.ndarray([num_iterations, 4])  # [I0, I1, I2, total]
+
+# Average Radius over all Theta_________________________________
+mean_radii_Thin = np.ndarray([num_iterations, 4])  # [I0, I1, I2, FullImage]
+mean_radii_Thick = np.ndarray([num_iterations, 4])  # [I0, I1, I2, FullImage]
+
+# First layer of Radius as a function of theta_________________________________
+radii_Full_Thin = np.zeros(num_of_theta_points)
+radii_I0_Thin = np.zeros(num_of_theta_points)
+radii_I1_Thin = np.zeros(num_of_theta_points)
+radii_I2_Thin = np.zeros(num_of_theta_points)
+
+radii_FullAbsorption_Thick = np.zeros(num_of_theta_points)
+radii_I0_Thick = np.zeros(num_of_theta_points)
+radii_I1_Thick = np.zeros(num_of_theta_points)
+radii_I2_Thick = np.zeros(num_of_theta_points)
+
+# Optical Depth_________________________________
+mean_optical_depth_I0 = np.zeros(num_iterations)
+mean_optical_depth_I1 = np.zeros(num_iterations)
+mean_optical_depth_I2 = np.zeros(num_iterations)
+
+for i in range(num_iterations):
+
+	brightparams[action["var"]] = action["start"] + i * action["step"]
+	current_freqeuncy = brightparams[action["var"]]
+
+	x_variable[i] = current_freqeuncy
+
+	rtray = fileloading.intensityNameNoUnits(brightparams, astroModels.funckeys)
+
+	doth5_files += [rtray]
+
+	print("Reading file: ", rtray)
+
+	h5f = h5py.File(rtray, 'r')
+
+	I0 = h5f['bghts0'][:]
+	I1 = h5f['bghts1'][:]
+	I2 = h5f['bghts2'][:]
+
+
+
+	h5f.close()
+
+	intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(current_freqeuncy)
+
+	h5f = h5py.File(intensity_path, 'r')
+
+	I0 = h5f['bghts0'][:]
+	I1 = h5f['bghts1'][:]
+	I2 = h5f['bghts2'][:]
+
+	I0_Absorb = h5f['bghts0_absorbtion'][:]
+	I1_Absorb = h5f['bghts1_absorbtion'][:]
+	I2_Absorb = h5f['bghts2_absorbtion'][:]
+
+	tau2 = h5f['tau2'][()]
+	tau1 = h5f['tau1'][()]
+	tau0 = h5f['tau0'][()]
+
+	h5f.close()
+
+	# Thin Radii Calcs----------------------------------------------------------------------------------------------
+
+	radii_I0_Thin_i, theta = tls.radii_of_thetaV2(I0, params.dx0, average=average)
+	radii_I1_Thin_i, theta = tls.radii_of_thetaV2(I1, params.dx0, average=average)
+	radii_I2_Thin_i, theta = tls.radii_of_thetaV2(I2, params.dx0, average=average)
+	radii_Full_Thick_i, theta = tls.radii_of_thetaV2(I0 + I1 + I2, params.dx0, average=average)
+
+	# profs = scipy.ndimage.convolve1d(profs, np.ones(navg_ang), axis=0) / navg_ang
+
+	r0_thin = tls.curve_params(theta, radii_I0_Thin_i)
+	r1_thin = tls.curve_params(theta, radii_I1_Thin_i)
+	r2_thin = tls.curve_params(theta, radii_I2_Thin_i)
+	full_thin = tls.curve_params(theta, radii_Full_Thick_i)
+
+	mean_radii_Thin[i, 0] = r0_thin
+	mean_radii_Thin[i, 1] = r1_thin
+	mean_radii_Thin[i, 2] = r2_thin
+	mean_radii_Thin[i, 3] = full_thin
+
+	radii_I0_Thin = np.vstack((radii_I0_Thin, radii_I0_Thin_i))
+	radii_I1_Thin = np.vstack((radii_I1_Thin, radii_I1_Thin_i))
+	radii_I2_Thin = np.vstack((radii_I2_Thin, radii_I2_Thin_i))
+	radii_Full_Thin = np.vstack((radii_Full_Thin, radii_Full_Thick_i))
+
+	# Thick Radii Calcs---------------------------------------------------------------------------------------------
+	radii_I0_Thick_i, theta = tls.radii_of_thetaV2(I0_Absorb, params.dx0, average=average)
+	radii_I1_Thick_i, theta = tls.radii_of_thetaV2(I1_Absorb, params.dx0, average=average)
+	radii_I2_Thick_i, theta = tls.radii_of_thetaV2(I2_Absorb, params.dx0, average=average)
+	radii_FullAbsorption_Thick_i, theta = tls.radii_of_thetaV2(Absorbtion_Image, params.dx0, average=average)
+
+	r0_thick = tls.curve_params(theta, radii_I0_Thick_i)
+	r1_thick = tls.curve_params(theta, radii_I1_Thick_i)
+	r2_thick = tls.curve_params(theta, radii_I2_Thick_i)
+	full_thick = tls.curve_params(theta, radii_FullAbsorption_Thick_i)
+
+	mean_radii_Thick[i, 0] = r0_thick
+	mean_radii_Thick[i, 1] = r1_thick
+	mean_radii_Thick[i, 2] = r2_thick
+	mean_radii_Thick[i, 3] = full_thick
+
+	radii_I0_Thick = np.vstack((radii_I0_Thick, radii_I0_Thick_i))
+	radii_I1_Thick = np.vstack((radii_I1_Thick, radii_I1_Thick_i))
+	radii_I2_Thick = np.vstack((radii_I2_Thick, radii_I2_Thick_i))
+	radii_FullAbsorption_Thick = np.vstack((radii_FullAbsorption_Thick, radii_FullAbsorption_Thick_i))
+
+	# Total Flux Calcualtions
+	janksys_thin[i, 0] = ilp.total_jy(I0, brightparams["nu0"], brightparams["mass"]).value
+	janksys_thin[i, 1] = ilp.total_jy(I1, brightparams["nu0"], brightparams["mass"]).value
+	janksys_thin[i, 2] = ilp.total_jy(I2, brightparams["nu0"], brightparams["mass"]).value
+	janksys_thin[i, 3] = ilp.total_jy(I0 + I1 + I2, brightparams["nu0"], brightparams["mass"]).value
+
+	janksys_thick[i, 0] = ilp.total_jy(I0_Absorb, brightparams["nu0"], brightparams["mass"]).value
+	janksys_thick[i, 1] = ilp.total_jy(I1_Absorb, brightparams["nu0"], brightparams["mass"]).value
+	janksys_thick[i, 2] = ilp.total_jy(I2_Absorb, brightparams["nu0"], brightparams["mass"]).value
+	janksys_thick[i, 3] = ilp.total_jy(Absorbtion_Image, brightparams["nu0"], brightparams["mass"]).value
+
+	# Optical Depth-------------------------------------------------------------------------------------------------
+
+	mean_optical_depth_I0[i] = tau0
+	mean_optical_depth_I1[i] = tau1
+	mean_optical_depth_I2[i] = tau2
+# (\Sum \tau * I) / (\Sum I),
+
+# Remove Row of Zeros
+radii_Full_Thin = np.delete(radii_Full_Thin, 0, 0)
+radii_I0_Thin = np.delete(radii_I0_Thin, 0, 0)
+radii_I1_Thin = np.delete(radii_I1_Thin, 0, 0)
+radii_I2_Thin = np.delete(radii_I2_Thin, 0, 0)
+
+radii_FullAbsorption_Thick = np.delete(radii_FullAbsorption_Thick, 0, 0)
+radii_I0_Thick = np.delete(radii_I0_Thick, 0, 0)
+radii_I1_Thick = np.delete(radii_I1_Thick, 0, 0)
+radii_I2_Thick = np.delete(radii_I2_Thick, 0, 0)
 
 # Black Hole Inner Shadow Calc--------------------------
 r_inner = np.load('r_inner_spin_{}_inc_{}.npy'.format(spin_case, i_case))

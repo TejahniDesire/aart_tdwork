@@ -193,6 +193,7 @@ def imageAnalysis(action, sub_path, model: str, brightparams,average=True):
     mean_optical_depth_I0 = np.zeros(num_iterations)
     mean_optical_depth_I1 = np.zeros(num_iterations)
     mean_optical_depth_I2 = np.zeros(num_iterations)
+    mean_optical_depth_Total = np.zeros(num_iterations)
 
     for i in range(num_iterations):
         print(line)
@@ -221,6 +222,7 @@ def imageAnalysis(action, sub_path, model: str, brightparams,average=True):
         tau2 = h5f['tau2'][()]
         tau1 = h5f['tau1'][()]
         tau0 = h5f['tau0'][()]
+        tauTotal = h5f['tauTotal'][()]
 
         h5f.close()
 
@@ -285,6 +287,7 @@ def imageAnalysis(action, sub_path, model: str, brightparams,average=True):
         mean_optical_depth_I0[i] = tau0
         mean_optical_depth_I1[i] = tau1
         mean_optical_depth_I2[i] = tau2
+        mean_optical_depth_Total = tauTotal
         # (\Sum \tau * I) / (\Sum I),
 
     # Remove Row of Zeros
@@ -316,6 +319,7 @@ def imageAnalysis(action, sub_path, model: str, brightparams,average=True):
     np.save(final_data_path + "mean_optical_depth_I0", mean_optical_depth_I0)
     np.save(final_data_path + "mean_optical_depth_I1", mean_optical_depth_I1)
     np.save(final_data_path + "mean_optical_depth_I2", mean_optical_depth_I2)
+    np.save(final_data_path + "mean_optical_depth_Total", mean_optical_depth_Total)
 
 
 def blurr_intensity_movie(action, sub_path, model: str, intent_grid_type: int,

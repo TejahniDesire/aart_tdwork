@@ -245,6 +245,7 @@ class SingleModelData:
             "mean_optical_depth_I0": data_path + "mean_optical_depth_I0.npy",
             "mean_optical_depth_I1": data_path + "mean_optical_depth_I1.npy",
             "mean_optical_depth_I2": data_path + "mean_optical_depth_I2.npy",
+            "mean_optical_depth_Total": data_path + "mean_optical_depth_Total.npy"
         }
 
     def __getitem__(self, item):
