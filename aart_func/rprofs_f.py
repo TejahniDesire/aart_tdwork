@@ -15,7 +15,7 @@ import EZPaths
 # TODO Units of the images pixel value
 # TODO find values to change j coeff peak to occur between 3-20rg
 
-inoisy_path = EZPaths.aartPath
+inoisy_path = EZPaths.aartPath + '/'
 # Constants
 G = const.G.cgs
 c = const.c.cgs
