@@ -33,7 +33,7 @@ run = runDataClass.run2
 # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = ["ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = None
-do_list =None
+
 # run.setAction(
 #     {
 #         "var": "nu0",
@@ -44,8 +44,10 @@ do_list =None
 #     }
 # )
 isContinuous= False
-
-frequency_list = [86e9,230e9,345e9]
+average = True
+# frequency_list = [86e9,230e9,345e9]
+frequency_list = None
+do_list =None
 # do_list = ["ModelC22"]
 # do_list = ["ModelC21","ModelC22","ModelC23"]
 
@@ -63,22 +65,22 @@ bigRun = classRunComputing.BigRuns(
 # bigRun.createGeoGrid()
 
 """ Intensity Grid Creation_________________________________________________________"""
-#
-# bigRun.creatIntensityGrid(
-#     run.getAction(),
-#     do_list=do_list,
-#     isContinuous=isContinuous,
-#     frequency_list=None
-# )
-average = True
+
+bigRun.creatIntensityGrid(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=isContinuous,
+    frequency_list=None
+)
+
 
 """ Intensity Grid Analysis_________________________________________________________"""
-# bigRun.intensityGridAnalysis(
-#     run.getAction(),
-#     do_list=do_list,
-#     isContinuous=isContinuous,
-#     average=average
-# )
+bigRun.intensityGridAnalysis(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=isContinuous,
+    average=average
+)
 
 """ Clean Graph Creation_________________________________________________________"""
 bigRun.graphCreation(
