@@ -532,7 +532,7 @@ class BigRuns:
             else:
                 print(current_total_name + " marked for skipping...")
 
-    def graphCreation(self, action, do_list=None, isContinuous=False,average=True):
+    def graphCreation(self, action, do_list=None, isContinuous=False,average=True,doFullImages=True):
         """
 
         Args:
@@ -783,7 +783,7 @@ class BigRuns:
                 plt.close()
 
                 '''Full Images----------------------------------'''
-                if action["images"]:
+                if doFullImages:
                     parent_model_path = self.sub_paths["intensityPath"] + model + "/"
                     current_model_file = parent_model_path + "clean/"
                     k = action["start"]

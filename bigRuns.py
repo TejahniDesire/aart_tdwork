@@ -85,7 +85,8 @@ bigRun.graphCreation(
     run.getAction(),
     do_list=do_list,
     isContinuous=False,
-    average=average
+    average=average,
+    doFullImages=False
 )
 
 """ Radial Profiles_________________________________________________________"""
