@@ -31,7 +31,7 @@ kw_action = {
 funckeys = astroModels.funckeys
 
 
-def createIntensityArgs(brightparams):
+def createIntensityArgs(brightparams,funckeys=astroModels.funckeys):
     args = ' '
     cmd1_args = {
         "nu0": '--nu ',

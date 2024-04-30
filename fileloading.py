@@ -15,6 +15,45 @@ import importlib
 import astroModels
 
 
+def createIntensityArgs(brightparams,funckeys=astroModels.funckeys):
+    args = ' '
+    cmd1_args = {
+        "nu0": '--nu ',
+        "mass": '--mass ',
+        "scale_height": '--scaleh ',
+        "theta_b": '--thetab ',
+        "beta": '--beta ',
+        "r_ie": '--rie ',
+        "rb_0": '--rb0 ',
+        "n_th0": '--nth0 ',
+        "t_e0": '--te0 ',
+        "b_0": '--b0 ',
+        "p_dens": '--pdens ',
+        "p_temp": '--ptemp ',
+        "p_mag": '--pmag ',
+        "nscale": '--nscale ',
+    }
+    cmd2_args = {
+        "emodelkey": '--emodelkey ',
+        "bkey": '--bkey ',
+        "nnoisykey": '--nnoisykey ',
+        "tnoisykey": '--tnoisykey ',
+        "bnoisykey": '--bnoisykey ',
+    }
+
+
+    # brightparams = fpp.bp_steeperT
+    # funckeys = fpp.fk_fiducial
+
+    for arg in cmd1_args:
+        args = args + cmd1_args[arg] + str(brightparams[arg]) + ' '
+
+    for arg in cmd2_args:
+        args = args + cmd2_args[arg] + str(funckeys[arg]) + ' '
+
+    return args
+
+
 def intensityNameWrite(brightparams,funckeys):
     filename = path + ('Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}_'
                        'b0_{}_pdens_{}_ptemp_{}_pmag_{}_nscale_{}_emkey_{}_bkey_{}_nkey_{}_tnkey_{}_bnkey_{}.h5').format(
