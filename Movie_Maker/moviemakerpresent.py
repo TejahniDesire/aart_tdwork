@@ -1,12 +1,11 @@
 import sys
 import subprocess
 
-import astroModels
-import bigRunComputing
-import fileloading
-
 aartpath = '/home/td6241/repositories/aart' #insert path to aart repo
 sys.path.append(aartpath)
+
+import fileloading
+import astroModels
 
 from matplotlib import ticker
 from aart_func import *
@@ -86,11 +85,11 @@ def curve_params(varphi, rho):
     
 
 '''Reading of the lensing bands----------------------------------'''
-fnbands="/scratch/gpfs/td6241/aart/rawResults/LensingBands_a_%s_i_%s.h5"%(spin_case,i_case)
+lband="/scratch/gpfs/td6241/aart/rawResults/LensingBands_a_%s_i_%s.h5"%(spin_case,i_case)
 
-print("Reading file: ",fnbands)
+print("Reading file: ",lband)
 
-h5f = h5py.File(fnbands,'r')
+h5f = h5py.File(lband,'r')
 
 #Points for the boundary of the BH shadow
 alpha_critc=h5f['alpha'][:]
@@ -122,11 +121,11 @@ h5f.close()
 
 
 '''Reading Analytical Ray-tracing----------------------------------'''
-fnrays="/scratch/gpfs/td6241/aart/rawResults/Rays_a_%s_i_%s.h5"%(spin_case,i_case)
+rtray= "/scratch/gpfs/td6241/aart/rawResults/Rays_a_%s_i_%s.h5" % (spin_case, i_case)
 
-print("Reading file: ",fnrays)
+print("Reading file: ", rtray)
 
-h5f = h5py.File(fnrays,'r')
+h5f = h5py.File(rtray, 'r')
 
 rs0=h5f['rs0'][:]
 sign0=h5f['sign0'][:]
@@ -301,33 +300,18 @@ for i in range(int((action[2]-action[1])/action[3])):
 	print('Creating Data Set: ' + str(b))
 	x_variable.append(brightparamsLEG[action[0]])
 
-	args = bigRunComputing.createIntensityArgs(brightparams)
-	subprocess.run(['python3 ' + aartpath + '/radialintensity.py' + args], shell=True)
-	fnrays= fileloading.intensityNameNoUnits(brightparams, astroModels.funckeys)
-	#
-	# 	'./Results/Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_Rie_{}_Bchoi_{}_rb_{}_nth0_{}_te0_{}_pdens_{}_ptemp_{}.h5'.format(
-    # spin_case,
-    # i_case,
-    # "{:.1e}".format(brightparams[0]),
-    # "{:.1e}".format(brightparams[1]),
-    # float(brightparams[2]),
-    # "{:.3e}".format(brightparams[3]),
-    # float(brightparams[4]),
-    # float(brightparams[5]),
-    # float(brightparams[6]),
-    # float(brightparams[7]),
-    # "{:.1e}".format(brightparams[8]),
-    # "{:.1e}".format(brightparams[9]),
-    # float(brightparams[10]),
-    # float(brightparams[11])
-	# ))
-	
-	doth5_files += [fnrays]
+	# args = bigRunComputing.createIntensityArgs(brightparams)
+	args = fileloading.createIntensityArgs(brightparams,lband,rtray,
+										   funckeys=astroModels.funckeys,aart_path=EZPaths.aartPath)
+	subprocess.run([args], shell=True)
+	rtray= fileloading.intensityNameNoUnits(brightparams, astroModels.funckeys)
+
+	doth5_files += [rtray]
 
 
-	print("Reading file: ",fnrays)
+	print("Reading file: ", rtray)
 
-	h5f = h5py.File(fnrays,'r')
+	h5f = h5py.File(rtray, 'r')
 
 	I0=h5f['bghts0'][:]
 	I1=h5f['bghts1'][:]
@@ -391,8 +375,6 @@ for i in range(int((action[2]-action[1])/action[3])):
 	# fig = plt.subplots(1,1, figsize=[6,5],dpi=400)
 
 	fig = plt.subplots(1,2, figsize=[10,5],dpi=400, width_ratios=[2,1])
-
-	
 
 	xaxis = np.array(x_variable)/label[action[0],1]
 
