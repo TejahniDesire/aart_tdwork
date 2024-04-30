@@ -15,7 +15,7 @@ import importlib
 import astroModels
 
 
-def createIntensityArgs(brightparams,funckeys=astroModels.funckeys,aart_path=EZPaths.aartPath):
+def createIntensityArgs(brightparams,lband,rtray,funckeys=astroModels.funckeys,aart_path=EZPaths.aartPath):
     args = ' '
     cmd1_args = {
         "nu0": '--nu ',
@@ -50,6 +50,8 @@ def createIntensityArgs(brightparams,funckeys=astroModels.funckeys,aart_path=EZP
 
     for arg in cmd2_args:
         args = args + cmd2_args[arg] + str(funckeys[arg]) + ' '
+
+    args += "--lband " + lband + " --rtray " + rtray
 
     return 'python3 ' + aart_path + '/radialintensity.py' + args
 
