@@ -423,7 +423,7 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     h5f.create_dataset('tau2', data=tau2)
     h5f.create_dataset('tau1', data=tau1)
     h5f.create_dataset('tau0', data=tau0)
-    h5f.create_dataset('tauTotal',tauTotal)
+    h5f.create_dataset('tauTotal',data=tauTotal)
     h5f.create_dataset('full_profiles2', data=full_profiles2resized)
     h5f.create_dataset('full_profiles1', data=full_profiles1resized)
     h5f.create_dataset('full_profiles0', data=full_profiles0resized)
