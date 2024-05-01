@@ -185,7 +185,7 @@ class BigRuns:
 
     def getModelBrightParams(self,model:str):
 
-        return self.all_model_brightparams[self.all_model_names.index(model)]
+        return self.all_model_brightparams[list(self.all_model_names).index(model)]
 
     def type2Grid(self):
         all_brightparams = []  # list[tuple (name, bright parameters)]
