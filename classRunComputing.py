@@ -89,7 +89,8 @@ class BigRuns:
             "RadVVarphi": image_path + "radVVarphi/",
             "fluxVRadii": image_path + "fluxVVarphi/",
             "meta": meta_path,
-            "3d": image_path + "3dPloting/"
+            "3d": image_path + "3dPloting/",
+            "movie": image_path + "Movie/"
 
         }
 
@@ -181,6 +182,10 @@ class BigRuns:
 
     def getSubPaths(self):
         return self.sub_paths
+
+    def getModelBrightParams(self,model:str):
+
+        return self.all_model_brightparams[self.all_model_names.index(model)]
 
     def type2Grid(self):
         all_brightparams = []  # list[tuple (name, bright parameters)]

@@ -1,6 +1,8 @@
 import sys
 import subprocess
 
+import kgeo
+
 aartpath = '/home/td6241/repositories/aart'  # insert path to aart repo
 sys.path.append(aartpath)
 
@@ -430,16 +432,6 @@ radii_I0_Thick = np.delete(radii_I0_Thick, 0, 0)
 radii_I1_Thick = np.delete(radii_I1_Thick, 0, 0)
 radii_I2_Thick = np.delete(radii_I2_Thick, 0, 0)
 
-# Black Hole Inner Shadow Calc--------------------------
-r_inner = np.load('r_inner_spin_{}_inc_{}.npy'.format(spin_case, i_case))
-alphas_inner = np.load('alphas_inner_spin_{}_inc_{}.npy'.format(spin_case, i_case))
-betas_inner = np.load('betas_inner_spin_{}_inc_{}.npy'.format(spin_case, i_case))
-
-# Black Hole Outer Shadow Calc--------------------------
-r_outer = np.load('r_outer_spin_{}_inc_{}.npy'.format(spin_case, i_case))
-alphas_outer = np.load('alphas_outer_spin_{}_inc_{}.npy'.format(spin_case, i_case))
-betas_outer = np.load('betas_outer_spin_{}_inc_{}.npy'.format(spin_case, i_case))
-
 '''------------------------------------------------------------------------'''
 jansky_variable_total = janksys_thick[:, 3]
 jansky_variable_n0 = janksys_thick[:, 0]
@@ -456,6 +448,8 @@ ring_radii_n2 = mean_radii_Thick[:, 2]
 
 b = 0
 # Figures--------------------------
+
+
 for i in range(num_iterations):
     print('Creating Frame : ' + str(b))
 
