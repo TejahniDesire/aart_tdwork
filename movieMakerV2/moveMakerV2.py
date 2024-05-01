@@ -88,7 +88,7 @@ one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
 M2uas = np.arctan(one_M.value / dBH) / muas_to_rad  # Mass to micro arcseconds
 
 k = action["start"]
-parent_model_path = sub_paths["intensityPath"] + model + "/"
+parent_model_path = sub_paths["intensityPath"] + model_name + "/"
 current_model_file = parent_model_path + "clean/"
 
 ring_radii_n0_array = radii_I0_Thick
