@@ -26,7 +26,6 @@ import params
 import astroModels
 import fileloading
 
-
 run = runDataClass.run2
 # run.setActionKey("images",True)
 # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC23","ModelC31","ModelC32","ModelC33"]
@@ -43,10 +42,10 @@ run = runDataClass.run2
 #         "images": True
 #     }
 # )
-isContinuous= False
+isContinuous = False
 average = True
-frequency_list = [86e9,230e9,345e9]
-do_list = ["ModelC21","ModelC22","ModelC23"]
+frequency_list = [86e9, 230e9, 345e9]
+do_list = ["ModelC21", "ModelC22", "ModelC23"]
 # frequency_list = None
 # do_list =None
 # do_list = ["ModelC22"]
@@ -67,21 +66,28 @@ bigRun = classRunComputing.BigRuns(
 
 """ Intensity Grid Creation_________________________________________________________"""
 
-bigRun.creatIntensityGrid(
+# bigRun.creatIntensityGrid(
+#     run.getAction(),
+#     do_list=do_list,
+#     isContinuous=isContinuous,
+#     frequency_list=frequency_list
+# )
+
+""" Radial Profile Creation_________________________________________________________"""
+bigRun.creatRadialProfiles(
     run.getAction(),
     do_list=do_list,
     isContinuous=isContinuous,
     frequency_list=frequency_list
 )
 
-
 """ Intensity Grid Analysis_________________________________________________________"""
-bigRun.intensityGridAnalysis(
-    run.getAction(),
-    do_list=do_list,
-    isContinuous=isContinuous,
-    average=average
-)
+# bigRun.intensityGridAnalysis(
+#     run.getAction(),
+#     do_list=do_list,
+#     isContinuous=isContinuous,
+#     average=average
+# )
 
 """ Clean Graph Creation_________________________________________________________"""
 # bigRun.graphCreation(
@@ -190,5 +196,3 @@ bigRun.intensityGridAnalysis(
 #     blurr_frequency_list=blurr_frequency_list,
 #     blur_kernal=blurr_kernal[3]
 # )
-
-
