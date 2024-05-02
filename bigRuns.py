@@ -31,7 +31,7 @@ run = runDataClass.run2
 # run.setActionKey("images",True)
 # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
-# do_list = ["ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
+
 # do_list = None
 
 # run.setAction(
@@ -45,9 +45,10 @@ run = runDataClass.run2
 # )
 isContinuous= False
 average = True
-# frequency_list = [86e9,230e9,345e9]
-frequency_list = None
-do_list =None
+frequency_list = [86e9,230e9,345e9]
+do_list = ["ModelC21","ModelC22","ModelC23"]
+# frequency_list = None
+# do_list =None
 # do_list = ["ModelC22"]
 # do_list = ["ModelC21","ModelC22","ModelC23"]
 
@@ -66,12 +67,12 @@ bigRun = classRunComputing.BigRuns(
 
 """ Intensity Grid Creation_________________________________________________________"""
 
-# bigRun.creatIntensityGrid(
-#     run.getAction(),
-#     do_list=do_list,
-#     isContinuous=isContinuous,
-#     frequency_list=None
-# )
+bigRun.creatIntensityGrid(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=isContinuous,
+    frequency_list=frequency_list
+)
 
 
 """ Intensity Grid Analysis_________________________________________________________"""
@@ -83,13 +84,13 @@ bigRun.intensityGridAnalysis(
 )
 
 """ Clean Graph Creation_________________________________________________________"""
-bigRun.graphCreation(
-    run.getAction(),
-    do_list=do_list,
-    isContinuous=False,
-    average=average,
-    doFullImages=False
-)
+# bigRun.graphCreation(
+#     run.getAction(),
+#     do_list=do_list,
+#     isContinuous=False,
+#     average=average,
+#     doFullImages=False
+# )
 
 """ Radial Profiles_________________________________________________________"""
 
