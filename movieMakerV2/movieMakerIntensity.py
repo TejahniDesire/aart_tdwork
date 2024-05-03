@@ -287,7 +287,7 @@ def imageAnalysis(action, sub_path, model: str, brightparams,average=True):
         mean_optical_depth_I0[i] = tau0
         mean_optical_depth_I1[i] = tau1
         mean_optical_depth_I2[i] = tau2
-        mean_optical_depth_Total = tauTotal
+        mean_optical_depth_Total[i] = tauTotal
         # (\Sum \tau * I) / (\Sum I),
 
     # Remove Row of Zeros
