@@ -623,7 +623,10 @@ class BigRuns:
                     kill_policy = False
 
                 for i in range(len(file_creation)):
-                    fileloading.creatSubDirectory(file_creation[i], kill_policy=kill_policy)
+                    if (file_creation[i] == image_path) and doFullImages is False:
+                        fileloading.creatSubDirectory(file_creation[i], kill_policy=False)
+                    else:
+                        fileloading.creatSubDirectory(file_creation[i], kill_policy=kill_policy)
 
                 fluxVNu_path += "Clean_"
                 radVNu_path += "Clean_"
