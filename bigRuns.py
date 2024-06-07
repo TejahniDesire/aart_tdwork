@@ -93,20 +93,20 @@ bigRun = classRunComputing.BigRuns(
 
 
 """ Intermodel Data_________________________________________________________________"""
-bigRun.interModelAnalysis(
-    run.getAction(),
-    do_list=do_list,
-    average=average
-)
-
-""" Clean Graph Creation_________________________________________________________"""
-# bigRun.graphCreation(
+# bigRun.interModelAnalysis(
 #     run.getAction(),
 #     do_list=do_list,
-#     isContinuous=False,
-#     average=average,
-#     doFullImages=True
+#     average=average
 # )
+
+""" Clean Graph Creation_________________________________________________________"""
+bigRun.graphCreation(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=False,
+    average=average,
+    doFullImages=True
+)
 
 """ Radial Profiles_________________________________________________________"""
 
