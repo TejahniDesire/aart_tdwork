@@ -554,11 +554,7 @@ class BigRuns:
                 string += breaker + key + ": " + str(self.constant_params[key]) + '\n'
 
         string += line_small
-        for i in range(len(self.all_model_names)):
-            current_name = self.all_model_names[i]
-            current_model = self.all_model_brightparams[i]
-            string += line_small + current_name + '\n'
-        string += line_small
+
         # _______________________________________
 
         for model in self.all_model_names:
@@ -654,9 +650,9 @@ class BigRuns:
                 # String Data
                 string += line_small + model + '\n'
 
-                string += (breaker + R"Full Solution $\nu_{peak}$" + ": " + str(flux_peak_thick) + '\n')
-                string += (breaker + R"Optically Thin Assumption $\nu_{peak}$" + ": " + str(flux_peak_thin) + '\n')
-                string += (breaker + R"Full Solution $\nu_{conv}$" + ": " + str(conv_1) + '\n')
+                string += (breaker + R"Full RTE Solution $\nu_{peak}$" + ": " + str(flux_peak_thick) + '\n')
+                # string += (breaker + R"Optically Thin Assumption $\nu_{peak}$" + ": " + str(flux_peak_thin) + '\n')
+                string += (breaker + R"Full RTE Solution $\nu_{conv}$" + ": " + str(conv_1) + '\n')
 
         fileloading.writeDocString(self.sub_paths["meta"] + "interModelAnalysis.txt",
                                    string)
