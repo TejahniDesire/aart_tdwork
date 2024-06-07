@@ -97,6 +97,17 @@ run2 = runData("run2",
                ["ModelA", "ModelB","ModelC"],
                )
 run2.setisNormalized(True)
+
+# exp1__________________________________________________________________________
+exp1 = runData("exp1",
+               astroModels.bp_exp1,
+               ["t_e0", "b_0"],
+               [(["a"], [str(15/16)])],
+               ["ModelA"],
+               )
+run2.setisNormalized(False)
+
+
 # testRun1______________________________________________________________________
 
 testRun1 = runData("testRun1",
