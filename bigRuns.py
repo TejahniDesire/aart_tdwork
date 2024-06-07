@@ -83,29 +83,29 @@ bigRun.creatIntensityGrid(
 # )
 
 """ Intensity Grid Analysis_________________________________________________________"""
-# bigRun.intensityGridAnalysis(
-#     run.getAction(),
-#     do_list=do_list,
-#     isContinuous=isContinuous,
-#     average=average
-# )
+bigRun.intensityGridAnalysis(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=isContinuous,
+    average=average
+)
 
 
 """ Intermodel Data_________________________________________________________________"""
-# bigRun.interModelAnalysis(
-#     run.getAction(),
-#     do_list=do_list,
-#     average=average
-# )
+bigRun.interModelAnalysis(
+    run.getAction(),
+    do_list=do_list,
+    average=average
+)
 
 """ Clean Graph Creation_________________________________________________________"""
-# bigRun.graphCreation(
-#     run.getAction(),
-#     do_list=do_list,
-#     isContinuous=False,
-#     average=average,
-#     doFullImages=True
-# )
+bigRun.graphCreation(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=False,
+    average=average,
+    doFullImages=True
+)
 
 """ Radial Profiles_________________________________________________________"""
 
