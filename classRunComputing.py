@@ -361,8 +361,6 @@ class BigRuns:
 
     """ Clean _______________________________________________________________________________________________________"""
 
-    # def interModelAnalysis(self, action, do_list=None, isContinuous=False,frequency_list=None):
-
     def creatIntensityGrid(self, action, do_list=None, isContinuous=False,frequency_list=None):
 
         funckeys = {
@@ -539,6 +537,123 @@ class BigRuns:
                 )
             else:
                 print(current_total_name + " marked for skipping...")
+
+    def interModelAnalysis(self, action, do_list=None, average=True):
+        k = 0
+        print(line)
+        print(line)
+        print(line)
+        print("Running Intermodel Analysis for " + self.run)
+        print("All GeoGrid Names:  " + "\n" + str(self.geo_grid_names))
+
+        # Doc String_______________________________________
+        string = line_small + line_small + line_small + "Total Number of Models: " + str(
+            self.total_models_count) + '\n' + "Constant Params: " + '\n'
+        for key in list(self.constant_params):
+            if key != "n_th0":
+                string += breaker + key + ": " + str(self.constant_params[key]) + '\n'
+
+        string += line_small
+        for i in range(len(self.all_model_names)):
+            current_name = self.all_model_names[i]
+            current_model = self.all_model_brightparams[i]
+            string += line_small + current_name + '\n'
+        string += line_small
+        # _______________________________________
+
+        for model in self.all_model_names:
+
+            preform_model = fileloading.doListAnalysis(model,do_list)
+
+            if preform_model:
+                print(line)
+                print("Graphing " + model)
+                # File Creation
+
+                # if do_list is None:
+                #     kill_policy = True
+                # else:
+                #     kill_policy = False
+
+                if self.run_type == 0:
+                    amount_to_subtract = 1
+                else:
+                    amount_to_subtract = self.run_type
+
+                current_geo_model = model[0:len(model) - amount_to_subtract]
+                fileloading.loadGeoModel(current_geo_model, self.run)
+                # lband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
+                # rtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
+
+                # Construct Shadows___________________________________________________________________
+                # a = params.spin_case
+                # inc = params.i_case * np.pi / 180  # inclination angle
+                # rh = 1 + np.sqrt(1 - a ** 2)  # event horizon
+                # # angles to sample
+                # varphis = np.linspace(-180, 179, 360) * np.pi / 180
+                #
+                # # generate inner shadow (n=0) curve with kgeo
+                # data_inner = kgeo.equatorial_lensing.rho_of_req(a, inc, rh, mbar=0, varphis=varphis)
+                # (_, rhos_inner, alphas_inner, betas_inner) = data_inner
+                #
+                # r_inner = image_tools.curve_params(varphis, rhos_inner)
+                #
+                # # generate outer shadow (n=inf) curve with kgeo
+                # data_outer = kgeo.equatorial_lensing.rho_of_req(a, inc, rh, mbar=5, varphis=varphis)
+                # (_, rhos_outer, alphas_outer, betas_outer) = data_outer
+                #
+                # r_outer = image_tools.curve_params(varphis, rhos_outer)
+                # ___________________________________________________________________
+
+                '''Data Readind----------------------------------'''
+                data_path = self.sub_paths["intensityPath"] + model + "/clean/numpy/"
+
+                if not average:
+                    data_path += "FalseAvg_"
+
+                x_variable = np.load(data_path + "x_variable.npy")
+                janksys_thick = np.load(data_path + "janksys_thick.npy")
+                janksys_thin = np.load(data_path + "janksys_thin.npy")
+                # mean_radii_Thin = np.load(data_path + "mean_radii_Thin.npy")
+                mean_radii_Thick = np.load(data_path + "mean_radii_Thick.npy")
+                # radii_I0_Thin = np.load(data_path + "radii_I0_Thin.npy")
+                # radii_I1_Thin = np.load(data_path + "radii_I1_Thin.npy")
+                # radii_I2_Thin = np.load(data_path + "radii_I2_Thin.npy")
+                # radii_Full_Thin = np.load(data_path + "radii_Full_Thin.npy")
+                # radii_FullAbsorption_Thick = np.load(data_path + "radii_FullAbsorption_Thick.npy")
+                # radii_I0_Thick = np.load(data_path + "radii_I0_Thick.npy")
+                # radii_I1_Thick = np.load(data_path + "radii_I1_Thick.npy")
+                # radii_I2_Thick = np.load(data_path + "radii_I2_Thick.npy")
+                # theta = np.load(data_path + "theta.npy")
+                # mean_optical_depth_I0 = np.load(data_path + "mean_optical_depth_I0.npy")
+                # mean_optical_depth_I1 = np.load(data_path + "mean_optical_depth_I1.npy")
+                # mean_optical_depth_I2 = np.load(data_path + "mean_optical_depth_I2.npy")
+
+                num_of_intensity_points = janksys_thin[:, 0].shape[0]
+                print("Number of Intensity Points: ", num_of_intensity_points)
+
+                xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
+                # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
+                # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
+
+                # Points of Interest
+
+                conv_1 = (action["start"] + action["step"] *
+                          ilp.ring_convergance(mean_radii_Thick[:, 2], mean_radii_Thick[:, 3], 3))
+                conv_1 = conv_1 / astroModels.scale_label[action['var']]
+
+                flux_peak_thin = action["start"] + action["step"] * np.argmax(janksys_thin[:, 3])
+                flux_peak_thin = flux_peak_thin / astroModels.scale_label[action['var']]
+
+                flux_peak_thick = action["start"] + action["step"] * np.argmax(janksys_thick[:, 3])
+                flux_peak_thick = flux_peak_thick / astroModels.scale_label[action['var']]
+
+                # String Data
+                string += line_small + model + '\n'
+
+                string += (breaker + R"Full Solution \nu_{peak}" + ": " + str(flux_peak_thick) + '\n')
+                string += (breaker + R"Optically Thin Assumption \nu_{peak}" + ": " + str(flux_peak_thin) + '\n')
+                string += (breaker + R"Full Solution \nu_{conv}" + ": " + str(conv_1) + '\n')
 
     def graphCreation(self, action, do_list=None, isContinuous=False,average=True,doFullImages=True):
         """

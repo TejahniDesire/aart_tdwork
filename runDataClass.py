@@ -6,8 +6,8 @@ from movieMakerV2 import movieMakerIntensity
 
 class runData:
 
-    def __init__(self, name:str,brightparams_grid: dict,variable_brightparams_names:list,
-                 variable_geo_values,variable_geo_names):
+    def __init__(self, name: str, brightparams_grid: dict, variable_brightparams_names: list,
+                 variable_geo_values, variable_geo_names):
         """
 
         Args:
@@ -34,7 +34,7 @@ class runData:
         self.isNormalized = False
         self.blurr_policy = False
 
-    def setAction(self,action):
+    def setAction(self, action):
         """
 
         Args:
@@ -46,15 +46,15 @@ class runData:
                 "images": Bolean
 
         """
-        self.action=action
+        self.action = action
 
-    def setActionKey(self,key,value):
+    def setActionKey(self, key, value):
         self.action[key] = value
 
-    def setisNormalized(self,isnormalized):
+    def setisNormalized(self, isnormalized):
         self.isNormalized = isnormalized
 
-    def setBlurrPolicy(self,blurr_policy):
+    def setBlurrPolicy(self, blurr_policy):
         self.blurr_policy = blurr_policy
 
     def getRunName(self):
@@ -86,15 +86,15 @@ class runData:
 run1 = runData("run1",
                astroModels.bp_run1,
                ["p_temp", "p_mag"],
-               [(["a"], [str(.3)]),(["a"], [str(.9)])],
+               [(["a"], [str(.3)]), (["a"], [str(.9)])],
                ["ModelA", "ModelB"])
 
 # run2______________________________________________________________________
 run2 = runData("run2",
                astroModels.bp_run2,
                ["p_temp", "p_mag"],
-               [(["a"], [str(.001)]),(["a"], [str(.5)]),(["a"], [str(15/16)])],
-               ["ModelA", "ModelB","ModelC"],
+               [(["a"], [str(.001)]), (["a"], [str(.5)]), (["a"], [str(15 / 16)])],
+               ["ModelA", "ModelB", "ModelC"],
                )
 run2.setisNormalized(True)
 
@@ -102,19 +102,18 @@ run2.setisNormalized(True)
 exp1 = runData("exp1",
                astroModels.bp_exp1,
                ["t_e0", "b_0"],
-               [(["a"], [str(15/16)])],
+               [(["a"], [str(15 / 16)])],
                ["ModelA"],
                )
 run2.setisNormalized(False)
 
-
 # testRun1______________________________________________________________________
 
 testRun1 = runData("testRun1",
-               astroModels.bp_testRun1,
-               ["p_temp", "p_mag"],
-               [(["a"], [str(.3)]),(["a"], [str(.9)])],
-               ["ModelA", "ModelB"])
+                   astroModels.bp_testRun1,
+                   ["p_temp", "p_mag"],
+                   [(["a"], [str(.3)]), (["a"], [str(.9)])],
+                   ["ModelA", "ModelB"])
 
 testRun1.setAction(
     {
@@ -129,7 +128,7 @@ testRun1.setAction(
 testRun2 = runData("testRun2",
                    astroModels.bp_testRun1,
                    ["p_temp", "p_mag"],
-                   [(["a"], [str(.3)]),(["a"], [str(.9)])],
+                   [(["a"], [str(.3)]), (["a"], [str(.9)])],
                    ["ModelA", "ModelB"])
 
 testRun2.setAction(
@@ -147,22 +146,22 @@ testRun2.setisNormalized(True)
 soloRun1 = runData("soloRun1",
                    astroModels.bp_soloRun1,
                    ["p_mag"],
-                   [(["a"], [str(.3)]),(["a"], [str(.9)])],
+                   [(["a"], [str(.3)]), (["a"], [str(.9)])],
                    ["ModelA", "ModelB"])
 
 # soloRun2______________________________________________________________________
 soloRun2 = runData("soloRun2",
                    astroModels.bp_soloRun2,
                    [],
-                   [(["a"], [str(15/16)])],
+                   [(["a"], [str(15 / 16)])],
                    ["ModelB"])
 soloRun2.setAction(
     {
-            "var": "nu0",
-            "start": 670e9,
-            "stop": 700e9,
-            "step": 20e9,
-            "images": True
+        "var": "nu0",
+        "start": 670e9,
+        "stop": 700e9,
+        "step": 20e9,
+        "images": True
     }
 )
 soloRun2.setisNormalized(True)
@@ -170,7 +169,7 @@ soloRun2.setisNormalized(True)
 
 class SingleModelData:
 
-    def __init__(self,sub_paths:dict,run:str,model:str,frequency_points=None):
+    def __init__(self, sub_paths: dict, run: str, model: str, frequency_points=None):
         freq_points = frequency_points
         self.sub_paths = sub_paths
         self.run = run
@@ -188,11 +187,11 @@ class SingleModelData:
             "radii_I1_Thin": data_path + "radii_I1_Thin.npy",
             "radii_I2_Thin": data_path + "radii_I2_Thin.npy",
             "radii_Full_Thin": data_path + "radii_Full_Thin.npy",
-            "radii_FullAbsorption_Thick":data_path + "radii_FullAbsorption_Thick.npy",
+            "radii_FullAbsorption_Thick": data_path + "radii_FullAbsorption_Thick.npy",
             "radii_I0_Thick": data_path + "radii_I0_Thick.npy",
             "radii_I1_Thick": data_path + "radii_I1_Thick.npy",
             "radii_I2_Thick": data_path + "radii_I2_Thick.npy",
-            "theta":data_path + "theta.npy",
+            "theta": data_path + "theta.npy",
             "mean_optical_depth_I0": data_path + "mean_optical_depth_I0.npy",
             "mean_optical_depth_I1": data_path + "mean_optical_depth_I1.npy",
             "mean_optical_depth_I2": data_path + "mean_optical_depth_I2.npy",
@@ -212,12 +211,12 @@ class SingleModelData:
         self.blurr_data_paths = {
             "x_variable": data_path + "blurr_x_variable.npy",
             "janksys_thick": data_path + "blurr_janksys_thick.npy",
-            "janksys_thin" :data_path + "blurr_janksys_thin.npy",
+            "janksys_thin": data_path + "blurr_janksys_thin.npy",
             "mean_radii_Thin": data_path + "blurr_mean_radii_Thin.npy",
             "mean_radii_Thick": data_path + "blurr_mean_radii_Thick.npy",
             "radii_I0_Thin": data_path + "blurr_radii_I0_Thin.npy",
-            "radii_FullAbsorption_Thick" :data_path + "blurr_radii_FullAbsorption_Thick.npy",
-            "theta":data_path + "theta.npy",
+            "radii_FullAbsorption_Thick": data_path + "blurr_radii_FullAbsorption_Thick.npy",
+            "theta": data_path + "theta.npy",
             # "86full_profiles": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[0])),
             # # "86full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[0])),
             # "230full_profiles": data_path + "_full_profiles0_{}GHz.npy".format("{:.5e}".format(freq_points[1])),
@@ -226,14 +225,13 @@ class SingleModelData:
             # # "345full_profile_units": data_path + "_full_profiles_unit_{}GHz.npy".format("{:.5e}".format(freq_points[2]))
         }
 
-
         self.give_clean = True
 
-    def set_give_policy(self,policy:bool):
+    def set_give_policy(self, policy: bool):
         self.give_clean = policy
 
-    def set_average_policy(self,truth):
-        self.average= truth
+    def set_average_policy(self, truth):
+        self.average = truth
         data_path = self.sub_paths["intensityPath"] + self.model_name + "/clean/numpy/"
 
         if not self.average:
@@ -249,11 +247,11 @@ class SingleModelData:
             "radii_I1_Thin": data_path + "radii_I1_Thin.npy",
             "radii_I2_Thin": data_path + "radii_I2_Thin.npy",
             "radii_Full_Thin": data_path + "radii_Full_Thin.npy",
-            "radii_FullAbsorption_Thick":data_path + "radii_FullAbsorption_Thick.npy",
+            "radii_FullAbsorption_Thick": data_path + "radii_FullAbsorption_Thick.npy",
             "radii_I0_Thick": data_path + "radii_I0_Thick.npy",
             "radii_I1_Thick": data_path + "radii_I1_Thick.npy",
             "radii_I2_Thick": data_path + "radii_I2_Thick.npy",
-            "theta":data_path + "theta.npy",
+            "theta": data_path + "theta.npy",
             "mean_optical_depth_I0": data_path + "mean_optical_depth_I0.npy",
             "mean_optical_depth_I1": data_path + "mean_optical_depth_I1.npy",
             "mean_optical_depth_I2": data_path + "mean_optical_depth_I2.npy",
@@ -262,11 +260,11 @@ class SingleModelData:
 
     def __getitem__(self, item):
         if self.give_clean:
-            return np.load(self.clean_data_paths[item],allow_pickle=True)
+            return np.load(self.clean_data_paths[item], allow_pickle=True)
         else:
-            return np.load(self.blurr_data_paths[item],allow_pickle=True)
+            return np.load(self.blurr_data_paths[item], allow_pickle=True)
 
-    def get_intensity_name(self,frequency):
+    def get_intensity_name(self, frequency):
         parent_model_path = self.sub_paths["intensityPath"] + self.model_name + "/"
         current_model_file = parent_model_path + "clean/"
         return current_model_file + "nu0" + "_" + "{:.5e}".format(frequency)
