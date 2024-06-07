@@ -360,6 +360,9 @@ class BigRuns:
         return intensity_model_string + geo_models_string
 
     """ Clean _______________________________________________________________________________________________________"""
+
+    # def interModelAnalysis(self, action, do_list=None, isContinuous=False,frequency_list=None):
+
     def creatIntensityGrid(self, action, do_list=None, isContinuous=False,frequency_list=None):
 
         funckeys = {

@@ -42,9 +42,9 @@ do_list = None
 #         "images": True
 #     }
 # )
-# isContinuous = False
-# average = True
-# frequency_list = [86e9, 230e9, 345e9]
+isContinuous = False
+average = True
+frequency_list = None
 # do_list = ["ModelC21", "ModelC22", "ModelC23"]
 # frequency_list = None
 # do_list =None
@@ -62,16 +62,16 @@ bigRun = classRunComputing.BigRuns(
 )
 """ Geo Model_________________________________________________________"""
 
-bigRun.createGeoGrid()
+# bigRun.createGeoGrid()
 
 """ Intensity Grid Creation_________________________________________________________"""
 
-# bigRun.creatIntensityGrid(
-#     run.getAction(),
-#     do_list=do_list,
-#     isContinuous=isContinuous,
-#     frequency_list=frequency_list
-# )
+bigRun.creatIntensityGrid(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=isContinuous,
+    frequency_list=frequency_list
+)
 
 """ Radial Profile Creation_________________________________________________________"""
 # bigRun.creatRadialProfiles(
