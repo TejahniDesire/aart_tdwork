@@ -82,12 +82,12 @@ bigRun = classRunComputing.BigRuns(
 # )
 
 """ Intensity Grid Analysis_________________________________________________________"""
-bigRun.intensityGridAnalysis(
-    run.getAction(),
-    do_list=do_list,
-    isContinuous=isContinuous,
-    average=average
-)
+# bigRun.intensityGridAnalysis(
+#     run.getAction(),
+#     do_list=do_list,
+#     isContinuous=isContinuous,
+#     average=average
+# )
 
 
 """ Intermodel Data_________________________________________________________________"""
