@@ -445,6 +445,7 @@ class BigRuns:
                 k += 1
         if do_list is None:
             if not self.already_normalized_brightparams:
+                print("Saving Normalized Parameters")
                 file_paths = [
                     self.sub_paths["runWideNumpy"] + "all_intensity_model_brightparams",
                     self.sub_paths["runWideNumpy"] + "all_intensity_model_names",
