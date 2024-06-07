@@ -105,7 +105,7 @@ exp1 = runData("exp1",
                [(["a"], [str(15 / 16)])],
                ["ModelA"],
                )
-run2.setisNormalized(False)
+run2.setisNormalized(True)
 
 # testRun1______________________________________________________________________
 
