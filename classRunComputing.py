@@ -654,9 +654,9 @@ class BigRuns:
                 # String Data
                 string += line_small + model + '\n'
 
-                string += (breaker + R"Full Solution \nu_{peak}" + ": " + str(flux_peak_thick) + '\n')
-                string += (breaker + R"Optically Thin Assumption \nu_{peak}" + ": " + str(flux_peak_thin) + '\n')
-                string += (breaker + R"Full Solution \nu_{conv}" + ": " + str(conv_1) + '\n')
+                string += (breaker + R"Full Solution $\nu_{peak}$" + ": " + str(flux_peak_thick) + '\n')
+                string += (breaker + R"Optically Thin Assumption $\nu_{peak}$" + ": " + str(flux_peak_thin) + '\n')
+                string += (breaker + R"Full Solution $\nu_{conv}$" + ": " + str(conv_1) + '\n')
 
         fileloading.writeDocString(self.sub_paths["meta"] + "interModelAnalysis.txt",
                                    string)
