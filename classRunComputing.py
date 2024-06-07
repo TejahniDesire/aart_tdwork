@@ -563,7 +563,10 @@ class BigRuns:
 
         for model in self.all_model_names:
 
-            preform_model = fileloading.doListAnalysis(model,do_list)
+            if do_list is not None:
+                preform_model = fileloading.doListAnalysis(model,do_list)
+            else:
+                preform_model = True
 
             if preform_model:
                 print(line)

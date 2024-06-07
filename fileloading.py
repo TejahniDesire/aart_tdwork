@@ -370,7 +370,10 @@ def writeDocString(filename:str, text:str):
 
 def doListAnalysis(current_model_name, do_list):
     do = False
-    if current_model_name in do_list:
+    if do_list is not None:
+        if current_model_name in do_list:
+            do = True
+    else:
         do = True
 
     return do
