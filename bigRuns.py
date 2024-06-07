@@ -26,7 +26,8 @@ import params
 import astroModels
 import fileloading
 
-run = runDataClass.exp1
+# run = runDataClass.exp1
+run = runDataClass.run2
 # run.setActionKey("images",True)
 # # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
@@ -62,16 +63,16 @@ bigRun = classRunComputing.BigRuns(
 )
 """ Geo Model_________________________________________________________"""
 
-bigRun.createGeoGrid()
+# bigRun.createGeoGrid()
 
 """ Intensity Grid Creation_________________________________________________________"""
 
-bigRun.creatIntensityGrid(
-    run.getAction(),
-    do_list=do_list,
-    isContinuous=isContinuous,
-    frequency_list=frequency_list
-)
+# bigRun.creatIntensityGrid(
+#     run.getAction(),
+#     do_list=do_list,
+#     isContinuous=isContinuous,
+#     frequency_list=frequency_list
+# )
 
 """ Radial Profile Creation_________________________________________________________"""
 # bigRun.creatRadialProfiles(
@@ -82,20 +83,20 @@ bigRun.creatIntensityGrid(
 # )
 
 """ Intensity Grid Analysis_________________________________________________________"""
-bigRun.intensityGridAnalysis(
-    run.getAction(),
-    do_list=do_list,
-    isContinuous=isContinuous,
-    average=average
-)
+# bigRun.intensityGridAnalysis(
+#     run.getAction(),
+#     do_list=do_list,
+#     isContinuous=isContinuous,
+#     average=average
+# )
 
 
 """ Intermodel Data_________________________________________________________________"""
-bigRun.interModelAnalysis(
-    run.getAction(),
-    do_list=do_list,
-    average=average
-)
+# bigRun.interModelAnalysis(
+#     run.getAction(),
+#     do_list=do_list,
+#     average=average
+# )
 
 """ Clean Graph Creation_________________________________________________________"""
 bigRun.graphCreation(
