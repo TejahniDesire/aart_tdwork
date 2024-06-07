@@ -32,8 +32,8 @@ run = runDataClass.exp1
 # # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 
-# do_list = None
-do_list = ["ModelA31","ModelA32","ModelA33"]
+do_list = None
+# do_list = ["ModelA31","ModelA32","ModelA33"]
 
 # run.setAction(
 #     {
@@ -68,12 +68,12 @@ bigRun = classRunComputing.BigRuns(
 
 """ Intensity Grid Creation_________________________________________________________"""
 
-bigRun.creatIntensityGrid(
-    run.getAction(),
-    do_list=do_list,
-    isContinuous=isContinuous,
-    frequency_list=frequency_list
-)
+# bigRun.creatIntensityGrid(
+#     run.getAction(),
+#     do_list=do_list,
+#     isContinuous=isContinuous,
+#     frequency_list=frequency_list
+# )
 
 """ Radial Profile Creation_________________________________________________________"""
 # bigRun.creatRadialProfiles(
@@ -84,20 +84,20 @@ bigRun.creatIntensityGrid(
 # )
 
 """ Intensity Grid Analysis_________________________________________________________"""
-bigRun.intensityGridAnalysis(
-    run.getAction(),
-    do_list=do_list,
-    isContinuous=isContinuous,
-    average=average
-)
+# bigRun.intensityGridAnalysis(
+#     run.getAction(),
+#     do_list=do_list,
+#     isContinuous=isContinuous,
+#     average=average
+# )
 
 
 """ Intermodel Data_________________________________________________________________"""
-# bigRun.interModelAnalysis(
-#     run.getAction(),
-#     do_list=do_list,
-#     average=average
-# )
+bigRun.interModelAnalysis(
+    run.getAction(),
+    do_list=do_list,
+    average=average
+)
 
 """ Clean Graph Creation_________________________________________________________"""
 # bigRun.graphCreation(
