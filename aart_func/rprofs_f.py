@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.interpolate import interp1d
 
 from aart_func import *
 from params import *
@@ -764,6 +765,25 @@ def ring_radius(I0):
 
 
 # Returns index of first occurance of below percent diff
-def ring_convergance(ring1, ring2, percent_diff):
-    diff = (np.abs(ring1 - ring2) / ring1) * 100
-    return np.argmax(diff <= percent_diff)
+def ring_convergance(xaxis,ring1,ring2, percent_diff):
+    num_of_observation_points = 1000
+    x1=xaxis[0]
+    x2=xaxis[len(xaxis)-1]
+    coords = np.linspace(x1, x2, num_of_observation_points)
+
+    r1_interp = interp1d(xaxis, ring1)(coords)
+    r2_interp = interp1d(xaxis, ring2)(coords)
+
+    diff = (np.abs(r1_interp - r2_interp) / r1_interp) * 100
+    return coords[np.argmax(diff <= percent_diff)]
+
+
+def function_peak(xaxis,function):
+    num_of_observation_points = 1000
+    x1=xaxis[0]
+    x2=xaxis[len(xaxis)-1]
+    coords = np.linspace(x1, x2, num_of_observation_points)
+
+    interp=interp1d(xaxis,function)(coords)
+
+    return coords[np.argmax(interp)]
