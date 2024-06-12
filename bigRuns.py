@@ -68,12 +68,12 @@ bigRun = classRunComputing.BigRuns(
 
 """ Intensity Grid Creation_________________________________________________________"""
 
-# bigRun.creatIntensityGrid(
-#     run.getAction(),
-#     do_list=do_list,
-#     isContinuous=isContinuous,
-#     frequency_list=frequency_list
-# )
+bigRun.creatIntensityGrid(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=isContinuous,
+    frequency_list=frequency_list
+)
 
 """ Radial Profile Creation_________________________________________________________"""
 # bigRun.creatRadialProfiles(
@@ -84,12 +84,12 @@ bigRun = classRunComputing.BigRuns(
 # )
 
 """ Intensity Grid Analysis_________________________________________________________"""
-# bigRun.intensityGridAnalysis(
-#     run.getAction(),
-#     do_list=do_list,
-#     isContinuous=isContinuous,
-#     average=average
-# )
+bigRun.intensityGridAnalysis(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=isContinuous,
+    average=average
+)
 
 
 """ Intermodel Data_________________________________________________________________"""
@@ -100,13 +100,13 @@ bigRun.interModelAnalysis(
 )
 
 """ Clean Graph Creation_________________________________________________________"""
-# bigRun.graphCreation(
-#     run.getAction(),
-#     do_list=do_list,
-#     isContinuous=False,
-#     average=average,
-#     doFullImages=True
-# )
+bigRun.graphCreation(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=False,
+    average=average,
+    doFullImages=True
+)
 
 """ Radial Profiles_________________________________________________________"""
 
