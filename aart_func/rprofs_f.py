@@ -774,7 +774,7 @@ def ring_convergance(xaxis,ring1,ring2, percent_diff):
     r1_interp = interp1d(xaxis, ring1)(coords)
     r2_interp = interp1d(xaxis, ring2)(coords)
 
-    diff = (np.abs(r1_interp - r2_interp) / r1_interp) * 100
+    diff = np.abs((np.abs(r1_interp - r2_interp) / r1_interp) * 100)
     return coords[np.argmax(diff <= percent_diff)]
 
 
