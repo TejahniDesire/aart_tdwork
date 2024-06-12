@@ -282,8 +282,8 @@ plt.close()
 
 # Thick Full Image--------------------------------------------------------------------------------------------------
 
-conv_1 = action["start"] + action["step"] * ilp.ring_convergance(xaxis,mean_radii_Thick[:, 2], mean_radii_Thick[:, 3], 5)
-conv_1 = conv_1 / scale_label[action['var']]
+conv_1 = ilp.ring_convergance(xaxis,mean_radii_Thick[:, 2], mean_radii_Thick[:, 3], 5)
+
 
 fig = plt.subplots(2, 1, figsize=dim, dpi=400)
 ax1 = [None, None]

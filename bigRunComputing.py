@@ -470,18 +470,10 @@ def graphCreation(sub_path, run, action, intent_grid_type=2):
 
         # Points of Interest
 
-        conv_1 = action["start"] + action["step"] * ilp.ring_convergance(
-            xaxis,
-            mean_radii_Thick[:, 2],
-            mean_radii_Thick[:, 3],
-            3)
-        conv_1 = conv_1 / astroModels.scale_label[action['var']]
+        conv_1 = ilp.ring_convergance(xaxis, mean_radii_Thick[:, 2],mean_radii_Thick[:, 3],3)
 
-        flux_peak_thin = action["start"] + action["step"] * np.argmax(janksys_thin[:, 3])
-        flux_peak_thin = flux_peak_thin / astroModels.scale_label[action['var']]
-
-        flux_peak_thick = action["start"] + action["step"] * np.argmax(janksys_thick[:, 3])
-        flux_peak_thick = flux_peak_thick / astroModels.scale_label[action['var']]
+        flux_peak_thin = ilp.function_peak(xaxis,janksys_thin[:, 3])
+        flux_peak_thick = ilp.function_peak(xaxis,janksys_thick[:, 3])
 
         hist_flux_peaks_thins += [flux_peak_thin]
         hist_flux_peaks_thicks += [flux_peak_thick]

@@ -412,8 +412,7 @@ for i in range(num_iterations):
 
     # Thick Full Image--------------------------------------------------------------------------------------------------
 
-    conv_1 = action["start"] + action["step"] * ilp.ring_convergance(xaxis,mean_radii_Thick[:, 2], mean_radii_Thick[:, 3], 5)
-    conv_1 = conv_1 / scale_label[action['var']]
+    conv_1 = ilp.ring_convergance(xaxis,mean_radii_Thick[:, 2], mean_radii_Thick[:, 3], 5)
 
     # Janksy Plots------------------------------------
     fig = plt.subplots(2, 2, figsize=[16, 8], dpi=400, width_ratios=[1, 1.3])
