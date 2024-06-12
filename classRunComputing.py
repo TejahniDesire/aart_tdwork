@@ -552,7 +552,12 @@ class BigRuns:
             self.total_models_count) + '\n' + "Constant Params: " + '\n'
         for key in list(self.constant_params):
             if key != "n_th0":
-                string += breaker + key + ": " + str(self.constant_params[key]) + '\n'
+                if (key == "mass") or (key == "nu0"):
+                    string += breaker + key + ": " + str("{:.5e}".format(self.constant_params[key])) + '\n'
+                elif key == "theta_b":
+                    string += breaker + key + ": " + str("{:.5f}".format(self.constant_params[key])) + '\n'
+                else:
+                    string += breaker + key + ": " + str(self.constant_params[key]) + '\n'
 
         string += line_small
 
@@ -567,7 +572,7 @@ class BigRuns:
 
             if preform_model:
                 print(line)
-                print("Graphing " + model)
+                print("Printing Analysis of " + model)
                 # File Creation
 
                 # if do_list is None:
@@ -647,9 +652,9 @@ class BigRuns:
                 # String Data
                 string += line_small + model + '\n'
 
-                string += (breaker + R"Full RTE Solution $\nu_{peak}$" + ": " + str(flux_peak_thick) + '\n')
+                string += (breaker + R"Full RTE Solution $\nu_{peak}$" + ": " + str("{:.5f}".format(flux_peak_thick)) + 'GHz\n')
                 # string += (breaker + R"Optically Thin Assumption $\nu_{peak}$" + ": " + str(flux_peak_thin) + '\n')
-                string += (breaker + R"Full RTE Solution $\nu_{conv}$" + ": " + str(conv_1) + '\n')
+                string += (breaker + R"Full RTE Solution $\nu_{conv}$" + ": " + str("{:.5f}".format(conv_1)) + 'GHz\n')
 
         fileloading.writeDocString(self.sub_paths["meta"] + "interModelAnalysis.txt",
                                    string)
