@@ -126,11 +126,12 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
     [l.set_visible(False) for (i, l) in enumerate(ax1.xaxis.get_minorticklabels()) if i % n != 0]
     ax1.legend(frameon=False)
     ax1.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
-    ax1.set_ylim(3,8)
-    if not blurr_policy:
-        ax1.set_ylim(0, 6)
-    else:
-        ax1.set_ylim(3, 8)
+    # ax1.set_ylim(3,8)
+    ax1.set_ylim(3, 8)
+    # if not blurr_policy:
+    #     ax1.set_ylim(0, 8)
+    # else:
+    #     ax1.set_ylim(3, 8)
 
 
     ax1.tick_params('x', length=20, width=1, which='major', labelrotation=80)
