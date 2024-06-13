@@ -32,7 +32,7 @@ run = runDataClass.exp1
 # # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC23","ModelC31","ModelC32","ModelC33"]
 # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC22","ModelC23","ModelC31","ModelC32","ModelC33"]
 
-do_list = ["ModelA32"]
+do_list = None
 # do_list = ["ModelA31","ModelA32","ModelA33"]
 
 # run.setAction(
