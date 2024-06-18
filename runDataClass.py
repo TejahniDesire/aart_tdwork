@@ -107,6 +107,23 @@ exp1 = runData("exp1",
                )
 exp1.setisNormalized(True)
 
+# exp2__________________________________________________________________________
+exp2 = runData("exp1",
+               astroModels.bp_exp1,
+               ["t_e0", "b_0"],
+               [(["a"], [str(15 / 16)])],
+               ["ModelA"],
+               )
+exp2.setisNormalized(False)
+exp2Action = {
+    "var": "nu0",
+    "start": 10e9,
+    "stop": 100e10,
+    "step": 40e9,
+    "images": True
+}
+exp2.setAction(exp2Action)
+
 # testRun1______________________________________________________________________
 
 testRun1 = runData("testRun1",

@@ -10,13 +10,34 @@ import scipy.interpolate
 from matplotlib import ticker
 import importlib
 from functools import partial
-
+# 10-10,000 GHZ, sample logeraythmically
+# TODO: Compara to m87* data FIRST, plot
+# Optically thick case, temp all that matters (optically thick limit, black body)
+# G without other term is true for beta access
+# Spectral Index
 bp_exp1 = {
     "p_mag": [-1.5],
     "p_temp": [-1],
-    "p_dens": [-.7],
+    "p_dens": [-.7],  # Check
     "n_th0": [1.9e4],
     "t_e0": [3e12,4e12,5e12,6e12,7e12],
+    "b_0": [6,7,8],
+    "theta_b": [50.0 * (np.pi / 180)],  # NONE VARRYING________________________________________
+    "mass": [(MMkg * u.kg).to(u.g).value],
+    "nu0": [230e9],
+    "scale_height": [.5],
+    "rb_0": [5],
+    "beta": [1.0],  # Legacy _____________________________________
+    "r_ie": [10.0],
+    "nscale": [.4]
+}
+
+bp_exp2 = {
+    "p_mag": [-1.5],
+    "p_temp": [-1],
+    "p_dens": [-1],  # Check
+    "n_th0": [1.9e4],
+    "t_e0": [1e9,5e9,1e10,5e10,1e11,5e11,1e12,5e12,1e13,5e14,1e14],
     "b_0": [6,7,8],
     "theta_b": [50.0 * (np.pi / 180)],  # NONE VARRYING________________________________________
     "mass": [(MMkg * u.kg).to(u.g).value],
