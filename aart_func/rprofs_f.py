@@ -735,7 +735,7 @@ def total_jy(I, nu, mass):
     one_M = rg_func(mass).to(u.m)
     M2rads = np.arctan(one_M.value / dBH)
     rads2pxls = (M2rads * 2 * limits) / I.shape[0]  # total amount M length units rads / total pixels
-    return (I * nu ** 2 * (2 * kB / c ** 2)).to(u.Jy).nansum() * rads2pxls ** 2  # was this orifianlly in per radians?
+    return (I * nu ** 2 * (2 * kB / c ** 2)).to(u.Jy).nansum() * rads2pxls ** 2  # was this originally in per radians?
 
 
 def ring_radius(I0):
