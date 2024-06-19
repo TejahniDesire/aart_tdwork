@@ -108,8 +108,8 @@ exp1 = runData("exp1",
 exp1.setisNormalized(True)
 
 # exp2__________________________________________________________________________
-exp2 = runData("exp1",
-               astroModels.bp_exp1,
+exp2 = runData("exp2",
+               astroModels.bp_exp2,
                ["t_e0", "b_0"],
                [(["a"], [str(15 / 16)])],
                ["ModelA"],
