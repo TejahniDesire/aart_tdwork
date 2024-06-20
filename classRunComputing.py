@@ -219,7 +219,7 @@ class BigRuns:
                 elif j >= 9 and i >= 9:
                     place2 = str(j + 1) + '-'
                 else:
-                    place2 = '-' + str(j + 1) + '-'
+                    place2 = '-' + str(j + 1)
                 current_model_name = "Model_" + place1 + place2
 
                 # Fill out the constant parameters
