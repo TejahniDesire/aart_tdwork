@@ -123,19 +123,20 @@ class BigRuns:
         print("Final Grid Type: ", self.run_type)
         # Create astro ParamGrid________________________________________________________________________________________
         self.string_order = {
-            "p_mag": "{:.2f}",
-            "p_temp": "{:.2f}",
-            "p_dens": "{:.2f}",
-            "theta_b": "{:.4f}",
-            "mass": "{:.4e}",
+            "p_mag":"{:.2f}",
+            "p_temp":"{:.2f}",
+            "p_dens":"{:.2f}",
+            "theta_b":"{:.4f}",
+            "mass":"{:.4e}",
+            "t_e0":"{:.2e}",
             "nu0": "{:.2}",
-            "scale_height": "{:.2f}",
-            "rb_0": "{:.2f}",
-            "beta": "{:.2f}",
-            "r_ie": "{:.2f}",
-            "nscale": "{:.2f}"
+            "scale_height":"{:.2f}",
+            "rb_0":"{:.2f}",
+            "beta":"{:.2f}",
+            "b_0":"{:.2f}",
+            "r_ie":"{:.2f}",
+            "nscale":"{:.2f}",
         }
-
         if self.already_normalized_brightparams:
 
             file_paths = [
