@@ -48,7 +48,7 @@ isContinuous = False
 average = True
 frequency_list = None
 # do_list = ["ModelC21", "ModelC22", "ModelC23"]
-do_list = ["ModelA_10-1"]
+# do_list = ["ModelA_10-1"]
 # frequency_list = None
 # do_list =None
 # do_list = ["ModelC22"]
@@ -85,20 +85,20 @@ bigRun.creatIntensityGrid(
 # )
 
 """ Intensity Grid Analysis_________________________________________________________"""
-# bigRun.intensityGridAnalysis(
-#     run.getAction(),
-#     do_list=do_list,
-#     isContinuous=isContinuous,
-#     average=average
-# )
+bigRun.intensityGridAnalysis(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=isContinuous,
+    average=average
+)
 
 
 """ Intermodel Data_________________________________________________________________"""
-# bigRun.interModelAnalysis(
-#     run.getAction(),
-#     do_list=do_list,
-#     average=average
-# )
+bigRun.interModelAnalysis(
+    run.getAction(),
+    do_list=do_list,
+    average=average
+)
 
 """ Clean Graph Creation_________________________________________________________"""
 # bigRun.graphCreation(
