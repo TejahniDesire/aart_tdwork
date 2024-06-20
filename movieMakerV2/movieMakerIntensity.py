@@ -36,7 +36,7 @@ def intensity_movie(action, sub_path, model: str, intent_grid_type, brightparams
          "step":
     """
 
-    geo_model = model[0:len(model) - intent_grid_type]  # remove numbers from model
+    geo_model = model.split("_")[0]  # remove numbers from model
     lband = sub_path["GeoDoth5Path"] + geo_model + "Lensing" + ".h5"
     rtray = sub_path["GeoDoth5Path"] + geo_model + "RayTracing" + ".h5"
 
@@ -324,7 +324,7 @@ def imageAnalysis(action, sub_path, model: str, brightparams,average=True):
 
 def blurr_intensity_movie(action, sub_path, model: str, intent_grid_type: int,
                           brightparams: dict, blurr_frequency_list, blur_kernal):
-    geo_model = model[0:len(model) - intent_grid_type]  # remove numbers from model
+    geo_model = model.split("_")[0]  # remove numbers from model
     lband = sub_path["GeoDoth5Path"] + geo_model + "Lensing" + ".h5"
     rtray = sub_path["GeoDoth5Path"] + geo_model + "RayTracing" + ".h5"
 
