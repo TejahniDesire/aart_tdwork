@@ -122,6 +122,20 @@ class BigRuns:
 
         print("Final Grid Type: ", self.run_type)
         # Create astro ParamGrid________________________________________________________________________________________
+        self.string_order = {
+            "p_mag": "{:.2f}",
+            "p_temp": "{:.2f}",
+            "p_dens": "{:.2f}",
+            "theta_b": "{:.4f}",
+            "mass": "{:.4e}",
+            "nu0": "{:.2}",
+            "scale_height": "{:.2f}",
+            "rb_0": "{:.2f}",
+            "beta": "{:.2f}",
+            "r_ie": "{:.2f}",
+            "nscale": "{:.2f}"
+        }
+
         if self.already_normalized_brightparams:
 
             file_paths = [
@@ -329,6 +343,7 @@ class BigRuns:
 
         return string + line + line + line
 
+
     def totalModelDocString(self):
 
         intensity_model_string = line_small + line_small + line_small + "Total Number of Models: " + str(
@@ -344,8 +359,11 @@ class BigRuns:
             intensity_model_string += line_small + current_name + '\n'
 
             for k in range(len(self.var_intensity_grid_names)):
-                intensity_model_string += (breaker + self.var_intensity_grid_names[k] + ": "
-                                           + str(current_model[self.var_intensity_grid_names[k]]) + '\n')
+                intensity_model_string += (breaker + self.var_intensity_grid_names[k] + ": " +
+                                           str(self.string_order[self.var_intensity_grid_names[k]].format(
+                                               current_model[self.var_intensity_grid_names[k]]) + '\n'
+                                               ))
+
             intensity_model_string += breaker + "n_th0: " + str(current_model["n_th0"]) + '\n'
 
         intensity_model_string += line_small + line_small + line_small
