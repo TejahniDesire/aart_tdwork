@@ -208,7 +208,18 @@ class BigRuns:
         for i in range(self.variable_param_ranges[self.var_intensity_grid_names[0]]):
             for j in range(self.variable_param_ranges[self.var_intensity_grid_names[1]]):
                 current_model_brightparams = {}  # brightprams for current model
-                current_model_name = "Model" + str(i + 1) + str(j + 1)
+
+                if i < 9:
+                    place1 = str(i + 1)
+                else:
+                    place1 = str(i + 1) + '-'
+
+                if i < 9:
+                    place2 = str(j + 1)
+                else:
+                    place2 = '-' + str(j + 1) + '-'
+                current_model_name = "Model_" + place1 + place2
+
                 # Fill out the constant parameters
                 for key in list(self.constant_params):
                     current_model_brightparams[key] = self.constant_params[key]
@@ -790,7 +801,7 @@ class BigRuns:
                 else:
                     amount_to_subtract = self.run_type
 
-                current_geo_model = model[0:len(model) - amount_to_subtract]
+                current_geo_model = model.split("_")[0]
                 fileloading.loadGeoModel(current_geo_model, self.run)
                 lband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "Lensing" + ".h5"
                 rtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "RayTracing" + ".h5"
@@ -1265,7 +1276,7 @@ class BigRuns:
             else:
                 amount_to_subtract = self.run_type
 
-            current_geo_model = model[0:len(model) - amount_to_subtract]
+            current_geo_model = model.split("_")[0]
             fileloading.loadGeoModel(current_geo_model, self.run)
 
             fluxVNu_path = self.sub_paths["fluxPath"] + model
