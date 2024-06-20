@@ -214,8 +214,10 @@ class BigRuns:
                 else:
                     place1 = str(i + 1) + '-'
 
-                if i < 9:
+                if j < 9:
                     place2 = str(j + 1)
+                elif j >= 9 and i >= 9:
+                    place2 = str(j + 1) + '-'
                 else:
                     place2 = '-' + str(j + 1) + '-'
                 current_model_name = "Model_" + place1 + place2
@@ -239,6 +241,7 @@ class BigRuns:
         all_model_names = []
         for i in range(self.variable_param_ranges[self.var_intensity_grid_names[0]]):
             current_model_brightparams = {}  # dict[key] = for value of [key]/varied parameter
+
             current_model_name = "Model" + str(i + 1)
             for key in list(self.constant_params):
                 current_model_brightparams[key] = self.constant_params[key]
