@@ -351,7 +351,8 @@ class BigRuns:
             self.total_models_count) + '\n' + "Constant Params: " + '\n'
         for key in list(self.constant_params):
             if key != "n_th0":
-                intensity_model_string += breaker + key + ": " + str(self.constant_params[key]) + '\n'
+                intensity_model_string += breaker + key + ": " + str(self.string_order[key].format(
+                    self.constant_params[key])) + '\n'
 
         intensity_model_string += line_small
         for i in range(len(self.all_model_names)):
