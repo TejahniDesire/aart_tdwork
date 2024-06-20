@@ -647,6 +647,8 @@ class BigRuns:
                 '''Data Reading----------------------------------'''
                 data_path = self.sub_paths["intensityPath"] + model + "/clean/numpy/"
 
+                print("Reading: " + data_path)
+
                 if not average:
                     data_path += "FalseAvg_"
 
