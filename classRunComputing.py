@@ -1598,6 +1598,38 @@ class BigRuns:
             plt.close()
         else:
             print("Not all models were computed, skipping Histogram creation...")
+    
+    def getModelDict(self):
+        diction = {}
+        for i in range(self.all_model_names):
+            current_name = self.all_model_names[i]
+            
+            diction[current_name] = {}
+            # Clean Parent
+            diction[current_name]['Cintent_data'] = self.sub_paths['intensityPath'] + current_name + "/clean/"
+            diction[current_name]['Pintent_data'] = self.sub_paths['intensityPath'] + current_name
+            diction[current_name]['bp'] = self.getModelBrightParams(current_name)
+            
+            geo_param = self.geo_grid_params[self.geo_grid_names.index(current_name.split("_")[0])]
+            hname = "Model"
+            for j in range(len(geo_param[0])):
+                hname += '--' + geo_param[0][j] + "_" + geo_param[1][j]
+
+            
+            for j in range(len(self.var_intensity_grid_names)):
+                current_var_param = self.var_intensity_grid_names[j]
+                current_var_position = current_name.split("_")[1][j]
+                hname += "--{}_{}".format(current_var_param,self.intensity_grid_params[current_var_param][current_var_position])
+            
+            diction[current_name]['hname'] = hname
+        
+        return diction
+    
+    def getModelGrid(self):
+        dimensions = []
+        for i in range(len(self.geo_grid_names)):
+            dimensions += []
+
 
 def fmt(x, pos):
     x = x / 1e9
