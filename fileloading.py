@@ -358,8 +358,9 @@ def totalModelNametoGridModel(model,run_type):
 def writeDocString(filename:str, text:str):
     doc_string_file = filename
     cmd = "touch " + doc_string_file
-    print("File ({}) Created".format(filename))
+
     subprocess.run([cmd], shell=True)
+    print("File ({}) Created".format(filename))
 
     # writing
     doc_string_file = open(doc_string_file, 'w')
