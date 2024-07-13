@@ -19,6 +19,7 @@ import fileloading
 from movieMakerV2 import movieMakerIntensity
 import normalizingBrightparams
 from astropy import units as u
+from functools import partial 
 import re
 
 breaker = "     "
@@ -1599,37 +1600,156 @@ class BigRuns:
         else:
             print("Not all models were computed, skipping Histogram creation...")
     
-    def getModelDict(self):
-        diction = {}
-        for i in range(self.all_model_names):
-            current_name = self.all_model_names[i]
-            
-            diction[current_name] = {}
-            # Clean Parent
-            diction[current_name]['Cintent_data'] = self.sub_paths['intensityPath'] + current_name + "/clean/"
-            diction[current_name]['Pintent_data'] = self.sub_paths['intensityPath'] + current_name
-            diction[current_name]['bp'] = self.getModelBrightParams(current_name)
-            
-            geo_param = self.geo_grid_params[self.geo_grid_names.index(current_name.split("_")[0])]
-            hname = "Model"
-            for j in range(len(geo_param[0])):
-                hname += '--' + geo_param[0][j] + "_" + geo_param[1][j]
+    def getIntentPath(self,model,freq,blurr=None):
+        if blurr is None:
+            path = self.sub_paths['intensityPath'] + model + "/clean/nu0_" + "{:.5e}".format(freq)
+        else:
+            path = self.sub_paths['intensityPath'] + model + "/" + blurr +  "nu0_"+ "{:.5e}".format(freq)
+        return path
+    
+    def getLBandPath(self,model):
+        geo_name,dummy = self.getGeoName(model)
+        return self.sub_paths['GeoDoth5Path'] + geo_name + "Lensing.h5"
+    
+    def getRBandPath(self,model):
+        geo_name,dummy = self.getGeoName(model)
+        return self.sub_paths['GeoDoth5Path'] + geo_name + "RayTracing.h5"
+    
+    def getPlotName(self,model):
+        hlist = self.getHumanNameList(model)
+        title = ''
+        latexList = {
+            'p_temp': R"\alpha_T",
+            'p_dens': R"\alpha_n",
+            'p_mag': R"\alpha_B",
+            'a':R'a'
+        }
+        for i in range(len(hlist)):
+            if i == 0:
+                pstr = R"${} = {}, "
+            elif i == len(hlist) - 1:
+                pstr= R"{} = {} $"
+            else:   
+                pstr = R"{} = {}, "
+            title += pstr.format(latexList[hlist[i][0]],hlist[i][1])
+        
+        return title
 
-            
-            for j in range(len(self.var_intensity_grid_names)):
-                current_var_param = self.var_intensity_grid_names[j]
-                current_var_position = current_name.split("_")[1][j]
-                hname += "--{}_{}".format(current_var_param,self.intensity_grid_params[current_var_param][current_var_position])
-            
-            diction[current_name]['hname'] = hname
+    def getAllModelDict(self):
+        diction = {}
+        for i in range(len(self.all_model_names)):
+            current_name = self.all_model_names[i]
+            diction[current_name] = self.createModelDictionary(current_name)
         
         return diction
     
-    def getModelGrid(self):
-        dimensions = []
-        for i in range(len(self.geo_grid_names)):
-            dimensions += []
+    def createModelDictionary(self,model):
+        current_name = model
+        geo_name,dummy = self.getGeoName(current_name)
 
+        diction = {}
+        diction['model'] = model
+        diction['lband'] = self.getLBandPath(current_name)
+        diction['rband'] = self.getRBandPath(current_name)
+        diction['loadGeo'] = partial(fileloading.loadGeoModel,geo_name, self.run)
+        diction['cintent_data'] = partial(self.getIntentPath,current_name)
+        diction['pintent_data'] = self.sub_paths['intensityPath'] + current_name
+        diction['bp'] = self.getModelBrightParams(current_name)
+        diction['hname'] = self.makeHumanName(current_name)
+        diction['hname_list'] =  self.getHumanNameList(current_name)
+        diction['hname_plot'] = self.getPlotName(current_name)
+        return diction
+    
+    def getModelGrid(self):
+        dimensions = [0]
+        for i in range(len(self.geo_grid_names)):
+            dimensions[0] += 1
+
+        for i in range(self.run_type):
+            current_dimension = self.var_intensity_grid_names[i]
+            dimensions += [self.variable_param_ranges[current_dimension]]
+        
+        return [self.oneGridDepth,self.twoGridDepth][self.run_type - 1](dimensions)
+        
+    def oneGridDepth(self,dimensions):
+        grid = np.ndarray([dimensions[0],dimensions[1]],dtype=object)
+        l = 0
+        for i in range(dimensions[0]):
+            for j in range(dimensions[1]):
+                grid[i,j] = self[self.all_model_names[l]]
+                l +=1
+        return grid
+    
+    def twoGridDepth(self,dimensions):
+        grid = np.ndarray([dimensions[0],dimensions[1],dimensions[2]],dtype=object)
+        l = 0
+        for i in range(dimensions[0]):
+            for j in range(dimensions[1]):
+                for k in range(dimensions[2]):
+                    grid[i,j,k] = self[str(self.all_model_names[l])]
+                    l +=1
+        return grid
+
+    def __getitem__(self,item):
+        if type(item) is str:
+            return self.createModelDictionary(item)
+        elif type(item) is tuple:
+            return self.getModelGrid()[item]
+
+    def getGeoName(self,model):
+        modelstr = model.split("_")
+        if len(modelstr) == 1:
+            modelstr = modelstr[0]
+            splitchar = ''
+            l = 0
+            while not splitchar.isnumeric():
+                splitchar = modelstr[l]
+                l += 1
+            modelstr = model.split(splitchar)
+            geo_name = modelstr[0]
+            int_name = model.split(geo_name[len(geo_name)-1])[1]
+        else:
+            geo_name = modelstr[0]
+            int_name = modelstr[1]
+        return geo_name, int_name
+
+    def makeHumanName(self,model):
+        
+        geo_name, int_name = self.getGeoName(model)
+        geo_param = self.geo_grid_params[self.geo_grid_names.index(geo_name)]
+        # pstr = 
+        hname = ''
+        for j in range(len(geo_param[0])):
+            hname += '--' + geo_param[0][j] + ">" + geo_param[1][j]
+
+            
+        for j in range(len(self.var_intensity_grid_names)):
+            current_var_param = self.var_intensity_grid_names[j]
+            current_var_position = int(int_name[j]) - 1
+
+            value = str(self.string_order[current_var_param].format(self.intensity_grid_params[current_var_param][current_var_position]))
+            hname += "--{}>{}".format(current_var_param,value)
+        
+        return hname
+    
+    def getHumanNameList(self,model):
+        geo_name, int_name = self.getGeoName(model)
+        geo_param = self.geo_grid_params[self.geo_grid_names.index(geo_name)]
+        # pstr = 
+        hname = []
+        for j in range(len(geo_param[0])):
+            hname += [(geo_param[0][j], geo_param[1][j])]
+        
+            
+        for j in range(len(self.var_intensity_grid_names)):
+            current_var_param = self.var_intensity_grid_names[j]
+            current_var_position = int(int_name[j]) - 1
+
+            value = str(self.string_order[current_var_param].format(self.intensity_grid_params[current_var_param][current_var_position]))
+            hname += [(current_var_param,value)]
+        return hname
+        
+        
 
 def fmt(x, pos):
     x = x / 1e9

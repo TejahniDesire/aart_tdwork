@@ -30,8 +30,8 @@ def radon_cut(radonangles,I0,I1,I2,supergrid0,supergrid1,supergrid2,Ncut=0):
 
         radonangle = radonangles[i]
         radon0=imagetreat(I0,radonangle,supergrid0[-1,0],supergrid0[-1,0])
-        radon1=imagetreat(fudge*I1,radonangle,supergrid1[-1,0],supergrid0[-1,0])
-        radon2=imagetreat(fudge*I2,radonangle,supergrid2[-1,0],supergrid0[-1,0])
+        radon1=imagetreat(I1,radonangle,supergrid1[-1,0],supergrid0[-1,0])
+        radon2=imagetreat(I2,radonangle,supergrid2[-1,0],supergrid0[-1,0])
 
         R0 = interpolate.interp1d(radon0[1],radon0[0],fill_value=0, bounds_error=False,kind="linear")
         R1 = interpolate.interp1d(radon1[1],radon1[0],fill_value=0, bounds_error=False,kind="linear")
@@ -52,7 +52,7 @@ def radon_cut(radonangles,I0,I1,I2,supergrid0,supergrid1,supergrid2,Ncut=0):
         R*=smooth_transition_to_zero
 
         # Compute 1D FFT of the projection, shift and take modulus
-        padding=16
+        padding=32
         radonff = fft(R,padding*xvalues.shape[0]) #1D FFT of the projection
         radonshift=fftshift(radonff) # recenter FFT
         radonvisamp=np.abs(radonshift) # this is the visamp
