@@ -12,6 +12,7 @@ import image_tools
 from aart_func import *
 from image_tools import curve_params
 from params import *
+from scipy.interpolate import interp1d
 import importlib
 import params
 import astroModels
@@ -1619,10 +1620,16 @@ class BigRuns:
         hlist = self.getHumanNameList(model)
         title = ''
         latexList = {
-            'p_temp': R"\alpha_T",
-            'p_dens': R"\alpha_n",
-            'p_mag': R"\alpha_B",
-            'a':R'a'
+            'p_temp':   R"$\alpha_T$",
+            'p_dens':   R"$\alpha_n$",
+            'p_mag':    R"$\alpha_B$",
+            'a':        R'$a$',
+            'n_th0':    R'$n_{th,0}$',
+            'theta_b':  R'$\theta_b$',
+            'nu0':      R'$\nu_0$',
+            'nscale':   R"$n_{scale}$",
+            't_e0':     R'$t_{e,0}$',
+            'b_0':      R'$b_0$'
         }
         for i in range(len(hlist)):
             if i == 0:
@@ -1658,7 +1665,62 @@ class BigRuns:
         diction['hname'] = self.makeHumanName(current_name)
         diction['hname_list'] =  self.getHumanNameList(current_name)
         diction['hname_plot'] = self.getPlotName(current_name)
+        diction['np'] = {
+            "jansky_thick": partial(self.getModelNp,current_name,'janksys_thick.npy'),
+            "jansky_thin": partial(self.getModelNp,current_name,'janksys_thin.npy'),
+            "radVnu_thick": partial(self.getModelNp,current_name,'mean_radii_Thick.npy'),
+            "radVnu_thin": partial(self.getModelNp,current_name,'mean_radii_Thin.npy'),
+            "xvar": partial(self.getModelNp,current_name,'x_variable.npy'),
+            "jansky_thick": partial(self.getModelNp,current_name,'janksys_thick.npy'),
+            "tau0": partial(self.getModelNp,current_name,'mean_optical_depth_I0.npy'),
+            "tau1": partial(self.getModelNp,current_name,'mean_optical_depth_I1.npy'),
+            "tau2": partial(self.getModelNp,current_name,'mean_optical_depth_I2.npy'),
+            "tauT": partial(self.getModelNp,current_name,'mean_optical_depth_Total.npy')
+        }
+        diction['rprofs'] = partial(self.getRadialProfiles,model,None,None,(2,20),'log',500)
+        diction['flux_peak'] = partial(self.getFluxPeak,current_name)
+        diction['conv'] = self.getConv(model)
+        diction['image'] = partial(self.getIntensityName,model)
+
+        t = os.listdir(diction['pintent_data'] + '/clean')
+        t.remove('numpy')
+        for k in range(len(t)):
+            t[k] = float(t[k].replace("nu0_",""))
+        t.sort()
+        diction['cfreq_list'] = t
+
         return diction
+    
+    def getIntensityName(self, model,frequency):
+        parent_model_path = self.sub_paths["intensityPath"] + model + "/"
+        current_model_file = parent_model_path + "clean/"
+        return current_model_file + "nu0" + "_" + "{:.5e}".format(frequency)
+    
+    def getConv(self,model):
+        yvar1 = self.getModelNp(model,'mean_radii_Thick.npy')[:,2]
+        yvar2 = self.getModelNp(model,'mean_radii_Thick.npy')[:,3]
+        xvar = self.getModelNp(model,'x_variable.npy')
+        return ilp.ring_convergance(xvar,yvar1,yvar2,2)
+    
+    def getFluxPeak(self,model,ring):
+        yvar = self.getModelNp(model,'janksys_thick.npy')[:,ring]
+        xvar = self.getModelNp(model,'x_variable.npy')
+        return self.getxOfFuncPeak(xvar,yvar)
+
+    def getxOfFuncPeak(self,xvar,yvar):
+        num_of_observation_points = 1000
+        
+        coords = np.linspace(xvar.min(),xvar.max(),num_of_observation_points)
+        points = num_of_observation_points - 1
+        step = (xvar.max() - xvar.min())/points
+        
+        yvar_interp = interp1d(xvar,yvar)(coords)
+        return (xvar.min() + step * np.argmax(yvar_interp))
+        
+
+    def getModelNp(self,model,array:str):
+        path = self.sub_paths['intensityPath'] + model + "/clean/numpy/" + array
+        return np.load(path)
     
     def getModelGrid(self):
         dimensions = [0]
@@ -1721,7 +1783,7 @@ class BigRuns:
         hname = ''
         for j in range(len(geo_param[0])):
             hname += '--' + geo_param[0][j] + ">" + geo_param[1][j]
-
+        hname = hname.removeprefix("--")
             
         for j in range(len(self.var_intensity_grid_names)):
             current_var_param = self.var_intensity_grid_names[j]
@@ -1748,7 +1810,69 @@ class BigRuns:
             value = str(self.string_order[current_var_param].format(self.intensity_grid_params[current_var_param][current_var_position]))
             hname += [(current_var_param,value)]
         return hname
+
+    def getRadialProfiles(self,model,rmin=None,rmax=None,rrange=None,scale:str='lin',num_of_points=100):
+        if ((rmin is not None) and (rmax is None)) or ((rmax is not None) and (rmin is None)):
+            raise ValueError("Either rmin or rmax were specified while the other was")
+        if rrange is None:
+            if (rmax is None) or (rmin is None):
+                raise ValueError("either rmin and rmax or rrange must be specified")
         
+        if (rrange is not None) and (rmin is not None):
+            raise ValueError("rrange and rmin/rmax can't be simulaneously specified")
+        if (scale != 'lin') and (scale != 'log'):
+            raise ValueError("Scale '{}' unrecongnized".format(scale))
+        
+        if rmin is None:
+            rmin = rrange[0]
+            rmax = rrange[1]
+        
+        # _______________
+                
+        bp = self.add_units_to_bp(self.getModelBrightParams(model))
+
+        if scale == 'lin':
+            rarray = np.linspace(rmin,rmax,num_of_points)
+        elif scale == 'log':
+            rarray = np.logspace(np.log10(rmin),np.log10(rmax),num_of_points)
+
+        b_profile = ilp.b_func_power_variable(rarray,mass=bp['mass'],rb_0=bp['rb_0'],bv_0=bp['b_0'],p_bv=bp['p_mag'])
+        te_profile = ilp.te_func(rarray,mass=bp['mass'],rb_0=bp['rb_0'],t_e0=bp['t_e0'], p_temp=bp['p_temp'])
+
+        theta_e=ilp.theta_e_func(te_profile)
+        nth_profile = ilp.nth_func(rarray,mass=bp['mass'],rb_0=bp['rb_0'], n_th0=bp['n_th0'], p_dens=bp['p_dens'])
+        
+        funckeys = {
+            "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
+            "bkey": 2,  # bkey
+            "nnoisykey": 0,  # nnoisykey Inoisy density. 0 = no noise, 1 = noise
+            "tnoisykey": 0,  # tnoisykey Inoisy temperature
+            "bnoisykey": 0  # bnoisykey Inoisy magnetic field
+        }
+        si_thin, si_thick, d, d = ilp.thermal_profile({'r':rarray,'x':0,'y':0}, redshift=1, cosAng=1, bp=bp, fk=funckeys)
+
+        profiles = {
+            'r':rarray,
+            'b': b_profile,
+            'theta_e':theta_e,
+            'nth':nth_profile,
+            'si_thick': si_thick,
+            'si_thin': si_thin
+                    }
+        return profiles
+
+
+
+    def add_units_to_bp(self,bp:dict):
+        bp_unit = bp.copy()
+        bp_unit['nu0'] = bp['nu0'] * ilp.Hz
+        bp_unit['mass'] = bp['mass'] * u.g
+        bp_unit['theta_b'] = bp['theta_b'] * ilp.rads
+        bp_unit['n_th0'] = bp['n_th0'] * ilp.cmcubed
+        bp_unit['t_e0'] = bp['t_e0'] * ilp.kelv
+        bp_unit['b_0'] = bp['b_0'] * ilp.gauss
+        return bp_unit
+
         
 
 def fmt(x, pos):

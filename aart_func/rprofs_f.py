@@ -167,8 +167,6 @@ def b_func_power(r, mass=kw_mass, rb_0=kw_rb_0):
     return b_0 * (r * rg / rb) ** p_b
     # return np.sqrt(nth * 8 * np.pi * mp * c ** 2 / (6 * beta * r))
 
-
-# TODO: pick better name, fix parameters
 def b_func_power_variable(r, mass=kw_mass, rb_0=kw_rb_0, bv_0=kw_bv_0, p_bv=kw_p_bv):
     if bv_0.unit != gauss:
         raise ValueError('b_0 needs units of gauss')

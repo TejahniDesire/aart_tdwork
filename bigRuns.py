@@ -26,7 +26,7 @@ import params
 import astroModels
 import fileloading
 
-run = runDataClass.exp2
+run = runDataClass.PRUN
 # run = runDataClass.run2
 # run.setActionKey("images",True)
 # # do_list = ["ModelC11","ModelC12","ModelC13","ModelC21","ModelC23","ModelC31","ModelC32","ModelC33"]
@@ -91,23 +91,23 @@ bigRun = classRunComputing.BigRuns(
 #     isContinuous=isContinuous,
 #     average=average
 # )
-#
+
 
 """ Intermodel Data_________________________________________________________________"""
-bigRun.interModelAnalysis(
-    run.getAction(),
-    do_list=do_list,
-    average=average
-)
-
-""" Clean Graph Creation_________________________________________________________"""
-# bigRun.graphCreation(
+# bigRun.interModelAnalysis(
 #     run.getAction(),
 #     do_list=do_list,
-#     isContinuous=False,
-#     average=average,
-#     doFullImages=True
+#     average=average
 # )
+
+""" Clean Graph Creation_________________________________________________________"""
+bigRun.graphCreation(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=False,
+    average=average,
+    doFullImages=True
+)
 
 """ Radial Profiles_________________________________________________________"""
 
@@ -119,10 +119,10 @@ bigRun.interModelAnalysis(
 # )
 
 """ Blurr Intensity Grid Creation_________________________________________________________"""
-#
+
 # blurr_frequency_list = [86e9,230e9,345e9]
 # blurr_kernal = [1,5,10,20]
-#
+
 # bigRun.blurrIntensityGrid(
 #     run.getAction(),
 #     do_list,
@@ -135,49 +135,49 @@ bigRun.interModelAnalysis(
 #     blurr_frequency_list=blurr_frequency_list,
 #     blur_kernal=blurr_kernal[1]
 # )
-#
+
 # bigRun.blurrIntensityGrid(
 #     run.getAction(),
 #     do_list,
 #     blurr_frequency_list=blurr_frequency_list,
 #     blur_kernal=blurr_kernal[2]
 # )
-#
+
 # bigRun.blurrIntensityGrid(
 #     run.getAction(),
 #     do_list,
 #     blurr_frequency_list=blurr_frequency_list,
 #     blur_kernal=blurr_kernal[3]
 # )
-# """ Blurring intensity analysis grid_________________________________________________________"""
+""" Blurring intensity analysis grid_________________________________________________________"""
 # bigRun.blurrIntensityGridAnalysis(
 #     run.getAction(),
 #     do_list=do_list,
 #     blurr_frequency_list=blurr_frequency_list,
 #     blur_kernal=blurr_kernal[0]
 # )
-#
+
 # bigRun.blurrIntensityGridAnalysis(
 #     run.getAction(),
 #     do_list=do_list,
 #     blurr_frequency_list=blurr_frequency_list,
 #     blur_kernal=blurr_kernal[1]
 # )
-#
+
 # bigRun.blurrIntensityGridAnalysis(
 #     run.getAction(),
 #     do_list=do_list,
 #     blurr_frequency_list=blurr_frequency_list,
 #     blur_kernal=blurr_kernal[2]
 # )
-#
+
 # bigRun.blurrIntensityGridAnalysis(
 #     run.getAction(),
 #     do_list=do_list,
 #     blurr_frequency_list=blurr_frequency_list,
 #     blur_kernal=blurr_kernal[3]
 # )
-#
+
 
 # """ Blurr Graph Creation_________________________________________________________"""
 # bigRun.blurrGraphCreation(

@@ -15,6 +15,24 @@ from functools import partial
 # Optically thick case, temp all that matters (optically thick limit, black body)
 # G without other term is true for beta access
 # Spectral Index
+
+bp_PRUN = {
+    "p_mag": [-2,-1.5,-1],
+    "p_temp": [-1.4,-1,-.6],
+    "p_dens": [-.7],
+    "n_th0": [1.9e4],
+    "t_e0": [5e10],
+    "b_0": [8],
+    "theta_b": [50.0 * (np.pi / 180)],  # NONE VARRYING________________________________________
+    "mass": [(MMkg * u.kg).to(u.g).value],
+    "nu0": [230e9],
+    "scale_height": [.5],
+    "rb_0": [5],
+    "beta": [1.0],  # Legacy _____________________________________
+    "r_ie": [10.0],
+    "nscale": [.4]
+}
+
 bp_exp1 = {
     "p_mag": [-1.5],
     "p_temp": [-1],

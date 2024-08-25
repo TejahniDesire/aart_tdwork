@@ -98,6 +98,15 @@ run2 = runData("run2",
                )
 run2.setisNormalized(True)
 
+# PRUN______________________________________________________________________
+PRUN  = runData("PRUN",
+               astroModels.bp_PRUN,
+               ["p_temp", "p_mag"],
+               [(["a"], [str(.001)]), (["a"], [str(.5)]), (["a"], [str(15 / 16)])],
+               ["ModelA", "ModelB", "ModelC"],
+               )
+PRUN.setisNormalized(False)
+
 # exp1__________________________________________________________________________
 exp1 = runData("exp1",
                astroModels.bp_exp1,

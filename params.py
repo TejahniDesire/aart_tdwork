@@ -1,17 +1,12 @@
 import EZPaths
 from aart_func import *
 
-model_name = "ModelB"
-
-# print("\nThanks for using AART")
-# print("Copyright (C) 2022, A. Cardenas-Avendano, H. Zhu & A. Lupsasca\n")
+model_name = "ModelA"
 
 # TEA fa  faf 
 
 #BH's Spin
-spin_case=0.9
-# spin_case=.1
-# spin_case=.001
+spin_case=15/16
 
 
 #Observer's inclination  
@@ -47,11 +42,11 @@ bvapp=0
 p_image=1
 limits=25
 #Resolution for the n=0 image [M]
-dx0 = 0.0333333
+dx0 = 50/2000
 #Resolution for the n=1 image [M]
-dx1 = 0.0333333
+dx1 = 50/2000
 #Resolution for the n=2 image [M]
-dx2 = 0.0333333
+dx2 = 50/2000
 
 
 # Projection angles for the radon transformation
