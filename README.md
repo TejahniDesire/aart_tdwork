@@ -1,6 +1,8 @@
+[![2211.07469](https://img.shields.io/badge/arXiv-2211.07469-b31b1b.svg)](https://arxiv.org/abs/2211.07469) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/iAART/aart/License.txt) [![GitHub repo stars](https://img.shields.io/github/stars/iAART/aart?style=social)](https://github.com/iAART/aart)
+
 # Adaptive Analytical Ray Tracing (AART) #
 
-AART is a numerical framework that exploits the integrability properties of the Kerr spacetime to compute high-resolution black hole images and their visibility amplitude on long interferometric baselines. It implements a non-uniform adaptive grid on the image plane suitable to study black hole photon rings (narrow ring-shaped features, predicted by general relativity but not yet observed). 
+AART is a numerical framework that exploits the integrability properties of the Kerr spacetime to compute high-resolution black hole images and their visibility amplitude on long interferometric baselines. It implements a non-uniform adaptive grid on the image plane suitable to study black hole photon rings (narrow ring-shaped features predicted by general relativity but not yet observed). 
 
 The code, described in detail in Ref. [1], implements all the relevant equations required to compute the appearance of equatorial sources on the (far) observer's screen. We refer the Reader to Refs. [2-4] for the derivations and further details. Through the code, the equations are mentioned as Pi Eq. N, which means Eq. N in Ref. [i]. 
 
@@ -14,7 +16,9 @@ We also request that AART modifications or extensions leading to a scientific pu
 
 <center> <em>Feel free to use images and movies produced with this code (with attribution) for your next presentation! </em> </center>
 
-Last updated: 11.15.2022
+_______
+![GitHub last commit](https://img.shields.io/github/last-commit/iAART/aart)
+_______
 
 ## AART's Components ##
 
@@ -26,8 +30,11 @@ Last updated: 11.15.2022
 
 * **Visibility Amplitudes**: The main functions are located in <em>visamp_f.py</em>: It computes the visibility amplitudes for given intensities over $n$ lensing bands. 
 
-* **Polarization**: For a given magnetic field configuration (specified in the file <em>polarization_f</em>), it parallel transports the linear polarization of a photon. 
+* **Polarization**: For a given magnetic field configuration (specified in the file <em>polarization_f</em>), it parallel transports the linear polarization of a photon.
 
+* **Theta_B**: For a given magnetic field configuration (specified in the file <em>magneticfield_f</em>), it returns the cosine square of the the angle between the field 𝑏𝜇 and photon momentum 𝑘𝜇.
+
+* **Redshift**: For a given geometry it returns the redshift factor. 
 
 ## Dependencies ##
 
@@ -55,9 +62,31 @@ Sometimes scipy does not update automatically to the latest version. If that is 
 
 <code> pip install -U scipy</code>
 
+Some users have experienced an issue with <em>imageio.v2</em>, as it is not found. To solve this issue please type:
+
+<code> python -m pip install --upgrade pip </code>
+
+<code> pip install imageio --upgrade </code>
+
 <em>*Thanks to @prestonyun for suggesting this simplification.</em> 
 
 ## How to run AART ##
+
+### As a python package:
+
+Simply [pip](https://pypi.org/project/aart/) install it like this:
+
+<code> pip install aart </code>
+
+In the notebook: 
+
+<em>AARTPackage_Examples.ipynb</em>
+
+the AART package is illustrated. This notebook also includes examples on how to calculate the diameters of the n=2 photon ring and a simple estimate of the spin and inclination of a BH. 
+
+<em>This Python package is maintained by Lennox Keeble, a brilliant Princeton undergraduate, who used aart for his junior paper.</em> 
+
+### From a terminal, using scripts: 
 
 The paramaters are always set in the file <em>params.py</em>. Once that file is modified.
 
@@ -71,7 +100,7 @@ The lensing bands are computed by simply running
 
   <code> python lensingbands.py </code>
   
-The result will be stored in a HDF5 file that contains the values of the Bardeen's coordinates withing each lensing band. The datasets inside the resulting file are:
+The result will be stored in a HDF5 file that contains the values of the Bardeen's coordinates within each lensing band. The datasets inside the resulting file are:
 
 * alpha: The coordinate alpha of the critical curve. The parameter <em>npointsS</em> controls the number of points used for the computation of the critical curve)
 * beta: The coordinate beta of the critical curve. 
@@ -186,7 +215,12 @@ The linear polarization of a given configuration of the magnetic field can be co
 
 ## Authors ##
 
-- Alejandro Cardenas-Avendano (cardenas-avendano [at] princeton [dot] edu)
+### Current Developers ###
+
+- Alejandro Cardenas-Avendano (cardenas-avendano [at] lanl [dot] gov)
+- Lennox Keeble
+
+### Former Developers ###
 - Hengrui Zhu
 - Alex Lupsasca
 

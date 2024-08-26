@@ -127,6 +127,29 @@ def angular_integrals(mbar,beta,u_p,u_m,theta_p,theta_m,pm_o,theta_o,a):
     
     return(G_theta,G_phi,G_t)
 
+def source_radius2_inf(r1,r2,r3,r4,G_theta):
+    '''
+    Computes radius for the equitorial source of a photon with Type II trajectory
+    (outside the critical curve, one turning point, scattering) in Boyer-Lindquist coordinates
+    :param r1-4: radial turning points
+    :param G_theta: the angular path integral, G_theta=I_r=Mino time
+
+    :returns:  radius of the equitorial source
+    '''
+    # Eqs. (31-32 P1)
+    r31 = (r3-r1)
+    r32 = (r3-r2)
+    r41 = (r4-r1)
+    r42 = (r4-r2)
+    r21 = (r2-r1)
+
+    k2 = r32*r41/r31/r42
+
+    # Eqs. (30 P1)
+    F2 = ellipf(np.arcsin(np.sqrt(r31/r41).real),(k2).real)
+    sn_square = np.square(ellipj(1/2*np.sqrt(r31*r42).real*G_theta-F2, (k2).real)[0])
+    rs2 = np.nan_to_num((r4*r31-r3*r41*sn_square)/(r31-r41*sn_square))
+    return(rs2)
 
 def source_radius2(r,r1,r2,r3,r4,G_theta):
     '''
@@ -155,14 +178,13 @@ def source_radius2(r,r1,r2,r3,r4,G_theta):
     rs2 = np.nan_to_num((r4*r31-r3*r41*sn_square)/(r31-r41*sn_square))
     return(rs2)
 
-def source_radius3_inf(r1,r2,r3,r4,G_theta,alpha):
+def source_radius3_inf(r1,r2,r3,r4,G_theta):
     '''
     Computes radius for the equitorial source of a photon with Type III trajectory
     (inside the critical curve, generated at the horizon, no turning points) in Boyer-Lindquist coordinates
     assuming that the observer is at infinity
     :param r1-4: radial turning points
     :param G_theta: the angular path integral, G_theta=I_r=Mino time
-    :param alpha: x coordinate on the image plane
     :returns:  radius of the equitorial source
     '''
 
@@ -546,8 +568,8 @@ def calculate_observables(grid,mask,theta_o,a,mbar,distance=1000):
     rs2 = source_radius2(distance,r1[mask2],r2[mask2],r3[mask2],r4[mask2],G_theta[mask2])
     rs3 = source_radius3(distance,r1[mask3],r2[mask3],r3[mask3],r4[mask3],G_theta[mask3])
 
-    #rs2 = source_radius2_inf(r1[mask2],r2[mask2],r3[mask2],r4[mask2],G_theta[mask2],eta[mask2])
-    #rs3 = source_radius3_inf(r1[mask3],r2[mask3],r3[mask3],r4[mask3],G_theta[mask3],eta[mask3])
+    #rs2 = source_radius2_inf(r1[mask2],r2[mask2],r3[mask2],r4[mask2],G_theta[mask2])
+    #rs3 = source_radius3_inf(r1[mask3],r2[mask3],r3[mask3],r4[mask3],G_theta[mask3])
 
     rs = np.zeros(mask.shape)
     r_mask = np.zeros(rs[mask].shape)
@@ -568,6 +590,11 @@ def calculate_observables(grid,mask,theta_o,a,mbar,distance=1000):
     maskkk = np.ones(rs.shape)
     
     maskkk[rs<=r_p] = np.nan
+
+    if imag_cut==1:
+        maskkk[rs>=r_cutoff] = np.nan
+    elif imag_cut==2:
+        maskkk[rs>=r_cutoff+5] = np.nan
 
     return(rs*maskkk,redshift_sign*maskkk,deltat*maskkk,deltaphi*maskkk)
 

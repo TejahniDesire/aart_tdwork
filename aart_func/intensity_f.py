@@ -104,6 +104,7 @@ def gDisk(r,a,b,lamb,eta):
     Calculates the redshift factor for a photon outside the inner-most stable circular orbit(isco) (assume circular orbit)
     (Eq. B13 P1)
     :param r: radius of the source
+    :param b: The +- sign of p^r
     :param a: spin of the black hole
     :param lamb: angular momentum
     :param eta: Carter constant
@@ -146,6 +147,24 @@ def gGas(r,a,b,lamb,eta):
 
     return 1/(ut*(1-b*np.sign(ur)*sqrt(np.abs(Rint(r,a,lamb,eta)*ur**2))/Delta(r,a)/ut-lamb*uphi/ut))
 
+#TODO: This expression will just work for sure for the Keplerian velocity. 
+# I need to check if it has to be modified for the general four-velocity
+def CosAng(r,a,b,lamb,eta):
+    """
+    Calculates the cosine of the emission angle
+    :param r: radius of the source
+    :param a: spin of the black hole
+    :param b: sign for the redshift
+    :param lamb: angular momentum
+    :param eta: Carter constant
+
+    :return: the  cosine of the emission angle
+    """
+    #From eta, solve for Sqrt(p_\theta/p_t)
+    kthkt=np.sqrt(eta)
+    #Sqrt(g^{\theta\theta}) Evaluated at the equatorial plane
+    thth=1/r
+    return thth*gDisk(r,a,b,lamb,eta)*kthkt
 
 #calculate the observed brightness for a purely radial profile
 def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys,phi):
@@ -450,7 +469,7 @@ def br_bv(supergrid0,mask0,N0,rs0,sign0):
 
     print("File ",filename," created.")
 
-def gfactorf(grid,mask,redshift_sign,a,isco,rs,th,thetao):
+def gfactorf(grid,mask,redshift_sign,a,isco,rs,thetao):
     """
     Calculate the redshift factor
     :param grid: alpha and beta grid on the observer plane on which we evaluate the observables
@@ -459,7 +478,6 @@ def gfactorf(grid,mask,redshift_sign,a,isco,rs,th,thetao):
     :param a: black hole spin
     :param isco: radius of the inner-most stable circular orbit
     :param rs: source radius
-    :param th: source angle, polar coordinate
     :param thetao: observer inclination
 
     :return: redshift factor at each point.
@@ -469,7 +487,6 @@ def gfactorf(grid,mask,redshift_sign,a,isco,rs,th,thetao):
     alpha = grid[:,0][mask]
     beta = grid[:,1][mask]
     rs = rs[mask]
-    th = th[mask]
     lamb,eta = rt.conserved_quantities(alpha,beta,thetao,a)
     gfact = np.zeros(rs.shape[0])
     redshift_sign = redshift_sign[mask]
@@ -487,13 +504,13 @@ def gfactorf(grid,mask,redshift_sign,a,isco,rs,th,thetao):
     gs[mask] = gfact
     return(gs)
 
-# orbit for the centroid with r=8 and phidot = 0.01
-# one may put arbitrary orbit here.
+# orbit for the centroid with radhs=Radius of the hotspot and velhs = 0.01 (angular frequency)
+# one may put an arbitrary orbit
 def x0(t):
-    return(radhs*np.sin(t*velhs))
+    return(radhs*np.cos(t*velhs))
 
 def y0(t):
-    return(radhs*np.cos(t*velhs))
+    return(radhs*np.sin(t*velhs))
 
 def flare_model(grid,mask,redshift_sign,a,rs,th,ts,thetao,rwidth,delta_t):
 

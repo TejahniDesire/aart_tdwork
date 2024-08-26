@@ -93,12 +93,13 @@ def kappa(grid,mask,N,rs,redshift_sign,a,thetao):
     #Electric vector polarization angle EVPA (Eq. 5 P1)
     nu=-(alpha+a*sin(thetao))
 
-    EVPA_d=sqrt((k1**2+k2**2)*(beta**2+nu**2))
+    #EVPA_d=sqrt((k1**2+k2**2)*(beta**2+nu**2))
+    EVPA_d=nu**2+beta**2
     EVPA_i=(beta*k2-nu*k1)
     EVPA_j=(beta*k1+nu*k2)
 
-    EVPA_i[rs<=2] = np.nan
-    EVPA_j[rs<=2] = np.nan
+    EVPA_i[rs<=r_p] = np.nan
+    EVPA_j[rs<=r_p] = np.nan
 
     mask_d=EVPA_d>0
     EVPA_i[mask_d]/=EVPA_d[mask_d]
