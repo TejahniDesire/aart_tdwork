@@ -1,6 +1,9 @@
-aartPath = '/home/td6241/repositories/aartConvergenceTest'
-aartPathResults = '/scratch/gpfs/td6241/convergence_data/'
-aartOutput = aartPathResults + 'results/'
+aartPath = '/home/td6241/repo/aart'
+aartPathResults = '/scratch/gpfs/td6241/aart/'
+aartOutput = aartPathResults + 'rawResults/'
+modelDir = aartPath + "/paramModels/"
+modelRunsDir = aartPathResults + 'bigRuns/'
 
 
-# Not:
+
+# TEST:
