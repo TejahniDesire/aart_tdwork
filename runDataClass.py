@@ -2,12 +2,12 @@ import astroModels
 import numpy as np
 import movieMakerV2.movieMakerIntensity
 from movieMakerV2 import movieMakerIntensity
-
+from astroModels import *
 
 class runData:
 
     def __init__(self, name: str, brightparams_grid: dict, variable_brightparams_names: list,
-                 variable_geo_values, variable_geo_names):
+                 variable_geo_values, variable_geo_names, funckey=funckeys):
         """
 
         Args:
@@ -33,6 +33,7 @@ class runData:
 
         self.isNormalized = False
         self.blurr_policy = False
+        self.funckeys = funckey
 
     def setAction(self, action):
         """
@@ -62,6 +63,9 @@ class runData:
 
     def getBrightparams(self):
         return self.brightparams_values_grid
+
+    def getFunckeys(self):
+        return self.funckeys
 
     def getBPVarNames(self):
         return self.variable_brightparams_names
@@ -98,6 +102,28 @@ run2 = runData("run2",
                )
 run2.setisNormalized(True)
 
+# TestRun__________________________________________
+TestRun  = runData("TestRun",
+               astroModels.bp_PrunSingle,
+               ["t_e0"],
+               [(["a"], [str(15 / 16)])],
+               ["ModelC"],
+               funckey=astroModels.funckey_PrunSingle
+               )
+TestRun.setisNormalized(False)
+
+
+# PrunSingle______________________________________________________________________
+PrunSingle  = runData("PrunSingle",
+               astroModels.bp_PrunSingle,
+               [],
+               [(["a"], [str(15 / 16)])],
+               ["ModelC"],
+               funckey=astroModels.funckey_PrunSingle
+               )
+PrunSingle.setisNormalized(True)
+
+
 # PRUN______________________________________________________________________
 PRUN  = runData("PRUN",
                astroModels.bp_PRUN,
@@ -105,14 +131,14 @@ PRUN  = runData("PRUN",
                [(["a"], [str(.001)]), (["a"], [str(.5)]), (["a"], [str(15 / 16)])],
                ["ModelA", "ModelB", "ModelC"],
                )
-PRUN.setisNormalized(False)
+PRUN.setisNormalized(True)
 
 # exp1__________________________________________________________________________
 exp1 = runData("exp1",
                astroModels.bp_exp1,
-               ["t_e0", "b_0"],
+               ["t_e0"],
                [(["a"], [str(15 / 16)])],
-               ["ModelA"],
+               ["ModelC"],
                )
 exp1.setisNormalized(True)
 

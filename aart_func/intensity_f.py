@@ -167,7 +167,7 @@ def CosAng(r,a,b,lamb,eta):
     return thth*gDisk(r,a,b,lamb,eta)*kthkt
 
 #calculate the observed brightness for a purely radial profile
-def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys,phi):
+def bright_radial(grid,mask,redshift_sign,anglen,a,rs,isco,thetao,brightparams,funckeys,phi):
     """
     Calculate the brightness of a rotationally symmetric disk
     (Eq. 50 P1)
@@ -196,6 +196,7 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys
     full_profiles = np.zeros(shape=(8, rs.shape[0]))
     tau = np.zeros(rs.shape[0])
     redshift_sign = redshift_sign[mask]
+    # anglen = anglen[mask]
 
     x_aux=rs*np.cos(phi)
     y_aux=rs*np.sin(phi)
@@ -233,9 +234,9 @@ def bright_radial(grid,mask,redshift_sign,a,rs,isco,thetao,brightparams,funckeys
         1: ilp.power_profile
     }
     si_thin[rs>=isco], si_thick[rs>=isco], tau[rs>=isco], full_profiles[:,rs>=isco] = emissionmodel[
-        funckeys["emodelkey"]](coords_inner,redshift_inner,CosAng_inner,brightparams,funckeys)
+        funckeys["emodelkey"]](coords_inner,redshift_inner,CosAng_inner,anglen[rs>=isco],brightparams,funckeys)
     si_thin[rs<isco], si_thick[rs<isco], tau[rs<isco], full_profiles[:,rs<isco] = emissionmodel[
-        funckeys["emodelkey"]](coords_outter,redshift_outter,CosAng_outter,brightparams,funckeys)
+        funckeys["emodelkey"]](coords_outter,redshift_outter,CosAng_outter,anglen[rs<isco],brightparams,funckeys)
 
     r_p = 1+np.sqrt(1-a**2)
     # si_thin[rs<=r_p] = 0
@@ -330,7 +331,7 @@ def slow_light(grid,mask,redshift_sign,a,isco,rs,th,ts,interpolation,thetao):
     return(I)
 
 
-def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,mask2,N2,rs2,sign2,brightparams,funckeys,phi012):
+def br(supergrid0,mask0,N0,rs0,sign0,anglen0,supergrid1,mask1,N1,rs1,sign1,anglen1,supergrid2,mask2,N2,rs2,sign2,anglen2,brightparams,funckeys,phi012):
     """
     Calculate and save the radial brightness profile
     """
@@ -341,9 +342,9 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     # I2-------------
     rs2 = rs2[mask2]
     phi2 = phi012[2][mask2]
-
+    anglen2 = anglen2[mask2]
     si_thin2, si_thick2, tau2mask2, full_profiles2= bright_radial(
-        supergrid2,mask2,sign2,spin_case,rs2,isco,thetao,brightparams,funckeys,phi2)
+        supergrid2,mask2,sign2,anglen2,spin_case,rs2,isco,thetao,brightparams,funckeys,phi2)
 
     I2_thin = np.zeros(mask2.shape)
     I2_thin[mask2] = si_thin2
@@ -353,16 +354,16 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     tau2[mask2] = tau2mask2
 
     full_intensity = full_intensity * np.exp(-tau2) + I2_thick
-
+    
     I2_temp_thin = ilp.brightness_temp(I2_thin*ilp.specific_int_units, brightparams["nu0"])
     I2_temp_thick = ilp.brightness_temp(I2_thick*ilp.specific_int_units, brightparams["nu0"])
 
     # I1-------------
     rs1 = rs1[mask1]
     phi1 = phi012[1][mask1]
-
+    anglen1 = anglen1[mask1]
     si_thin1, si_thick1, tau1mask1, full_profiles1 = bright_radial(
-        supergrid1, mask1, sign1, spin_case,rs1, isco, thetao, brightparams, funckeys, phi1)
+        supergrid1, mask1, sign1, anglen1, spin_case,rs1, isco, thetao, brightparams, funckeys, phi1)
 
 
 
@@ -380,9 +381,9 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     # I0-------------
     rs0 = rs0[mask0]
     phi0 = phi012[0][mask0]
-
+    anglen0 = anglen0[mask0]
     si_thin0, si_thick0, tau0mask0, full_profiles0 = bright_radial(
-        supergrid0, mask0, sign0, spin_case,rs0, isco, thetao, brightparams, funckeys, phi0)
+        supergrid0, mask0, sign0, anglen0, spin_case,rs0, isco, thetao, brightparams, funckeys, phi0)
 
     I0_thin = np.zeros(mask0.shape)
     I0_thin[mask0] = si_thin0
@@ -419,14 +420,26 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     """Full Profile Reshaping_________________________"""
     num_of_profiles = full_profiles2.shape[0]
 
-    print("Mask Shape: ", mask2.shape)
     full_profiles2resized = np.ndarray((num_of_profiles, mask2.shape[0]))
     full_profiles1resized = np.ndarray((num_of_profiles, mask1.shape[0]))
     full_profiles0resized = np.ndarray((num_of_profiles, mask0.shape[0]))
+
+    # full_profiles0Grid = np.empty([num_of_profiles],dtype=object)
+    # full_profiles1Grid = np.empty([num_of_profiles],dtype=object)
+    # full_profiles2Grid = np.empty([num_of_profiles],dtype=object)
+
+    full_profiles0Grid = np.ndarray([num_of_profiles,N0,N0])
+    full_profiles1Grid = np.ndarray([num_of_profiles,N1,N1])
+    full_profiles2Grid = np.ndarray([num_of_profiles,N2,N2])
     for i in range(num_of_profiles):
         full_profiles2resized[i, mask2] = full_profiles2[i, :]
+        full_profiles2Grid[i,:,:] = full_profiles2resized[i].reshape(N2, N2).T
+
         full_profiles1resized[i, mask1] = full_profiles1[i, :]
+        full_profiles1Grid[i,:,:] = full_profiles1resized[i].reshape(N1, N1).T
+
         full_profiles0resized[i, mask0] = full_profiles0[i, :]
+        full_profiles0Grid[i,:,:] = full_profiles0resized[i].reshape(N0, N0).T
     """_________________________"""
 
     h5f = h5py.File(filename, 'w')
@@ -443,9 +456,9 @@ def br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,supergrid2,ma
     h5f.create_dataset('tau1', data=tau1)
     h5f.create_dataset('tau0', data=tau0)
     h5f.create_dataset('tauTotal',data=tauTotal)
-    h5f.create_dataset('full_profiles2', data=full_profiles2resized)
-    h5f.create_dataset('full_profiles1', data=full_profiles1resized)
-    h5f.create_dataset('full_profiles0', data=full_profiles0resized)
+    h5f.create_dataset('full_profiles2', data=full_profiles2Grid)
+    h5f.create_dataset('full_profiles1', data=full_profiles1Grid)
+    h5f.create_dataset('full_profiles0', data=full_profiles0Grid)
 
 
     h5f.close()

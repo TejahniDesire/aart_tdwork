@@ -75,7 +75,7 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
 
     ax.legend(frameon=False)
     ax.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
-    ax.set_ylim(3,8)
+    # ax.set_ylim(3,8)
 
     new_ticks = [xaxis[0], 230, xaxis[xaxis.size - 1]]
     ax.set_xticks(new_ticks)
@@ -127,7 +127,7 @@ def radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
     ax1.legend(frameon=False)
     ax1.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
     # ax1.set_ylim(3,8)
-    ax1.set_ylim(3, 8)
+    # ax1.set_ylim(3, 8)
     # if not blurr_policy:
     #     ax1.set_ylim(0, 8)
     # else:
@@ -182,7 +182,7 @@ def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
     [l.set_visible(False) for (i, l) in enumerate(ax.xaxis.get_minorticklabels()) if i % n != 0]
     ax.tick_params('both', length=10, width=1, which='major')
     ax.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
-    ax.set_ylim(10e-6, 10e2)
+    # ax.set_ylim(10e-6, 10e2)
     # ax.legend(loc='lower left')
 
     # Optically Thick
@@ -219,7 +219,7 @@ def fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
     [l.set_visible(False) for (i, l) in enumerate(ax1.xaxis.get_minorticklabels()) if i % n != 0]
     ax1.tick_params('both', length=10, width=1, which='major')
     ax1.set_xlim(xaxis[0], xaxis[xaxis.size - 1])
-    ax1.set_ylim(10e-6, 10e2)
+    # ax1.set_ylim(10e-6, 10e2)
     ax1.legend(loc='lower left')
 
 
@@ -273,32 +273,32 @@ def IntensityVSRadii(fig,ax0,ax1,limit,thin_intensity, thick_intensity,rmax,blur
     axes_0 = [ax0]
     axes_1 = [ax1]
     if not blurr_policy:
-        images = [thin_intensity[3], thick_intensity[3]]
+        images = [thick_intensity[3],thin_intensity[3]]
     else:
-        images = [thin_intensity[0], thick_intensity[0]]
+        images = [thick_intensity[0],thin_intensity[0]]
 
     if not blurr_policy:
-        peak012, interp012 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
+        peak012, interp012 = image_tools.radii_of_thetaV2_data(thin_intensity[3],params.dx0,rmax=rmax)
         # peak0, interp0 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
         # peak1, interp1 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
         # peak2, interp2 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
-        peakAbsorb, interpAbsorb = image_tools.radii_of_thetaV2_data(thick_intensity[3])
+        peakAbsorb, interpAbsorb = image_tools.radii_of_thetaV2_data(thick_intensity[3],params.dx0,rmax=rmax)
         vmax = [np.nanmax(thin_intensity[3])*1.2,np.nanmax(thick_intensity[3])*1.2]
     else:
-        peak012, interp012 = image_tools.radii_of_thetaV2_data(thin_intensity[0])
+        peak012, interp012 = image_tools.radii_of_thetaV2_data(thin_intensity[0],params.dx0,rmax=rmax)
         # peak0, interp0 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
         # peak1, interp1 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
         # peak2, interp2 = image_tools.radii_of_thetaV2_data(thin_intensity[3])
-        peakAbsorb, interpAbsorb = image_tools.radii_of_thetaV2_data(thick_intensity[0])
-        vmax = [np.nanmax(thin_intensity[3])*1.2,np.nanmax(thick_intensity[0])*1.2]
-    peaks = [peak012, peakAbsorb]
-    interps = [interp012, interpAbsorb]
+        peakAbsorb, interpAbsorb = image_tools.radii_of_thetaV2_data(thick_intensity[0],params.dx0,rmax=rmax)
+        vmax = [np.nanmax(thick_intensity[0])*1.2,np.nanmax(thin_intensity[0])*1.2]
+    peaks = [peakAbsorb,peak012]
+    interps = [interpAbsorb,interp012]
 
-    model = ["for Thin Assumption", "for Full Solution"]
+    model = ["for Full Solution","for Thin Assumption"]
     for J in range(1):
-        if J == 0:
-            axes_0[J].get_xaxis().set_ticks([])
-            axes_1[J].get_xaxis().set_ticks([])
+        # if J == 0:
+        #     axes_0[J].get_xaxis().set_ticks([])
+        #     axes_1[J].get_xaxis().set_ticks([])
         x = np.linspace(0, rmax - 1, rsize) * params.dx0
         ptheta = [0, np.pi/2, np.pi]
         colors = [RingStyle["color"][0],RingStyle["color"][1],RingStyle["color"][2],RingStyle["color"][3]]
@@ -309,10 +309,13 @@ def IntensityVSRadii(fig,ax0,ax1,limit,thin_intensity, thick_intensity,rmax,blur
                            label=R"$\theta= $" + f"{ptheta[L]:.2f}")
             axes_0[J].axvline(peaks[J][parg[L]], color=colors[L])
 
-        axes_0[J].set_xlim([2, 6])
+        # axes_0[J].set_xlim([2, 6])
         axes_0[J].legend()
         axes_0[J].set_xlabel(R"$R_g$")
         axes_0[J].set_ylabel(R"Flux Value " + model[J])
+        axes_0[J].set_xlim(x[0],x[len(x)-1])
+        axes_0[J].xaxis.set_minor_formatter(ticker.FormatStrFormatter('%.1f'))
+        axes_0[J].xaxis.set_major_formatter(ticker.FormatStrFormatter("%.1f"))
 
         im1 = axes_1[J].imshow(images[J], origin="lower", cmap="afmhot", extent=[-limit, limit, -limit, limit])
 
@@ -362,14 +365,23 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False,plot_inten
                                                                        give_intensities=True,average=average)
         intent_at_peaks = [intent_at_peaks0, intent_at_peaks1, intent_at_peaks2, intent_at_peaks3]
     else:
-        peak0, theta0 = image_tools.radii_of_thetaV2(thin_intensity[0],average=average)
-        peak1, theta1 = image_tools.radii_of_thetaV2(thin_intensity[1],average=average)
-        peak2, theta2 = image_tools.radii_of_thetaV2(thin_intensity[2],average=average)
-        peak3, theta3 = image_tools.radii_of_thetaV2(thin_intensity[3],average=average)
+        if not blurr_policy:
+            peak0, theta0 = image_tools.radii_of_thetaV2(thin_intensity[0],average=average)
+            peak1, theta1 = image_tools.radii_of_thetaV2(thin_intensity[1],average=average)
+            peak2, theta2 = image_tools.radii_of_thetaV2(thin_intensity[2],average=average)
+            peak3, theta3 = image_tools.radii_of_thetaV2(thin_intensity[3],average=average)
+        else:
+            peak0, theta0 = image_tools.radii_of_thetaV2(thin_intensity[0],average=average)
 
-    peaks = [peak0,peak1,peak2,peak3]
 
-    thetas = [theta0,theta1,theta2,theta3]
+    if blurr_policy:
+        peaks = [peak0]
+
+        thetas = [theta0]
+    else:
+        peaks = [peak0,peak1,peak2,peak3]
+
+        thetas = [theta0,theta1,theta2,theta3]
 
     colors = [RingStyle["color"][0],RingStyle["color"][1],RingStyle["color"][2],RingStyle["color"][3]]
     labels = [R"$n= 0$",R"$n= 1$",R"$n= 2$",R"$Cumulative$"]
@@ -397,7 +409,7 @@ def radiiVSVarphi(fig,ax0,ax1,limit,thin_intensity,blurr_policy=False,plot_inten
     ax0.set_xlabel(R"$\varphi$")
 
     ax0.legend()
-    ax0.set_ylim(2.5,6)
+    ax0.set_ylim(2.5,np.max(peaks[i])*1.1)
     ax0.set_xlim(0,2*np.pi)
 
     if not blurr_policy:

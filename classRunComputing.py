@@ -12,10 +12,11 @@ import image_tools
 from aart_func import *
 from image_tools import curve_params
 from params import *
+import astroModels
 from scipy.interpolate import interp1d
 import importlib
 import params
-import astroModels
+from astroModels import *
 import fileloading
 from movieMakerV2 import movieMakerIntensity
 import normalizingBrightparams
@@ -27,12 +28,14 @@ breaker = "     "
 line = "\n________________________\n"
 long_line = "\n________________________________________________________________________\n"
 line_small = "________________________________ \n"
+"/scratch/gpfs/td6241/aart/rawResults/Intensity_a_0.001_i_17_nu_2.30000e+11_mass_1.32497e+43_scaleh_0.5_thetab_0.873_beta_1.00_rie_10.0_rb_5.0_nth0_1.3e+05_te0_5.0e+10_b0_8.000e+00_pdens_-0.7_ptemp_-1.5_pmag_-2.0_nscale_0.4_emkey_0_bkey_2_nkey_0_tnkey_0_bnkey_0_magkey_0.h5"
+"/scratch/gpfs/td6241/aart/rawResults/Intensity_a_0.9375_i_17_nu_2.30000e+11_mass_1.32497e+43_scaleh_0.5_thetab_0.873_beta_1.00_rie_10.0_rb_2.0_nth0_1.9e+04_te0_2.0e+11_b0_8.131e+00_pdens_-0.7_ptemp_-0.84_pmag_-0.3_nscale_0.4_emkey_0_bkey_2_nkey_0_tnkey_0_bnkey_0_magkey_0.h5"
 
 
 class BigRuns:
 
     def __init__(self, run: str, intensity_grid_params: dict, var_intensity_grid_names, geo_grid_params, geo_grid_names,
-                 normalized_brightparams=False):
+                 normalized_brightparams=False,funcKey=None):
         """
 
         Args:
@@ -59,6 +62,10 @@ class BigRuns:
         """
         self.intensity_grid_params = intensity_grid_params
         self.run = run
+        if funcKey is None:
+            self.funckeys = funckeys
+        else:
+            self.funckeys = funcKey
         self.var_intensity_grid_names = var_intensity_grid_names
         self.geo_grid_names = geo_grid_names
         self.geo_grid_params = geo_grid_params
@@ -180,7 +187,8 @@ class BigRuns:
             grid_types = {
                 0: self.type0grid,
                 1: self.type1Grid,
-                2: self.type2Grid
+                2: self.type2Grid,
+                3: self.type3Grid
             }
 
             self.all_intensity_model_names, self.all_intensity_model_brightparams = grid_types[self.run_type]()
@@ -203,6 +211,52 @@ class BigRuns:
     def getModelBrightParams(self,model:str):
 
         return self.all_model_brightparams[list(self.all_model_names).index(model)]
+
+    def type3Grid(self):
+        all_brightparams = []  # list[tuple (name, bright parameters)]
+        all_model_names = []
+        for i in range(self.variable_param_ranges[self.var_intensity_grid_names[0]]):
+            for j in range(self.variable_param_ranges[self.var_intensity_grid_names[1]]):
+                for k in range(self.variable_param_ranges[self.var_intensity_grid_names[2]]):
+                    current_model_brightparams = {}  # brightprams for current model
+
+                    if i < 9:
+                        place1 = str(i + 1)
+                    else:
+                        place1 = str(i + 1) + '-'
+
+                    if j < 9:
+                        place2 = str(j + 1)
+                    elif j >= 9 and i >= 9:
+                        place2 = str(j + 1) + '-'
+                    else:
+                        place2 = '-' + str(j + 1)
+                    
+
+                    if k < 9:
+                        place3 = str(k + 1)
+                    elif k >= 9 and j >= 9:
+                        place3 = str(k + 1) + '-'
+                    else:
+                        place3 = '-' + str(k + 1)
+
+                    current_model_name = "Model_" + place1 + place2 + place3
+
+                    # Fill out the constant parameters
+                    for key in list(self.constant_params):
+                        current_model_brightparams[key] = self.constant_params[key]
+
+                    current_model_brightparams[self.var_intensity_grid_names[0]] = \
+                        self.intensity_grid_params[self.var_intensity_grid_names[0]][i]
+                    current_model_brightparams[self.var_intensity_grid_names[1]] = \
+                        self.intensity_grid_params[self.var_intensity_grid_names[1]][j]
+                    current_model_brightparams[self.var_intensity_grid_names[2]] = \
+                        self.intensity_grid_params[self.var_intensity_grid_names[2]][k]
+
+                    all_brightparams += [current_model_brightparams]
+                    all_model_names += [current_model_name]
+
+        return all_model_names, all_brightparams
 
     def type2Grid(self):
         all_brightparams = []  # list[tuple (name, bright parameters)]
@@ -244,7 +298,7 @@ class BigRuns:
         for i in range(self.variable_param_ranges[self.var_intensity_grid_names[0]]):
             current_model_brightparams = {}  # dict[key] = for value of [key]/varied parameter
 
-            current_model_name = "Model" + str(i + 1)
+            current_model_name = "Model_" + str(i + 1)
             for key in list(self.constant_params):
                 current_model_brightparams[key] = self.constant_params[key]
 
@@ -258,7 +312,7 @@ class BigRuns:
 
     def type0grid(self):
         current_model_brightparams = {}  # dict[key] = for value of [key]/varied parameter
-        current_model_name = "Model" + str(1)
+        current_model_name = "Model_" + str(1)
         for key in list(self.constant_params):
             current_model_brightparams[key] = self.constant_params[key]
 
@@ -266,60 +320,73 @@ class BigRuns:
 
     def createGeoGrid(self):
         for i in range(len(self.geo_grid_names)):
-            # Create normalizing lensing band
+            print("\nCreating Geo Model '{}' \n".format(self.geo_grid_names[i]))
+            print(line)
+            # Create normalizing lensing band_____________________________________________________________________________________________
 
             normal_param_name = self.geo_grid_names[i] + "_Normalizing"
 
             fileloading.loadGeoModel(normal_param_name, self.run)
             importlib.reload(params)
-
-            new_lband = self.sub_paths["GeoDoth5Path"] + normal_param_name + "Lensing" + ".h5"
-            new_rtray = self.sub_paths["GeoDoth5Path"] + normal_param_name + "RayTracing" + ".h5"
-            print("Computation of {} Lensing Bands".format(normal_param_name))
-            """Computation of the lensing bands______________________________________________________"""
-            subprocess.run(['python3 ' + EZPaths.aartPath + '/lensingbands.py '], shell=True)
-
             spin_case = params.spin_case
             i_case = params.i_case
 
+            new_lband = self.sub_paths["GeoDoth5Path"] + normal_param_name + "Lensing" + ".h5"
+            new_rtray = self.sub_paths["GeoDoth5Path"] + normal_param_name + "RayTracing" + ".h5"
+            new_mag_angle = self.sub_paths["GeoDoth5Path"] + normal_param_name + "MagAng" + ".h5"
+            print("Computation of {} Lensing Bands".format(normal_param_name))
+            """Computation of the lensing bands______________________________________________________"""
+            subprocess.run(['python3 ' + EZPaths.aartPath + '/lensingbands.py '], shell=True)
             fnbands = path + "LensingBands_a_%s_i_%s.h5" % (params.spin_case, params.i_case)
-
-            print("Reading file: ", fnbands)
 
             '''Analytical Ray-tracing______________________________________________________'''
             print("Analytical Raytracing of {}".format(normal_param_name))
             subprocess.run(['python3 ' + EZPaths.aartPath + '/raytracing.py '], shell=True)
             fnrays1 = path + "Rays_a_%s_i_%s.h5" % (spin_case, i_case)
+            
+            """Computation of the Magnetic Angle______________________________________________________"""
+            subprocess.run(['python3 ' + EZPaths.aartPath + '/magneticangle.py '], shell=True)
+            fn= path + "MagneticAngle_a_%s_i_%s.h5"%(spin_case,i_case)
 
             # Move lensing bands and raytracing bands
             subprocess.run(["mv " + fnbands + ' ' + new_lband], shell=True)
             subprocess.run(["mv " + fnrays1 + ' ' + new_rtray], shell=True)
+            subprocess.run(["mv " + fn + ' ' + new_mag_angle], shell=True)
 
-            # Actual Model Params____________________________________
+            # Actual Model Params__________________________________________________________________________________________________________
             fileloading.loadGeoModel(self.geo_grid_names[i], self.run)
             importlib.reload(params)
-
-            new_lband = self.sub_paths["GeoDoth5Path"] + self.geo_grid_names[i] + "Lensing" + ".h5"
-            new_rtray = self.sub_paths["GeoDoth5Path"] + self.geo_grid_names[i] + "RayTracing" + ".h5"
-            print("Computation of {} Lensing Bands".format(self.geo_grid_names[i]))
-            """Computation of the lensing bands______________________________________________________"""
-            subprocess.run(['python3 ' + EZPaths.aartPath + '/lensingbands.py '], shell=True)
-
             spin_case = params.spin_case
             i_case = params.i_case
 
-            fnbands = path + "LensingBands_a_%s_i_%s.h5" % (params.spin_case, params.i_case)
 
-            print("Reading file: ", fnbands)
+            new_lband = self.sub_paths["GeoDoth5Path"] + self.geo_grid_names[i] + "Lensing" + ".h5"
+            new_rtray = self.sub_paths["GeoDoth5Path"] + self.geo_grid_names[i] + "RayTracing" + ".h5"
+            new_mag_angle = self.sub_paths["GeoDoth5Path"] + self.geo_grid_names[i] + "MagAng" + ".h5"
+            print("Computation of {} Lensing Bands".format(self.geo_grid_names[i]))
+            """Computation of the lensing bands______________________________________________________"""
+            subprocess.run(['python3 ' + EZPaths.aartPath + '/lensingbands.py '], shell=True)
+            fnbands = path + "LensingBands_a_%s_i_%s.h5" % (params.spin_case, params.i_case)
 
             '''Analytical Ray-tracing______________________________________________________'''
             print("Analytical Raytracing of {}".format(self.geo_grid_names[i]))
             subprocess.run(['python3 ' + EZPaths.aartPath + '/raytracing.py '], shell=True)
             fnrays1 = path + "Rays_a_%s_i_%s.h5" % (spin_case, i_case)
 
+
+            """Computation of the Magnetic Angle______________________________________________________"""
+            subprocess.run(['python3 ' + EZPaths.aartPath + '/magneticangle.py '], shell=True)
+            fn= path + "MagneticAngle_a_%s_i_%s.h5"%(spin_case,i_case)
+
+
             # Move lensing bands and raytracing bands
             subprocess.run(["mv " + fnbands + ' ' + new_lband], shell=True)
             subprocess.run(["mv " + fnrays1 + ' ' + new_rtray], shell=True)
+            subprocess.run(["mv " + fn + ' ' + new_mag_angle], shell=True)
+            print("Files Moved and created: ")
+            print("     ",new_lband)
+            print("     ",new_rtray)
+            print("     ",new_mag_angle)
 
     def creatAllModelNames(self):
         k = 0
@@ -397,15 +464,7 @@ class BigRuns:
 
     """ Clean _______________________________________________________________________________________________________"""
 
-    def creatIntensityGrid(self, action, do_list=None, isContinuous=False,frequency_list=None):
-
-        funckeys = {
-            "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
-            "bkey": 2,  # bkey
-            "nnoisykey": 0,  # nnoisykey Inoisy density. 0 = no noise, 1 = noise
-            "tnoisykey": 0,  # tnoisykey Inoisy temperature
-            "bnoisykey": 0  # bnoisykey Inoisy magnetic field
-        }
+    def creatIntensityGrid(self, action, do_list=None, isContinuous=False,frequency_list=None,average=True,analyze=False,keep_freq_list=None,blurr_list=None,blurr=False,kernal=20):
 
         all_230_total_jy_thin = []
         all_230_total_jy_thick = []
@@ -424,6 +483,7 @@ class BigRuns:
 
             normlband = self.sub_paths["GeoDoth5Path"] + current_geo_model + "_Normalizing" + "Lensing" + ".h5"
             normrtray = self.sub_paths["GeoDoth5Path"] + current_geo_model + "_Normalizing" + "RayTracing" + ".h5"
+            normMagAng = self.sub_paths["GeoDoth5Path"] + current_geo_model + "_Normalizing" + "MagAng" + ".h5"
 
             for i in range(len(self.all_intensity_model_brightparams)):
                 # String Names
@@ -455,7 +515,7 @@ class BigRuns:
                         print("\n" + "Normalizing " + current_total_name + "\n")
                         print(long_line)
 
-                        current_bp["n_th0"] = normalizingBrightparams.normalize(normlband, normrtray, current_bp)
+                        current_bp["n_th0"] = normalizingBrightparams.normalize(normlband, normrtray,normMagAng,current_bp,self.funckeys)
 
                         print("\n" + current_total_name + " normalized with a value of n_th0="
                               + str(current_bp["n_th0"]) + "\n")
@@ -465,7 +525,7 @@ class BigRuns:
                     else:
                         run_type_arg = self.run_type
                     intermodel_data = movieMakerIntensity.intensity_movie(
-                        action, self.sub_paths, current_total_name, run_type_arg, current_bp,frequency_list)
+                        action, self.sub_paths, current_total_name, run_type_arg, current_bp,frequency_list,self.funckeys)
 
                     print(
                         "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(
@@ -476,6 +536,43 @@ class BigRuns:
                         all_230_total_jy_thick += [intermodel_data["thick_total_flux"]]
                     else:
                         print("Not all Models are being analyzed, skipping collection of intermodel data")
+
+                    # Analysis_____________
+                    if analyze:
+                        if keep_freq_list is None:
+                            keep_freq_list = np.arange(action["start"],action["stop"] - action["step"],action["step"])
+                        #     print(keep_freq_list)
+                        # str_keep_freq_list = []
+                        # for i in range(len(keep_freq_list)):
+                        #     str_keep_freq_list += ["{:.5e}".format(keep_freq_list[i])]
+
+                        self.analyzeModel(current_total_name,action,current_bp,average)
+
+                        if blurr:
+                            if blurr_list is not None:
+                                if current_total_name in blurr_list:
+                                    do_blurr = True
+                                else:
+                                    do_blurr = False
+                            else:
+                                do_blurr = True
+
+                            if do_blurr:
+                                if type(kernal) is not list:
+                                    kernal = [kernal]
+                                for i in range(len(kernal)):
+                                    current_kernal = kernal[i]
+                                    movieMakerIntensity.blurr_intensity_movie(
+                                        action, self.sub_paths, current_total_name, run_type_arg, current_bp,None,current_kernal,self.funckeys
+                                    )
+                                    
+                                    movieMakerIntensity.blurrImageAnalysis(
+                                        action, self.sub_paths, current_total_name, current_bp, None, current_kernal
+                                    )
+                                    blurr_dir = self.sub_paths["intensityPath"] + current_total_name + "/" + "blurr" + str(current_kernal) + "/"
+                                    self.deleteNu0Points(blurr_dir,keep_freq_list)
+                        
+                        self.deleteNu0Points(self.sub_paths["intensityPath"] + current_total_name + "/" + "clean/", keep_freq_list)
                 else:
                     print("{} marked for skipping...".format(current_total_name))
                 k += 1
@@ -567,13 +664,35 @@ class BigRuns:
                 current_total_name, do_list, current_model_file, isContinuous)
 
             if preform_model:
-                print("Analyzing Intensity Movie for Model ", current_total_name)
-                print(long_line)
-                movieMakerIntensity.imageAnalysis(
-                    action, self.sub_paths, current_total_name, current_bp,average=average
-                )
+                self.analyzeModel(current_total_name,action,current_bp,average)
+
+                # print("Analyzing Intensity Movie for Model ", current_total_name)
+                # print(long_line)
+                # movieMakerIntensity.imageAnalysis(
+                #     action, self.sub_paths, current_total_name, current_bp,average=average
+                # )
             else:
                 print(current_total_name + " marked for skipping...")
+    
+    def analyzeModel(self,model_name,action,bp,average):
+        print("Analyzing Intensity Movie for Model ", model_name)
+        print(long_line)
+        movieMakerIntensity.imageAnalysis(
+            action, self.sub_paths, model_name, bp,average=average
+        )
+
+    def deleteNu0Points(self,dire,keep_list):
+        files = fileloading.filesInDir(dire)
+
+        str_keep_list = []
+        for i in range(len(keep_list)):
+            str_keep_list += ["{:.5e}".format(keep_list[i])]
+
+            
+        for file in files:
+            full_file = dire + file
+            if not fileloading.strContains(file,str_keep_list):
+                os.remove(full_file)
 
     def interModelAnalysis(self, action, do_list=None, average=True):
         k = 0
@@ -675,7 +794,7 @@ class BigRuns:
                 num_of_intensity_points = janksys_thin[:, 0].shape[0]
                 print("Number of Intensity Points: ", num_of_intensity_points)
 
-                xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
+                xaxis = np.array(x_variable) / scale_label[action['var']]
                 # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
                 # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
 
@@ -860,7 +979,7 @@ class BigRuns:
                 num_of_intensity_points = janksys_thin[:, 0].shape[0]
                 print("Number of Intensity Points: ", num_of_intensity_points)
 
-                xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
+                xaxis = np.array(x_variable) / scale_label[action['var']]
                 # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
                 # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
 
@@ -988,12 +1107,12 @@ class BigRuns:
                         astroPloting.fullImage(fig, ax0, ax1, lim0, thin_intensity, thick_intensity,
                                                thin_radii, thick_radii, theta)
 
-                        ax0.text(-9, 8.5, astroModels.var_label[action["var"]]
-                                 + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-                                 + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="w")
+                        ax0.text(-9, 8.5, var_label[action["var"]]
+                                 + str(round(x_variable[i] / scale_label[action["var"]], 2))
+                                 + ' ' + units_label[action["var"]], fontsize=12, color="w")
 
                         pltname = (image_path + 'FullImage_' + str(i) + "_Nu_"
-                                   + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+                                   + str(round(x_variable[i] / scale_label[action["var"]], 2)) + ".jpeg")
                         plt.savefig(pltname, bbox_inches='tight')
                         print("Jpeg Created:  " + pltname)
                         plt.close()
@@ -1009,12 +1128,12 @@ class BigRuns:
                         astroPloting.IntensityVSRadii(fig, ax0, ax1, params.limits, thin_intensity,
                                                       thick_intensity, rmax)
                         #
-                        # ax1.text(2, 1.01, astroModels.var_label[action["var"]]
-                        #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-                        #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
+                        # ax1.text(2, 1.01, var_label[action["var"]]
+                        #          + str(round(x_variable[i] / scale_label[action["var"]], 2))
+                        #          + ' ' + units_label[action["var"]], fontsize=12, color="k")
 
                         pltname = (fluxVRadii_path + 'IntVRad_' + str(i) + "_Nu_"
-                                   + str(round(k / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+                                   + str(round(k / scale_label[action["var"]], 2)) + ".jpeg")
                         plt.savefig(pltname, bbox_inches='tight')
                         print("Image '{}' Created".format(pltname))
                         plt.close()
@@ -1026,12 +1145,12 @@ class BigRuns:
 
                         astroPloting.radiiVSVarphi(fig, ax0, ax1, params.limits, thin_intensity,average=average)
 
-                        # ax0.text(2, 1.01, astroModels.var_label[action["var"]]
-                        #          + str(round(x_variable[i] / astroModels.scale_label[action["var"]], 2))
-                        #          + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="k")
+                        # ax0.text(2, 1.01, var_label[action["var"]]
+                        #          + str(round(x_variable[i] / scale_label[action["var"]], 2))
+                        #          + ' ' + units_label[action["var"]], fontsize=12, color="k")
 
                         pltname = (radVVarphi_path + 'radVVarphu_' + str(i) + "_Nu_"
-                                   + str(round(k / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+                                   + str(round(k / scale_label[action["var"]], 2)) + ".jpeg")
                         plt.savefig(pltname, bbox_inches='tight')
                         print("Image '{}' Created".format(pltname))
                         plt.close()
@@ -1184,7 +1303,7 @@ class BigRuns:
                 print("Blurring " + current_total_name)
                 intermodel_data = movieMakerIntensity.blurr_intensity_movie(
                     action, self.sub_paths, current_total_name, run_type_arg, current_bp,
-                    blurr_frequency_list, blur_kernal)
+                    blurr_frequency_list, blur_kernal,self.funckeys)
 
                 print(
                     "\nTotal flux at 230GHz for Optically Thin Assumption: " + str(intermodel_data["thin_total_flux"]))
@@ -1207,11 +1326,14 @@ class BigRuns:
             print("Not all Models are being analyzed, skipping saving of intermodel data")
 
     def blurrIntensityGridAnalysis(self, action, do_list=None, isContinuous=False, blurr_frequency_list=None,
-                                   blur_kernal=20):
+                                   blur_kernal=20,keep_freq_list=None):
         print(line)
         print(line)
         print(line)
         print("Analyzing blurred intensity grid for " + self.run)
+
+        if keep_freq_list is None:    
+            keep_freq_list = np.arange(action["start"],action["stop"] - action["step"],action["step"])
         for i in range(len(self.all_model_brightparams)):
 
             # String Names
@@ -1233,6 +1355,8 @@ class BigRuns:
                 )
             else:
                 print(current_total_name + " marked for skipping...")
+            
+
 
     def blurrGraphCreation(self, action, do_list=None, isContinuous=False, blurr_frequency_list=None,
                            blur_kernal=20):
@@ -1290,6 +1414,8 @@ class BigRuns:
             radVNu_path = self.sub_paths["radPath"] + model
             image_path = self.sub_paths["imagePath"] + model
             Optical_depth_path = self.sub_paths["opticalDepth"] + model
+            fluxVRadii_path = self.sub_paths["fluxVRadii"] + model
+            radVVarphi_path = self.sub_paths["RadVVarphi"] + model
 
             file_creation = [fluxVNu_path, radVNu_path, image_path, Optical_depth_path]
 
@@ -1302,12 +1428,14 @@ class BigRuns:
                 for i in range(len(file_creation)):
                     fileloading.creatSubDirectory(file_creation[i], kill_policy=False)
 
-                fluxVNu_path += "/blurr" + str(blur_kernal) + "/"
-                radVNu_path += "/blurr" + str(blur_kernal) + "/"
-                image_path += "/blurr" + str(blur_kernal) + "/"
-                Optical_depth_path += "/blurr" + str(blur_kernal) + "/"
+                fluxVNu_path        += "/blurr" + str(blur_kernal) + "/"
+                radVNu_path         += "/blurr" + str(blur_kernal) + "/"
+                image_path          += "/blurr" + str(blur_kernal) + "/"
+                Optical_depth_path  += "/blurr" + str(blur_kernal) + "/"
+                fluxVRadii_path     += "/blurr" + str(blur_kernal) + "/"
+                radVVarphi_path     += "/blurr" + str(blur_kernal) + "/"
 
-                file_creation = [fluxVNu_path, radVNu_path, image_path, Optical_depth_path]
+                file_creation = [fluxVNu_path, radVNu_path, image_path, Optical_depth_path,fluxVRadii_path,radVVarphi_path]
 
                 if do_list is None:
                     kill_policy = True
@@ -1317,10 +1445,12 @@ class BigRuns:
                 for i in range(len(file_creation)):
                     fileloading.creatSubDirectory(file_creation[i], kill_policy=kill_policy)
 
-                fluxVNu_path += "Blurr" + str(blur_kernal) + "_"
-                radVNu_path += "Blurr" + str(blur_kernal) + "_"
-                image_path += "Blurr" + str(blur_kernal) + "_"
-                Optical_depth_path += "Blurr" + str(blur_kernal) + "_"
+                fluxVNu_path        += "Blurr" + str(blur_kernal) + "_"
+                radVNu_path         += "Blurr" + str(blur_kernal) + "_"
+                image_path          += "Blurr" + str(blur_kernal) + "_"
+                Optical_depth_path  += "Blurr" + str(blur_kernal) + "_"
+                fluxVRadii_path     += "Blurr" + str(blur_kernal) + "_"
+                radVVarphi_path     += "Blurr" + str(blur_kernal) + "_"
 
                 # Construct Shadows___________________________________________________________________
                 a = params.spin_case
@@ -1357,7 +1487,7 @@ class BigRuns:
                 num_of_action_points = int((action["stop"] - action["start"]) / action["step"])
                 print("Number of Intensity Points: ", num_of_action_points)
 
-                xaxis = np.array(x_variable) / astroModels.scale_label[action['var']]
+                xaxis = np.array(x_variable) / scale_label[action['var']]
                 # one_M = ilp.rg_func(brightparams["mass"] * u.g).to(u.m)
                 # M2uas = np.arctan(one_M.value / dBH) / muas_to_rad
 
@@ -1365,8 +1495,8 @@ class BigRuns:
 
                 conv_1 = ilp.ring_convergance(xaxis,mean_radii_Thick[:, 0],mean_radii_Thick[:, 0],3)
 
-                flux_peak_thin = ilp.function_peak(xaxis, janksys_thin[:, 3])
-                flux_peak_thick = ilp.function_peak(xaxis, janksys_thick[:, 3])
+                flux_peak_thin = ilp.function_peak(xaxis, janksys_thin[:, 0])
+                flux_peak_thick = ilp.function_peak(xaxis, janksys_thick[:, 0])
 
                 hist_flux_peaks_thins += [flux_peak_thin]
                 hist_flux_peaks_thicks += [flux_peak_thick]
@@ -1402,7 +1532,7 @@ class BigRuns:
                 # ________________________________
                 '''JANKSKY PLOTS----------------------------------'''
 
-                fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True)
+                fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True,sharey=True)
 
                 astroPloting.fluxThickThin(ax, ax1, xaxis, janksys_thin, janksys_thick,
                                            poi, conv_1_style, r_outer_style, flux_peak_style, action, blurr_policy=True)
@@ -1416,7 +1546,7 @@ class BigRuns:
                 # ______________________________________________
                 # ___________________________________
                 '''RADII PLOTS----------------------------------'''
-                fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True)
+                fig, (ax, ax1) = plt.subplots(2, 1, figsize=dim, dpi=400, sharex=True,sharey=True)
 
                 astroPloting.radiiThickThin(ax, ax1, xaxis, mean_radii_Thin, mean_radii_Thick,
                                             poi, conv_1_style, r_outer_style, flux_peak_style, action,
@@ -1479,15 +1609,52 @@ class BigRuns:
                         astroPloting.fullImage(fig, ax0, ax1, lim0, thin_intensity, thick_intensity,
                                                thin_radii, thick_radii, theta, blurr_policy=True)
 
-                        ax0.text(-9, 8.5, astroModels.var_label[action["var"]]
-                                 + str(round(x_variable[L] / astroModels.scale_label[action["var"]], 2))
-                                 + ' ' + astroModels.units_label[action["var"]], fontsize=12, color="w")
+                        ax0.text(-9, 8.5, var_label[action["var"]]
+                                 + str(round(x_variable[L] / scale_label[action["var"]], 2))
+                                 + ' ' + units_label[action["var"]], fontsize=12, color="w")
 
                         pltname = (image_path + '_FullImage_' + str(L) + "_Nu_"
-                                   + str(round(x_variable[L] / astroModels.scale_label[action["var"]], 2)) + ".jpeg")
+                                   + str(round(x_variable[L] / scale_label[action["var"]], 2)) + ".jpeg")
                         plt.savefig(pltname, bbox_inches='tight')
                         print("Jpeg Created:  " + pltname)
                         plt.close()
+
+
+                        '''IntensityVSRadii________________________________________________________________'''
+                        fig, dum = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
+                        ax0 = plt.subplot(1, 2, 1)
+                        ax1 = plt.subplot(1, 2, 2)
+                        rmax = Absorbtion_Image.shape[0] * .4
+                        astroPloting.IntensityVSRadii(fig, ax0, ax1, params.limits, thin_intensity,
+                                                      thick_intensity, rmax,blurr_policy=True)
+                        #
+                        # ax1.text(2, 1.01, var_label[action["var"]]
+                        #          + str(round(x_variable[i] / scale_label[action["var"]], 2))
+                        #          + ' ' + units_label[action["var"]], fontsize=12, color="k")
+
+                        pltname = (fluxVRadii_path + 'IntVRad_' + str(i) + "_Nu_"
+                                   + str(round(x_variable[L] / scale_label[action["var"]], 2)) + ".jpeg")
+                        plt.savefig(pltname, bbox_inches='tight')
+                        print("Image '{}' Created".format(pltname))
+                        plt.close()
+
+                        '''RadVSVarphiType2________________________________________________________________'''
+                        fig, dum = plt.subplots(1, 2, figsize=[15, 7], dpi=400)
+                        ax0 = plt.subplot(1, 2, 1)
+                        ax1 = plt.subplot(1, 2, 2)
+
+                        astroPloting.radiiVSVarphi(fig, ax0, ax1, params.limits, thin_intensity,average=True,blurr_policy=True)
+
+                        # ax0.text(2, 1.01, var_label[action["var"]]
+                        #          + str(round(x_variable[i] / scale_label[action["var"]], 2))
+                        #          + ' ' + units_label[action["var"]], fontsize=12, color="k")
+
+                        pltname = (radVVarphi_path + 'radVVarphu_' + str(i) + "_Nu_"
+                                   + str(round(x_variable[L] / scale_label[action["var"]], 2)) + ".jpeg")
+                        plt.savefig(pltname, bbox_inches='tight')
+                        print("Image '{}' Created".format(pltname))
+                        plt.close()
+
                         L += 1
                     else:
                         print("Freuquency {} marked for skipping...".format("{:.5e}".format(current_freqeuncy)))
@@ -1679,7 +1846,7 @@ class BigRuns:
         }
         diction['rprofs'] = partial(self.getRadialProfiles,model,None,None,(2,20),'log',500)
         diction['flux_peak'] = partial(self.getFluxPeak,current_name)
-        diction['conv'] = self.getConv(model)
+        diction['conv'] = partial(self.getConv,model)
         diction['image'] = partial(self.getIntensityName,model)
 
         t = os.listdir(diction['pintent_data'] + '/clean')
@@ -1691,20 +1858,32 @@ class BigRuns:
 
         return diction
     
-    def getIntensityName(self, model,frequency):
+    def getIntensityName(self, model,frequency,blurred=False,kernal=None):
         parent_model_path = self.sub_paths["intensityPath"] + model + "/"
-        current_model_file = parent_model_path + "clean/"
-        return current_model_file + "nu0" + "_" + "{:.5e}".format(frequency)
+        if not blurred:
+            blurr_str = "clean/nu0_"
+        else:
+            if kernal is None:
+                raise ValueError("No blurring kernal specified")
+            blurr_str = "blurr" + str(kernal) + "/nu0_blurr_"
+
+        return parent_model_path + blurr_str + "{:.5e}".format(frequency) 
     
-    def getConv(self,model):
+    def getConv(self,model,method=1):
         yvar1 = self.getModelNp(model,'mean_radii_Thick.npy')[:,2]
         yvar2 = self.getModelNp(model,'mean_radii_Thick.npy')[:,3]
         xvar = self.getModelNp(model,'x_variable.npy')
-        return ilp.ring_convergance(xvar,yvar1,yvar2,2)
+
+        methods = {
+            1: ilp.ring_convergance(xvar,yvar1,yvar2,2),
+            2: ilp.ring_diff_min(xvar,yvar1,yvar2),
+            3: ilp.ring_conv_3(xvar,yvar1,yvar2,2)
+        }
+        return methods[method]
     
-    def getFluxPeak(self,model,ring):
-        yvar = self.getModelNp(model,'janksys_thick.npy')[:,ring]
-        xvar = self.getModelNp(model,'x_variable.npy')
+    def getFluxPeak(self,model,ring,blurr=False,kernal=None):
+        yvar = self.getModelNp(model,'janksys_thick.npy',blurr,kernal)[:,ring]
+        xvar = self.getModelNp(model,'x_variable.npy',blurr,kernal)
         return self.getxOfFuncPeak(xvar,yvar)
 
     def getxOfFuncPeak(self,xvar,yvar):
@@ -1718,8 +1897,14 @@ class BigRuns:
         return (xvar.min() + step * np.argmax(yvar_interp))
         
 
-    def getModelNp(self,model,array:str):
-        path = self.sub_paths['intensityPath'] + model + "/clean/numpy/" + array
+    def getModelNp(self,model,array:str,blurr=False,kernal=None):
+        if blurr is True:
+            if kernal is None:
+                raise ValueError("No blurring kernal specified")
+            numpy_str = "/blurr" + str(kernal) + "/numpy/blurr_"
+        else:
+            numpy_str = "/clean/numpy/"
+        path = self.sub_paths['intensityPath'] + model + numpy_str + array
         return np.load(path)
     
     def getModelGrid(self):
@@ -1731,15 +1916,16 @@ class BigRuns:
             current_dimension = self.var_intensity_grid_names[i]
             dimensions += [self.variable_param_ranges[current_dimension]]
         
-        return [self.oneGridDepth,self.twoGridDepth][self.run_type - 1](dimensions)
+        return [self.oneGridDepth,self.twoGridDepth,self.threeGridDepth][self.run_type - 1](dimensions)
         
     def oneGridDepth(self,dimensions):
         grid = np.ndarray([dimensions[0],dimensions[1]],dtype=object)
         l = 0
         for i in range(dimensions[0]):
             for j in range(dimensions[1]):
-                grid[i,j] = self[self.all_model_names[l]]
+                grid[i,j] = self[str(self.all_model_names[l])]
                 l +=1
+        
         return grid
     
     def twoGridDepth(self,dimensions):
@@ -1751,6 +1937,18 @@ class BigRuns:
                     grid[i,j,k] = self[str(self.all_model_names[l])]
                     l +=1
         return grid
+    
+    def threeGridDepth(self,dimensions):
+        grid = np.ndarray([dimensions[0],dimensions[1],dimensions[2],dimensions[3]],dtype=object)
+        l = 0
+        for i in range(dimensions[0]):
+            for j in range(dimensions[1]):
+                for k in range(dimensions[2]):
+                    for p in range(dimensions[3]):
+                        grid[i,j,k,p] = self[str(self.all_model_names[l])]
+                        l +=1
+        return grid
+
 
     def __getitem__(self,item):
         if type(item) is str:
@@ -1811,7 +2009,7 @@ class BigRuns:
             hname += [(current_var_param,value)]
         return hname
 
-    def getRadialProfiles(self,model,rmin=None,rmax=None,rrange=None,scale:str='lin',num_of_points=100):
+    def getRadialProfiles(self,model,rmin=None,rmax=None,rrange=None,scale:str='lin',num_of_points=100,theta_bkey=funckeys["theta_bkey"],nu0=230e9,lab_frame=False):
         if ((rmin is not None) and (rmax is None)) or ((rmax is not None) and (rmin is None)):
             raise ValueError("Either rmin or rmax were specified while the other was")
         if rrange is None:
@@ -1828,9 +2026,10 @@ class BigRuns:
             rmax = rrange[1]
         
         # _______________
-                
-        bp = self.add_units_to_bp(self.getModelBrightParams(model))
-
+        bp = self.getModelBrightParams(model)
+        bp = bp.copy()
+        bp["nu0"]=nu0
+        bp = self.add_units_to_bp(bp)
         if scale == 'lin':
             rarray = np.linspace(rmin,rmax,num_of_points)
         elif scale == 'log':
@@ -1842,14 +2041,12 @@ class BigRuns:
         theta_e=ilp.theta_e_func(te_profile)
         nth_profile = ilp.nth_func(rarray,mass=bp['mass'],rb_0=bp['rb_0'], n_th0=bp['n_th0'], p_dens=bp['p_dens'])
         
-        funckeys = {
-            "emodelkey": 0,  # emodelkey Emission Model choice, 0 = thermal ultrarelativistic, 1 = power law
-            "bkey": 2,  # bkey
-            "nnoisykey": 0,  # nnoisykey Inoisy density. 0 = no noise, 1 = noise
-            "tnoisykey": 0,  # tnoisykey Inoisy temperature
-            "bnoisykey": 0  # bnoisykey Inoisy magnetic field
-        }
-        si_thin, si_thick, d, d = ilp.thermal_profile({'r':rarray,'x':0,'y':0}, redshift=1, cosAng=1, bp=bp, fk=funckeys)
+        if theta_bkey is None:
+            theta_bkey = self.funckeys["theta_bkey"]
+
+        funckeys_use = self.funckeys.copy()
+        funckeys_use["theta_bkey"] = theta_bkey
+        si_thin, si_thick, d, d = ilp.thermal_profile({'r':rarray,'x':0,'y':0}, redshift=1, cosAng=1,bp=bp, fk=funckeys_use)
 
         profiles = {
             'r':rarray,
@@ -1859,6 +2056,13 @@ class BigRuns:
             'si_thick': si_thick,
             'si_thin': si_thin
                     }
+        
+        if lab_frame is True:
+            final_data_path = self.sub_paths["intensityPath"] + model + "/" + "clean/" + "numpy/"
+            
+            profiles['n0_si_thick'] = np.load(final_data_path + "_full_profiles0_{}GHz".format("{:.5e}".format(nu0)) + ".npy")
+            profiles['n1_si_thick'] = np.load(final_data_path + "_full_profiles1_{}GHz".format("{:.5e}".format(nu0)) + ".npy")
+            profiles['n2_si_thick'] = np.load(final_data_path + "_full_profiles2_{}GHz".format("{:.5e}".format(nu0)) + ".npy")
         return profiles
 
 

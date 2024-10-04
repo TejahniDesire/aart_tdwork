@@ -302,7 +302,7 @@ def nu_c_func(b_field, theta_e, theta_b):
     """
 
     nu_b = (e * b_field / (2 * np.pi * me * c)).to(u.Hz)
-    return 3 / 2 * nu_b * np.sin(theta_b) * theta_e ** 2
+    return 3 / 2 * nu_b * np.abs(np.sin(theta_b)) * theta_e ** 2
 
 
 def synchrotron_func_I(x):
@@ -345,7 +345,7 @@ def synchrotron_func_V(x):
 def inoisy_radius():
     lowerbound = -30
     upperbound = 30
-    gridsize = 512
+    gridsize = 1024
     Xs = np.arange(lowerbound, upperbound, (upperbound - lowerbound) / gridsize)
     Ys = np.arange(lowerbound, upperbound, (upperbound - lowerbound) / gridsize)
 
@@ -355,9 +355,9 @@ def inoisy_radius():
 
 
 def inoisy_interp(envelope, scale):  # given an envelope, return noisy version to be evaluated at x and y grid
-    GRF = np.load(inoisy_path + "Inoisysnapshot.npy")
+    GRF = np.load(inoisy_path + "Inoisy_Snap_Keplerian_5.00_0.10_0.94_0.349.npy")
     radius, Xs, Ys = inoisy_radius()
-    density = envelope * np.exp(scale * GRF - scale ** 1 / 2)
+    density = envelope * np.exp(scale * GRF - 1/2 * scale ** 2)
     return RegularGridInterpolator((Xs, Ys), density, fill_value=1, bounds_error=False, method='linear')
 
 
@@ -376,7 +376,7 @@ def inoisy_value(x, y, envelope, scale, units):  # return value of noisy paramet
 
 
 # Ultrarelativistic
-def thermal_profile(coords, redshift, cosAng, bp=kw_brightparams, fk=kw_funckeys):
+def thermal_profile(coords, redshift, cosAng, magAng=None, bp=kw_brightparams, fk=kw_funckeys):
     """
 
     Calculate the radial profile emission according to a thermal distribution
@@ -407,6 +407,8 @@ def thermal_profile(coords, redshift, cosAng, bp=kw_brightparams, fk=kw_funckeys
 
     """
 
+    if (fk["theta_bkey"] == 0) and (cosAng is None):
+        raise ValueError("Function key indicates variable theta_b in use, but no theta_b array provided")
     rnoisy, Xs, Yx = inoisy_radius()
     # Temperature and Theta_e-------------------------------------------------------------------------------------------
     tempnoisy = te_func(rnoisy, bp["mass"], bp["rb_0"], bp["t_e0"], bp["p_temp"])
@@ -448,7 +450,11 @@ def thermal_profile(coords, redshift, cosAng, bp=kw_brightparams, fk=kw_funckeys
     b_field = b_field_noisy_funcs[fk["bnoisykey"]]()
 
     # ------------------------------------------------------------------------------------------------------------------
-    nu_c = nu_c_func(b_field, theta_e, bp["theta_b"])
+    if fk["theta_bkey"] == 0:
+        theta_b = np.arccos(np.sqrt(magAng))
+    else:
+        theta_b = bp['theta_b']
+    nu_c = nu_c_func(b_field, theta_e, theta_b)
 
     nu = bp["nu0"] / redshift
     x = nu / nu_c
@@ -640,6 +646,10 @@ def rest_frame_thermal_profile(coords, cosAng=None, bp=kw_brightparams, fk=kw_fu
 def brightness_temp(specific_intensity, nu0):
     return ((c ** 2 / (2 * nu0 ** 2 * kB)) * specific_intensity).to(u.K)
 
+def specific_intensity(temp,nu0):
+    temp = temp * u.K
+    return (c ** 2 / (2 * nu0 ** 2 * kB)) ** -1 * temp
+
 
 def tau_tester(coords, bp=kw_brightparams, fk=kw_funckeys):
     redshift = sqrt(1 - (2 * G * bp['mass'] / (c ** 2 * coords['r'] * rg_func(bp["mass"]))))
@@ -775,6 +785,26 @@ def ring_convergance(xaxis,ring1,ring2, percent_diff):
     diff = np.abs((np.abs(r1_interp - r2_interp) / r1_interp) * 100)
     return coords[np.argmax(diff <= percent_diff)]
 
+def ring_diff_min(xaxis,ring1,ring2):
+    num_of_observation_points = 1000
+    x1=xaxis[0]
+    x2=xaxis[len(xaxis)-1]
+    coords = np.linspace(x1, x2, num_of_observation_points)
+
+    r1_interp = interp1d(xaxis, ring1)(coords)
+    r2_interp = interp1d(xaxis, ring2)(coords)
+
+    diff = np.abs((np.abs(r1_interp - r2_interp) / r1_interp) * 100)
+    return coords[np.argmin(diff)]
+
+def ring_conv_3(xaxis,ring1,ring2, percent_diff):
+    conv1 = ring_convergance(xaxis,ring1,ring2, percent_diff)
+    conv2 = ring_diff_min(xaxis,ring1,ring2)
+
+    if ((np.abs(conv1 - xaxis[0]) / xaxis[0]) * 100) < 2:
+        return conv2
+    else:
+        return conv1
 
 def function_peak(xaxis,function):
     num_of_observation_points = 1000

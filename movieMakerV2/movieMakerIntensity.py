@@ -1,7 +1,6 @@
 import sys
 import EZPaths
 from Movie_Maker import astroModels
-import bigRunComputing
 import fileloading
 import image_tools
 import normalizingBrightparams
@@ -12,6 +11,7 @@ from aart_func import *
 import params
 from params import *  # The file params.py contains all the relevant parameters for the simulations
 import image_tools as tls
+from astroModels import *
 import numpy as np
 from movieMakerV2 import intensityBlurr
 
@@ -20,7 +20,7 @@ speed = 8
 line = "\n__________________________________________________\n"
 
 
-def intensity_movie(action, sub_path, model: str, intent_grid_type, brightparams,frequency_list=None):
+def intensity_movie(action, sub_path, model: str, intent_grid_type, brightparams,frequency_list=None,funckey=funckeys):
     """
         sub_paths = {
         "GeoDoth5Path"
@@ -39,16 +39,17 @@ def intensity_movie(action, sub_path, model: str, intent_grid_type, brightparams
     geo_model = model.split("_")[0]  # remove numbers from model
     lband = sub_path["GeoDoth5Path"] + geo_model + "Lensing" + ".h5"
     rtray = sub_path["GeoDoth5Path"] + geo_model + "RayTracing" + ".h5"
+    MagAng = sub_path["GeoDoth5Path"] + geo_model + "MagAng" + ".h5"
 
     # File paths-------------------------
     parent_model_path = sub_path["intensityPath"] + model + "/"
     current_model_file = parent_model_path + "clean/"
 
     # total jy at 230GHz
-
-    thin_total_flux, thick_total_flux = normalizingBrightparams.totalIntensity230Point(lband, rtray, brightparams,
-                                                                                       False)
-
+    print("Finding Value at 230GHz...")
+    thin_total_flux, thick_total_flux = normalizingBrightparams.totalIntensity230Point(lband, rtray,MagAng, brightparams,funckey,
+                                                                                       already230=False)
+    print("Value Found: ",thick_total_flux)
     intermodel_data = {
         "thin_total_flux": thin_total_flux,
         "thick_total_flux": thick_total_flux
@@ -69,13 +70,14 @@ def intensity_movie(action, sub_path, model: str, intent_grid_type, brightparams
     if frequency_list is not None:
         done_list = np.full(len(frequency_list),False)
 
+    freq_xaxis = []
     for i in range(num_iterations):
         print(line)
         print(line)
 
         brightparams[action["var"]] = action["start"] + i * action["step"]
         current_freqeuncy = brightparams[action["var"]]
-
+        freq_xaxis += [current_freqeuncy]
         do_image, done_list = fileloading.frequencyListAnalysis(frequency_list, done_list, current_freqeuncy)
 
         if do_image:
@@ -84,19 +86,16 @@ def intensity_movie(action, sub_path, model: str, intent_grid_type, brightparams
             # create current intensity folder
             # Update varing parameter
 
-            args = bigRunComputing.createIntensityArgs(brightparams)
-            args += "--lband " + lband + " --rtray " + rtray
-
-            subprocess.run(['python3 ' + EZPaths.aartPath + '/radialintensity.py' + args], shell=True)
+            cmd = fileloading.createIntensityArgs(brightparams,lband,rtray,MagAng,funckey)
+            subprocess.run([cmd], shell=True)
 
             # Read created file
-
-            fnrays = fileloading.intensityNameNoUnits(brightparams, astroModels.funckeys)
+            fnrays = fileloading.intensityNameNoUnits(brightparams,funckey)
             new_intensity_path = current_model_file + action["var"] + "_" + "{:.5e}".format(current_freqeuncy)
             subprocess.run(["mv " + fnrays + ' ' + new_intensity_path], shell=True)
         else:
             print('Skipping Intensity.h5 for Model ' + model + ' number: ' + str(i) + "...")
-
+    intermodel_data["xaxis"] = freq_xaxis
     return intermodel_data
 
 
@@ -323,10 +322,15 @@ def imageAnalysis(action, sub_path, model: str, brightparams,average=True):
 
 
 def blurr_intensity_movie(action, sub_path, model: str, intent_grid_type: int,
-                          brightparams: dict, blurr_frequency_list, blur_kernal):
+                          brightparams: dict, blurr_frequency_list, blur_kernal,funckey=funckeys):
     geo_model = model.split("_")[0]  # remove numbers from model
     lband = sub_path["GeoDoth5Path"] + geo_model + "Lensing" + ".h5"
     rtray = sub_path["GeoDoth5Path"] + geo_model + "RayTracing" + ".h5"
+    MagAng = sub_path["GeoDoth5Path"] + geo_model + "MagAng" + ".h5"
+
+    print("lband: '{}'".format(lband))
+    print("rtray: '{}'".format(rtray))
+    print("MagAng: '{}'".format(MagAng))
 
     # File paths-------------------------
     parent_model_path = sub_path["intensityPath"] + model + "/"
@@ -334,12 +338,12 @@ def blurr_intensity_movie(action, sub_path, model: str, intent_grid_type: int,
     clean_model_file = parent_model_path + "clean/"
 
     fileloading.creatSubDirectory(current_model_file,
-                                  "for {} intensities".format(model), kill_policy=True)
+                                  "for {} blurr intensities".format(model), kill_policy=True)
 
     # total jy at 230GHz
-
+    print("Calculating total flux at 230GHz")
     thin_total_230flux, thick_total_230flux = normalizingBrightparams.totalIntensity230Point(
-        lband, rtray, brightparams, already230=False, blurr_policy=True,blur_kernal=blur_kernal)
+        lband, rtray, MagAng, brightparams,funckey, already230=False, blurr_policy=True,blur_kernal=blur_kernal)
 
     intermodel_data = {
         "thin_total_flux": thin_total_230flux,

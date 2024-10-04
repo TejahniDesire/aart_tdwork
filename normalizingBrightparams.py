@@ -4,56 +4,51 @@ from lmfit import Parameters, minimize, fit_report
 
 import EZPaths
 import os
-
-import bigRunComputing
 import fileloading
 from aart_func import *
 import params
 from params import *
 import importlib
-import astroModels
+from astroModels import *
 from movieMakerV2 import  intensityBlurr
+from astroModels import *
 
-
-def normalize(lband,rtray,brightparams:dict):
+def normalize(lband,rtray,magAng,brightparams:dict,funckey=funckeys):
 
     bp = brightparams.copy()
     bp["nu0"] = 230e9
     fitparams = Parameters()
     fitparams.add('n_th0', value=1.3 * 10 ** 5,min=0)
-    fitted_params = minimize(total_jy_normal_func, fitparams, args=(lband, rtray, bp, .5), method='least_squares')
+    fitted_params = minimize(total_jy_normal_func, fitparams, args=(lband, rtray, magAng, bp, funckey, .5), method='least_squares')
     print("Risidual: ", fitted_params.residual)
     return fitted_params.params['n_th0'].value
 
 
-def total_jy_normal_func(fitparams,lband,rtray,bp,y):
+def total_jy_normal_func(fitparams,lband,rtray,magAng,bp,funckey,y):
 
     bp["n_th0"] = fitparams['n_th0'].value
     print("______________________________________ Running normalizing instance with n_th0 value of "
           + str(bp["n_th0"]) + " ______________________________________")
 
-    thin_total_flux,thick_total_flux = totalIntensity230Point(lband,rtray,bp,True)
+    thin_total_flux,thick_total_flux = totalIntensity230Point(lband,rtray,magAng,bp,funckey,True)
     print("Total thin model flux of ",thin_total_flux)
     print("Total full model flux of ",thick_total_flux)
     print("Difference from target: ", (y - thick_total_flux))
     return y - thick_total_flux
 
 
-def totalIntensity230Point(lband,rtray,brightparams:dict,already230=False,blurr_policy=False,blur_kernal=None):
+def totalIntensity230Point(lband,rtray,magAng,brightparams:dict,funckey,already230=False,blurr_policy=False,blur_kernal=None):
     if already230:
         bp = brightparams
     else:
         bp = brightparams.copy()
         bp["nu0"] = 230e9
 
-    args = bigRunComputing.createIntensityArgs(bp)
-    args += "--lband " + lband + " --rtray " + rtray
-
-    subprocess.run(['python3 ' + EZPaths.aartPath + '/radialintensity.py' + args], shell=True)
+    subprocess.run([fileloading.createIntensityArgs(bp,lband,rtray,magAng,funckey)], shell=True)
 
     # Read created file
 
-    fnrays = fileloading.intensityNameNoUnits(bp, astroModels.funckeys)
+    fnrays = fileloading.intensityNameNoUnits(bp,funckey)
     h5f = h5py.File(fnrays, 'r')
 
     I0 = h5f['bghts0'][:]

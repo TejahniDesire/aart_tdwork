@@ -5,17 +5,18 @@ aartpath = '/home/td6241/repositories/aart' #insert path to aart repo
 sys.path.append(aartpath)
 
 import shutil
-import subprocess
 import EZPaths
 import os
 from aart_func import *
 import params
 from params import *
 import importlib
-import astroModels
+from astroModels import *
+from os import listdir
+from os.path import isfile, join
 
 
-def createIntensityArgs(brightparams,lband,rtray,funckeys=astroModels.funckeys,aart_path=EZPaths.aartPath):
+def createIntensityArgs(brightparams,lband="0",rtray="0",magAng="0",funckeys=funckeys,aart_path=EZPaths.aartPath):
     args = ' '
     cmd1_args = {
         "nu0": '--nu ',
@@ -39,6 +40,7 @@ def createIntensityArgs(brightparams,lband,rtray,funckeys=astroModels.funckeys,a
         "nnoisykey": '--nnoisykey ',
         "tnoisykey": '--tnoisykey ',
         "bnoisykey": '--bnoisykey ',
+        "theta_bkey": '--thetabkey '
     }
 
 
@@ -51,14 +53,14 @@ def createIntensityArgs(brightparams,lband,rtray,funckeys=astroModels.funckeys,a
     for arg in cmd2_args:
         args = args + cmd2_args[arg] + str(funckeys[arg]) + ' '
 
-    args += "--lband " + lband + " --rtray " + rtray
+    args += "--lband " + lband + " --rtray " + rtray + " --magang " + magAng
 
     return 'python3 ' + aart_path + '/radialintensity.py' + args
 
 
-def intensityNameWrite(brightparams,funckeys):
+def intensityNameWrite(brightparams,funckeys=funckeys):
     filename = path + ('Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}_'
-                       'b0_{}_pdens_{}_ptemp_{}_pmag_{}_nscale_{}_emkey_{}_bkey_{}_nkey_{}_tnkey_{}_bnkey_{}.h5').format(
+                       'b0_{}_pdens_{}_ptemp_{}_pmag_{}_nscale_{}_emkey_{}_bkey_{}_nkey_{}_tnkey_{}_bnkey_{}_magkey_{}.h5').format(
         params.spin_case,
         i_case,
         "{:.5e}".format(brightparams["nu0"].value),
@@ -79,16 +81,17 @@ def intensityNameWrite(brightparams,funckeys):
         funckeys["bkey"],
         funckeys["nnoisykey"],
         funckeys["tnoisykey"],
-        funckeys["bnoisykey"]
+        funckeys["bnoisykey"],
+        funckeys["theta_bkey"]
     )
 
     return filename
 
 
-def intensityNameNoUnits(brightparams,funckeys):
+def intensityNameNoUnits(brightparams,funckeys=funckeys):
 
     filename = path + ('Intensity_a_{}_i_{}_nu_{}_mass_{}_scaleh_{}_thetab_{}_beta_{}_rie_{}_rb_{}_nth0_{}_te0_{}_'
-                       'b0_{}_pdens_{}_ptemp_{}_pmag_{}_nscale_{}_emkey_{}_bkey_{}_nkey_{}_tnkey_{}_bnkey_{}.h5').format(
+                       'b0_{}_pdens_{}_ptemp_{}_pmag_{}_nscale_{}_emkey_{}_bkey_{}_nkey_{}_tnkey_{}_bnkey_{}_magkey_{}.h5').format(
         params.spin_case,
         i_case,
         "{:.5e}".format(brightparams["nu0"]),
@@ -109,7 +112,8 @@ def intensityNameNoUnits(brightparams,funckeys):
         funckeys["bkey"],
         funckeys["nnoisykey"],
         funckeys["tnoisykey"],
-        funckeys["bnoisykey"]
+        funckeys["bnoisykey"],
+        funckeys["theta_bkey"]
     )
 
     return filename
@@ -352,6 +356,7 @@ def totalModelNametoGridModel(model,run_type):
         subtract_amount = 1
     else:
         subtract_amount = run_type
+    subtract_amount += 1
     return model[0:len(model) - subtract_amount]
 
 
@@ -419,7 +424,11 @@ def frequencyListAnalysis(frequency_list, done_list, current_frequency):
     return do_image,done_list
 
 
+def filesInDir(dir):
+    return [f for f in listdir(dir) if isfile(join(dir, f))]
 
+def strContains(string,substring_list):
+    return any(substring in string for substring in substring_list)
 
 
 

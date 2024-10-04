@@ -132,14 +132,15 @@ def radii_of_thetaV2_radArg(I0, dx=None):
     return (peaks * dx), np.ravel(theta)  # units of Rg
 
 
-def radii_of_thetaV2_data(I0, dx=None):
+def radii_of_thetaV2_data(I0, dx=None,rmax=None):
     x = np.arange(I0.shape[0])  # number of pixels
     y = x
     interp = RegularGridInterpolator((x, y), I0.T)
     theta = np.matrix(np.linspace(0, 2 * np.pi, num_of_theta_points))  # 1 x size
 
     # rmax = I0.shape[0] * .4
-    rmax = I0.shape[0] * .4
+    if rmax is None:
+        rmax = I0.shape[0] * .4
 
     r = np.matrix(np.linspace(0, rmax, num_of_radial_points)).T  # rsize x 1
 
@@ -164,6 +165,7 @@ def radii_of_thetaV2_data(I0, dx=None):
     if dx is None:
         dx = (params.limits * 2) / I0.shape[0]
 
+    print(dx)
     return (peaks * dx), interp(coords)
 
 

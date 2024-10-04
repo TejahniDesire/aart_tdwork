@@ -47,12 +47,12 @@ do_list = None
 isContinuous = False
 average = True
 frequency_list = None
-# do_list = ["ModelC21", "ModelC22", "ModelC23"]
+# do_list = ["ModelC_221"]
 # do_list = ["ModelA_10-1"]
 # frequency_list = None
 # do_list =None
 # do_list = ["ModelC22"]
-# do_list = ["ModelC21","ModelC22","ModelC23"]
+do_list = ["ModelC_33","ModelC_11"]
 
 
 bigRun = classRunComputing.BigRuns(
@@ -62,27 +62,34 @@ bigRun = classRunComputing.BigRuns(
     run.getGeoGrid(),
     run.getGeoGridNames(),
     normalized_brightparams=run.getIsNormalized(),
+    funcKey=run.getFunckeys()
 )
 """ Geo Model_________________________________________________________"""
 
 # bigRun.createGeoGrid()
 
 """ Intensity Grid Creation_________________________________________________________"""
-
-# bigRun.creatIntensityGrid(
-#     run.getAction(),
-#     do_list=do_list,
-#     isContinuous=isContinuous,
-#     frequency_list=frequency_list
-# )
+frequency_list = [230e9]
+bigRun.creatIntensityGrid(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=isContinuous,
+    frequency_list=frequency_list,
+    analyze=False,
+    # keep_freq_list=[90e9,230e9,350e9],
+    # blurr=False,
+    # blurr_list=["ModelC_2"],
+    # kernal=[10,20]
+)
 
 """ Radial Profile Creation_________________________________________________________"""
-# bigRun.creatRadialProfiles(
-#     run.getAction(),
-#     do_list=do_list,
-#     isContinuous=isContinuous,
-#     frequency_list=frequency_list
-# )
+
+bigRun.creatRadialProfiles(
+    run.getAction(),
+    do_list=do_list,
+    isContinuous=isContinuous,
+    frequency_list=frequency_list
+)
 
 """ Intensity Grid Analysis_________________________________________________________"""
 # bigRun.intensityGridAnalysis(
@@ -101,13 +108,13 @@ bigRun = classRunComputing.BigRuns(
 # )
 
 """ Clean Graph Creation_________________________________________________________"""
-bigRun.graphCreation(
-    run.getAction(),
-    do_list=do_list,
-    isContinuous=False,
-    average=average,
-    doFullImages=True
-)
+# bigRun.graphCreation(
+#     run.getAction(),
+#     do_list=do_list,
+#     isContinuous=False,
+#     average=average,
+#     doFullImages=True
+# )
 
 """ Radial Profiles_________________________________________________________"""
 
@@ -120,8 +127,12 @@ bigRun.graphCreation(
 
 """ Blurr Intensity Grid Creation_________________________________________________________"""
 
-# blurr_frequency_list = [86e9,230e9,345e9]
+# blurr_frequency_list = [230e9]
 # blurr_kernal = [1,5,10,20]
+
+
+# blurr_frequency_list = None
+# blurr_kernal = [10]
 
 # bigRun.blurrIntensityGrid(
 #     run.getAction(),
@@ -179,28 +190,28 @@ bigRun.graphCreation(
 # )
 
 
-# """ Blurr Graph Creation_________________________________________________________"""
+""" Blurr Graph Creation_________________________________________________________"""
 # bigRun.blurrGraphCreation(
 #     run.getAction(),
 #     do_list=do_list,
 #     blurr_frequency_list=blurr_frequency_list,
 #     blur_kernal=blurr_kernal[0],
 # )
-#
+
 # bigRun.blurrGraphCreation(
 #     run.getAction(),
 #     do_list=do_list,
 #     blurr_frequency_list=blurr_frequency_list,
 #     blur_kernal=blurr_kernal[1],
 # )
-#
+
 # bigRun.blurrGraphCreation(
 #     run.getAction(),
 #     do_list=do_list,
 #     blurr_frequency_list=blurr_frequency_list,
 #     blur_kernal=blurr_kernal[2]
 # )
-#
+
 # bigRun.blurrGraphCreation(
 #     run.getAction(),
 #     do_list=do_list,

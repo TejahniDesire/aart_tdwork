@@ -23,8 +23,10 @@ parser.add_argument('--bkey', default=0, type=int)
 parser.add_argument('--nnoisykey', default=0, type=int)
 parser.add_argument('--tnoisykey', default=0, type=int)
 parser.add_argument('--bnoisykey', default=0, type=int)
-parser.add_argument('--lband', default="0", type=str)
-parser.add_argument('--rtray', default="0", type=str)
+parser.add_argument('--thetabkey', default=0, type=int)
+parser.add_argument('--lband', default="0", type=str)   # PATH_DIR
+parser.add_argument('--rtray', default="0", type=str)   # PATH_DIR
+parser.add_argument('--magang', default="0", type=str)  # PATH_DIR
 
 
 args = parser.parse_args()
@@ -51,13 +53,15 @@ funckeys = {
 	"bkey": args.bkey, 					# 1
 	"nnoisykey": args.nnoisykey, 		# 2
 	"tnoisykey": args.tnoisykey, 		# 3
-	"bnoisykey": args.bnoisykey 		# 4
+	"bnoisykey": args.bnoisykey, 		# 4
+	"theta_bkey": args.thetabkey        # 0 for variable theta b, 1 for fixed
 }
 
 # Getting angles
 # fnrays="./Results/Rays_a_%s_i_%s.h5"%(spin_case,i_case)
 rtray = args.rtray
 lband = args.lband
+magAng = args.magang
 if rtray == "0":
 	print("using default rtray")
 	fnrays = path + "Rays_a_%s_i_%s.h5"%(spin_case,i_case)
@@ -76,7 +80,23 @@ phi012 = [
 
 h5f.close()
 #-------------------------
+if magAng == "0":
+	print("using default magAng")
+	fn = path + "MagneticAngle_a_%s_i_%s.h5"%(spin_case,i_case)
+else:
+	print("using altered rtray")
+	fn = magAng
 
+h5f = h5py.File(fn,'r')
+
+#Points for the boundary of the BH shadow
+anglen0=h5f['cos2angB_n0'][:]
+anglen1=h5f['cos2angB_n1'][:]
+anglen2=h5f['cos2angB_n2'][:]
+
+h5f.close()
+
+#-------------------------
 print("Intensity")
 
 
@@ -105,7 +125,7 @@ if bvapp!=1:
 	mask2=h5f['mask2'][:]
 	N2=int(h5f["N2"][0])
 
-	fnbands=rtray
+	fnbands=fnrays
 
 	print("Reading file: ",fnbands)
 
@@ -119,8 +139,8 @@ if bvapp!=1:
 	sign2=h5f['sign2'][:]
 	h5f.close()
 
-	obsint.br(supergrid0,mask0,N0,rs0,sign0,supergrid1,mask1,N1,rs1,sign1,
-			  supergrid2,mask2,N2,rs2,sign2,brightparams,funckeys,phi012)
+	obsint.br(supergrid0,mask0,N0,rs0,sign0,anglen0,supergrid1,mask1,N1,rs1,sign1,anglen1,
+			  supergrid2,mask2,N2,rs2,sign2,anglen2,brightparams,funckeys,phi012)
 else:
 
 	h5f.close()
