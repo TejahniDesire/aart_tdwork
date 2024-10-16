@@ -399,7 +399,9 @@ class BigRuns:
                 # String Names
                 current_intent_name = self.all_intensity_model_names[i]
                 self.all_model_names += [current_geo_model + current_intent_name.replace("Model", "")]
-                self.all_model_brightparams += [self.all_intensity_model_brightparams[i]]
+
+                newbp = self.all_intensity_model_brightparams[i].copy()
+                self.all_model_brightparams += [newbp]
                 self.total_models_count += 1
                 k += 1
 
@@ -519,6 +521,7 @@ class BigRuns:
 
                         print("\n" + current_total_name + " normalized with a value of n_th0="
                               + str(current_bp["n_th0"]) + "\n")
+                        self.all_model_brightparams[k] = current_bp
 
                     if self.run_type == 0:
                         run_type_arg = 1
@@ -598,6 +601,11 @@ class BigRuns:
                     np.save(file, arrays[k])
                     k += 1
 
+                fileloading.writeDocString(self.sub_paths["meta"] + "IntensityModelsGuide.txt",
+                                        self.intensityModelDocString())
+                fileloading.writeDocString(self.sub_paths["meta"] + "AllModelsGuide.txt",
+                                        self.totalModelDocString())
+
             self.already_normalized_brightparams = True
             # Numpy saving________________________________________________
 
@@ -647,7 +655,7 @@ class BigRuns:
             else:
                 print(current_total_name + " marked for skipping...")
 
-    def intensityGridAnalysis(self, action, do_list=None, isContinuous=False,average=True):
+    def intensityGridAnalysis(self, action, do_list=None, isContinuous=False, average=True):
         print(line)
         print(line)
         print(line)

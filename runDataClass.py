@@ -133,6 +133,15 @@ PRUN  = runData("PRUN",
                )
 PRUN.setisNormalized(True)
 
+# OctRun______________________________________________________________________
+OctRun  = runData("OctRun",
+               astroModels.bp_OctRun,
+               ["p_temp", "p_mag","t_e0"],
+               [(["a"], [str(.001)]), (["a"], [str(.5)]), (["a"], [str(15 / 16)])],
+               ["ModelA", "ModelB", "ModelC"],
+               )
+OctRun.setisNormalized(True)
+
 # exp1__________________________________________________________________________
 exp1 = runData("exp1",
                astroModels.bp_exp1,
@@ -145,19 +154,19 @@ exp1.setisNormalized(True)
 # exp2__________________________________________________________________________
 exp2 = runData("exp2",
                astroModels.bp_exp2,
-               ["t_e0", "b_0"],
-               [(["a"], [str(15 / 16)])],
-               ["ModelA"],
+               [],
+               [(["a"], [str(.001)]), (["a"], [str(15 / 16)])],
+               ["ModelA","ModelC"],
                )
 exp2.setisNormalized(False)
-exp2Action = {
-    "var": "nu0",
-    "start": 10e9,
-    "stop": 100e10,
-    "step": 40e9,
-    "images": True
-}
-exp2.setAction(exp2Action)
+# exp2Action = {
+#     "var": "nu0",
+#     "start": 10e9,
+#     "stop": 100e10,
+#     "step": 40e9,
+#     "images": True
+# }
+# exp2.setAction(exp2Action)
 
 # testRun1______________________________________________________________________
 

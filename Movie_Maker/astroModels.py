@@ -48,6 +48,23 @@ funckey_PrunSingle = {
     "theta_bkey": 0  # 0 for variable theta_b, 1 for fixed
 }
 
+bp_OctRun = {
+    "p_mag": [-2,-1.5,-1],
+    "p_temp": [-1.5,-1,-.5],
+    "p_dens": [-.7],
+    "n_th0": [1.9e4],
+    "t_e0": [3e10,5e10,7e10],
+    "b_0": [8],
+    "theta_b": [50.0 * (np.pi / 180)],  # NONE VARRYING________________________________________
+    "mass": [(MMkg * u.kg).to(u.g).value],
+    "nu0": [230e9],
+    "scale_height": [.5],
+    "rb_0": [5],
+    "beta": [1.0],  # Legacy _____________________________________
+    "r_ie": [10.0],
+    "nscale": [.4]
+}
+
 bp_PRUN = {
     "p_mag": [-2,-1.5,-1],
     "p_temp": [-1.5,-1,-.5],
@@ -85,10 +102,10 @@ bp_exp1 = {
 bp_exp2 = {
     "p_mag": [-1.5],
     "p_temp": [-1],
-    "p_dens": [-1],  # Check
+    "p_dens": [-.7],  # Check
     "n_th0": [1.9e4],
-    "t_e0": [1e9,5e9,1e10,5e10,1e11,5e11,1e12,5e12,1e13,5e14,1e14],
-    "b_0": [6,7,8],
+    "t_e0": [3e10],
+    "b_0": [8],
     "theta_b": [50.0 * (np.pi / 180)],  # NONE VARRYING________________________________________
     "mass": [(MMkg * u.kg).to(u.g).value],
     "nu0": [230e9],
